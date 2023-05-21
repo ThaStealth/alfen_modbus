@@ -1,6 +1,5 @@
 {
   "config": {
-    "title": "Alfen Modbus",
     "step": {
       "user": {
         "title": "Definieer uw Alfen modbus-verbinding",
