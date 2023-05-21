@@ -1,0 +1,25 @@
+{
+  "config": {
+    "title": "Alfen Modbus",
+    "step": {
+      "user": {
+        "title": "Definieer uw Alfen modbus-verbinding",
+        "data": {
+          "host": "Het ip-adres van uw Alfen-omvormer",
+          "name": "Het voorvoegsel dat moet worden gebruikt voor uw Alfen-sensoren",
+          "port": "De TCP-poort waarop verbinding moet worden gemaakt met de Alfen-omvormer",
+	    	  "modbus_address": "Modbus adres",
+          "read_scn": "Lees SCN (Smart Charging Network) data",
+          "read_socket_2": "Lees 2e socket data",
+          "scan_interval": "De polling-frequentie van de modbus registratie in seconden"
+        }
+      }
+    },
+    "error": {
+      "already_configured": "Apparaat is al geconfigureerd"
+    },
+    "abort": {
+      "already_configured": "Apparaat is al geconfigureerd"
+    }
+  }
+}

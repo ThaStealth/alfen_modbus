@@ -1,0 +1,25 @@
+{
+  "config": {
+    "title": "Alfen Modbus",
+    "step": {
+      "user": {
+        "title": "Define your Alfen modbus connection",
+        "data": {
+          "host": "The ip-address of your Alfen device",
+          "name": "The prefix to be used for your Alfen sensors",
+          "port": "The TCP port on which to connect to the Alfen",
+          "modbus_address": "The modbus address",
+          "read_scn": "Read SCN (Smart Charging Network) registers",
+          "read_socket_2": "Read socket 2 registers",
+          "scan_interval": "The polling frequency of the modbus registers in seconds"
+        }
+      }
+    },
+    "error": {
+      "already_configured": "Device is already configured"
+    },
+    "abort": {
+      "already_configured": "Device is already configured"
+    }
+  }
+}
