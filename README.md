@@ -15,9 +15,16 @@ After reboot of Home-Assistant, this integration can be configured through the i
 # Configure power budget (Slave role)
 Select the "Energy Management System" option in the Active balancing -> Data source field. 
 
-
 # Smart Charging Network
 SCN is used in a multi charging station situation (parking lots). The SCN fields are not yet fully implemented.
 
+# Known Issues
+- The power budget functionality is resetting to 0A randomly whenever there isn't a car charging. This is because of a reconnection bug in the Alfen firmware. They fixed this bug in [6.4.0-4210][2]
+
+# Future Improvements
+- Persist the set power budget value across HA restarts
+- Update the power budget value before the Alfen charger timer value expires and the charger drops into safe current mode
+
 [1]: https://alfen.com/file-download/download/public/1610
+[2]: https://knowledge.alfen.com/space/IN/243466257/Release+notes+-+Firmware+updates+NG-Platform
 
