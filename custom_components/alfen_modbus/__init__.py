@@ -265,7 +265,7 @@ class AlfenModbusHub:
         if status_data.isError():
             return False
         decoder = BinaryPayloadDecoder.fromRegisters(
-            status_data.registers, byteorder=Endian.Big
+            status_data.registers, byteorder=Endian.c
         )
         self.data["actualMaxCurrent"] =  round(decoder.decode_32bit_float(),2)
         self.data["boardTemperature"] =  round(decoder.decode_32bit_float(),2)
@@ -279,7 +279,7 @@ class AlfenModbusHub:
             if status_data.isError():
                 return False
             decoder = BinaryPayloadDecoder.fromRegisters(
-                status_data.registers, byteorder=Endian.Big
+                status_data.registers, byteorder=Endian.BIG
             )
             self.data["scnName"] = self.decode_string(decoder,4)
             self.data["scnSockets"] = decoder.decode_16bit_int()
@@ -292,7 +292,7 @@ class AlfenModbusHub:
             if energy_data.isError():
                 return False
             decoder = BinaryPayloadDecoder.fromRegisters(
-                energy_data.registers, byteorder=Endian.Big
+                energy_data.registers, byteorder=Endian.BIG
             )
             self.data["socket_"+str(socket)+"_meterstate"] = decoder.decode_16bit_uint()
             self.data["socket_"+str(socket)+"_meterAge"] = decoder.decode_64bit_uint()
@@ -355,7 +355,7 @@ class AlfenModbusHub:
             if status_data.isError():
                 return False
             decoder = BinaryPayloadDecoder.fromRegisters(
-                status_data.registers, byteorder=Endian.Big
+                status_data.registers, byteorder=Endian.BIG
             )
             self.data["socket_"+str(socket)+"_available"] = decoder.decode_16bit_uint()        
             self.data["socket_"+str(socket)+"_mode3state"] = self.decode_string(decoder,5)      
@@ -390,7 +390,7 @@ class AlfenModbusHub:
         if identification_data.isError():
             return False
         decoder = BinaryPayloadDecoder.fromRegisters(
-            identification_data.registers, byteorder=Endian.Big
+            identification_data.registers, byteorder=Endian.BIG
         )
          
         self.data["name"] = self.decode_string(decoder,17)
