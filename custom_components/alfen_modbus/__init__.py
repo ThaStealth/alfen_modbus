@@ -265,7 +265,7 @@ class AlfenModbusHub:
         if status_data.isError():
             return False
         decoder = BinaryPayloadDecoder.fromRegisters(
-            status_data.registers, byteorder=Endian.c
+            status_data.registers, byteorder=Endian.BIG
         )
         self.data["actualMaxCurrent"] =  round(decoder.decode_32bit_float(),2)
         self.data["boardTemperature"] =  round(decoder.decode_32bit_float(),2)
