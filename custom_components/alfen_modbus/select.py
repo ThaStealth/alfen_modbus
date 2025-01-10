@@ -46,7 +46,7 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
         )
         entities.append(select)
 
-    # If a battery is available add storage control
+    # If a second socket is available, add the controls
     if hub.has_socket_2:
         for select_info in CONTROL_PHASE:
             select = AlfenSelect(
@@ -92,7 +92,7 @@ class AlfenSelect(SelectEntity):
         self._key = key+str(socket)
         self._register = register
         self._option_dict = options
-
+        self._attr_device_info = device_info
         self._attr_options = list(options.values())
 
     async def async_added_to_hass(self) -> None:

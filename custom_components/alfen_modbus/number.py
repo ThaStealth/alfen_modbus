@@ -87,7 +87,7 @@ class AlfenNumber(NumberEntity):
         self._key = key+str(socket)
         self._register = register
         self._fmt = fmt
-
+        self._attr_device_info = device_info
         self._attr_native_min_value = attrs["min"]
         self._attr_native_max_value = attrs["max"]
         if "unit" in attrs.keys():
