@@ -7,8 +7,6 @@ from .const import (
     CONTROL_PHASE,
     CONTROL_PHASE_MODES,
 )
-from pymodbus.constants import Endian
-from pymodbus.payload import BinaryPayloadBuilder
 
 from homeassistant.const import CONF_NAME
 from homeassistant.components.select import (
@@ -128,10 +126,8 @@ class AlfenSelect(SelectEntity):
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
         new_mode = get_key(self._option_dict, option)
-        builder = BinaryPayloadBuilder(byteorder=Endian.BIG, wordorder=Endian.LITTLE)
-        builder.add_16bit_uint(int(new_mode))
-        self._hub.write_registers(unit=self._socket, address=self._register, payload=builder.to_registers())
-
+        payload = self._hub._client.convert_to_registers(int(new_mode), data_type=self._hub._client.DATATYPE.UINT16, word_order="big")                   
+        self._hub.write_registers(unit=self._socket, address=self._register, payload=payload)       
         self._hub.data[self._key] = option
         self.async_write_ha_state()
 

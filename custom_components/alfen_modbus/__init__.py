@@ -9,8 +9,6 @@ from typing import Optional
 
 import voluptuous as vol
 from pymodbus.client import ModbusTcpClient
-from pymodbus.constants import Endian
-from pymodbus.payload import BinaryPayloadDecoder
 
 import homeassistant.helpers.config_validation as cv
 from homeassistant.config_entries import ConfigEntry
@@ -258,17 +256,18 @@ class AlfenModbusHub:
         s = s.decode("utf-8")  # decode UTF-8
         return str(s)
 
+    def decode_from_registers(self, registers, offset, count, data_type):
+        return self._client.convert_from_registers(registers[offset:offset+count], data_type=data_type, word_order='big')
+
     def read_modbus_data_station(self):
         status_data = self.read_holding_registers(self._address,1100,6)
         if status_data.isError():
             return False
-        decoder = BinaryPayloadDecoder.fromRegisters(
-            status_data.registers, byteorder=Endian.BIG
-        )
-        self.data["actualMaxCurrent"] =  round(decoder.decode_32bit_float(),2)
-        self.data["boardTemperature"] =  round(decoder.decode_32bit_float(),2)
-        self.data["backofficeConnected"] = decoder.decode_16bit_uint()
-        self.data["numberOfSockets"] = decoder.decode_16bit_uint()
+    
+        self.data["actualMaxCurrent"] =  round(self.decode_from_registers(status_data.registers,0,2,self._client.DATATYPE.FLOAT32),2)
+        self.data["boardTemperature"] =  round(self.decode_from_registers(status_data.registers,2,2,self._client.DATATYPE.FLOAT32),2)
+        self.data["backofficeConnected"] = self.decode_from_registers(status_data.registers,4,1,self._client.DATATYPE.UINT16)
+        self.data["numberOfSockets"] = self.decode_from_registers(status_data.registers,5,1,self._client.DATATYPE.UINT16)
         return True
         
     def read_modbus_data_scn(self):
@@ -276,11 +275,9 @@ class AlfenModbusHub:
             status_data = self.read_holding_registers(self._address,1400,32)
             if status_data.isError():
                 return False
-            decoder = BinaryPayloadDecoder.fromRegisters(
-                status_data.registers, byteorder=Endian.BIG
-            )
-            self.data["scnName"] = self.decode_string(decoder,4)
-            self.data["scnSockets"] = decoder.decode_16bit_int()
+
+            self.data["scnName"] = self.decode_from_registers(status_data.registers,0,4,self._client.DATATYPE.STRING).strip('\x00')
+            self.data["scnSockets"] =  self.decode_from_registers(status_data.registers,4,1,self._client.DATATYPE.UINT16)
             #todo, Smart charging network registers
         return True
         
@@ -289,80 +286,78 @@ class AlfenModbusHub:
             energy_data = self.read_holding_registers(socket,300,125)
             if energy_data.isError():
                 return False
-            decoder = BinaryPayloadDecoder.fromRegisters(
-                energy_data.registers, byteorder=Endian.BIG
-            )
-            self.data["socket_"+str(socket)+"_meterstate"] = decoder.decode_16bit_uint()
-            self.data["socket_"+str(socket)+"_meterAge"] = decoder.decode_64bit_uint()
-            self.data["socket_"+str(socket)+"_meterType"] = decoder.decode_16bit_uint()
-            
-            self.data["socket_"+str(socket)+"_VL1-N"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_VL2-N"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_VL3-N"] =  round(decoder.decode_32bit_float(),2)
-            
-            self.data["socket_"+str(socket)+"_VL1-L2"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_VL2-L3"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_VL3-L1"] =  round(decoder.decode_32bit_float(),2)
-            
-            self.data["socket_"+str(socket)+"_currentN"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_currentL1"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_currentL2"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_currentL3"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_currentSum"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_powerL1"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_powerL2"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_powerL3"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_powerSum"] =  round(decoder.decode_32bit_float(),2)
-            
-            self.data["socket_"+str(socket)+"_frequency"] =  round(decoder.decode_32bit_float(),2)
-            
-            self.data["socket_"+str(socket)+"_realPowerL1"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_realPowerL2"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_realPowerL3"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_realPowerSum"] =  round(decoder.decode_32bit_float(),2)        
-            self.data["socket_"+str(socket)+"_apparantPowerL1"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_apparantPowerL2"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_apparantPowerL3"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_apparantPowerSum"] =  round(decoder.decode_32bit_float(),2)        
-                    
-            self.data["socket_"+str(socket)+"_reactivePowerL1"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_reactivePowerL2"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_reactivePowerL3"] =  round(decoder.decode_32bit_float(),2)
-            self.data["socket_"+str(socket)+"_reactivePowerSum"] =  round(decoder.decode_32bit_float(),2)        
 
-            self.data["socket_"+str(socket)+"_realEnergyDeliveredL1"] =  round(decoder.decode_64bit_float(),2)
-            self.data["socket_"+str(socket)+"_realEnergyDeliveredL2"] =  round(decoder.decode_64bit_float(),2)
-            self.data["socket_"+str(socket)+"_realEnergyDeliveredL3"] =  round(decoder.decode_64bit_float(),2)
-            self.data["socket_"+str(socket)+"_realEnergyDeliveredSum"] =  round(decoder.decode_64bit_float(),2)        
-            self.data["socket_"+str(socket)+"_realEnergyConsumedL1"] =  round(decoder.decode_64bit_float(),2)
-            self.data["socket_"+str(socket)+"_realEnergyConsumedL2"] =  round(decoder.decode_64bit_float(),2)
-            self.data["socket_"+str(socket)+"_realEnergyConsumedL3"] =  round(decoder.decode_64bit_float(),2)
-            self.data["socket_"+str(socket)+"_realEnergyConsumedSum"] =  round(decoder.decode_64bit_float(),2)        
-            self.data["socket_"+str(socket)+"_apparantEnergyL1"] =  round(decoder.decode_64bit_float(),2)
-            self.data["socket_"+str(socket)+"_apparantEnergyL2"] =  round(decoder.decode_64bit_float(),2)
-            self.data["socket_"+str(socket)+"_apparantEnergyL3"] =  round(decoder.decode_64bit_float(),2)
-            self.data["socket_"+str(socket)+"_apparantEnergySum"] =  round(decoder.decode_64bit_float(),2)        
+
+     
+            self.data["socket_"+str(socket)+"_meterstate"] =  self.decode_from_registers(energy_data.registers,0,1,self._client.DATATYPE.UINT16)
+            self.data["socket_"+str(socket)+"_meterAge"] =  self.decode_from_registers(energy_data.registers,1,4,self._client.DATATYPE.UINT16)
+            self.data["socket_"+str(socket)+"_meterType"] =  self.decode_from_registers(energy_data.registers,5,1,self._client.DATATYPE.UINT16)
+            
+            self.data["socket_"+str(socket)+"_VL1-N"] =   round(self.decode_from_registers(energy_data.registers,6,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_VL2-N"] =   round(self.decode_from_registers(energy_data.registers,8,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_VL3-N"] =   round(self.decode_from_registers(energy_data.registers,10,2,self._client.DATATYPE.FLOAT32),2)
+            
+            self.data["socket_"+str(socket)+"_VL1-L2"] =  round(self.decode_from_registers(energy_data.registers,12,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_VL2-L3"] =   round(self.decode_from_registers(energy_data.registers,14,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_VL3-L1"] =   round(self.decode_from_registers(energy_data.registers,16,2,self._client.DATATYPE.FLOAT32),2)
+            
+            self.data["socket_"+str(socket)+"_currentN"] =   round(self.decode_from_registers(energy_data.registers,18,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_currentL1"] =   round(self.decode_from_registers(energy_data.registers,20,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_currentL2"] =   round(self.decode_from_registers(energy_data.registers,22,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_currentL3"] =  round(self.decode_from_registers(energy_data.registers,24,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_currentSum"] =   round(self.decode_from_registers(energy_data.registers,26,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_powerL1"] =  round(self.decode_from_registers(energy_data.registers,28,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_powerL2"] =   round(self.decode_from_registers(energy_data.registers,30,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_powerL3"] =  round(self.decode_from_registers(energy_data.registers,32,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_powerSum"] =   round(self.decode_from_registers(energy_data.registers,34,2,self._client.DATATYPE.FLOAT32),2)
+            
+            self.data["socket_"+str(socket)+"_frequency"] =   round(self.decode_from_registers(energy_data.registers,36,2,self._client.DATATYPE.FLOAT32),2)
+            
+            self.data["socket_"+str(socket)+"_realPowerL1"] =   round(self.decode_from_registers(energy_data.registers,38,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_realPowerL2"] =   round(self.decode_from_registers(energy_data.registers,40,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_realPowerL3"] =   round(self.decode_from_registers(energy_data.registers,42,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_realPowerSum"] =   round(self.decode_from_registers(energy_data.registers,44,2,self._client.DATATYPE.FLOAT32),2)    
+            self.data["socket_"+str(socket)+"_apparantPowerL1"] =   round(self.decode_from_registers(energy_data.registers,46,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_apparantPowerL2"] =   round(self.decode_from_registers(energy_data.registers,48,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_apparantPowerL3"] =  round(self.decode_from_registers(energy_data.registers,50,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_apparantPowerSum"] =  round(self.decode_from_registers(energy_data.registers,52,2,self._client.DATATYPE.FLOAT32),2)
                     
-            self.data["socket_"+str(socket)+"_reactiveEnergyL1"] =  round(decoder.decode_64bit_float(),2)
-            self.data["socket_"+str(socket)+"_reactiveEnergyL2"] =  round(decoder.decode_64bit_float(),2)
-            self.data["socket_"+str(socket)+"_reactiveEnergyL3"] =  round(decoder.decode_64bit_float(),2)
+            self.data["socket_"+str(socket)+"_reactivePowerL1"] =   round(self.decode_from_registers(energy_data.registers,54,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_reactivePowerL2"] =   round(self.decode_from_registers(energy_data.registers,56,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_reactivePowerL3"] =   round(self.decode_from_registers(energy_data.registers,58,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_reactivePowerSum"] =   round(self.decode_from_registers(energy_data.registers,60,2,self._client.DATATYPE.FLOAT32),2)
+
+            self.data["socket_"+str(socket)+"_realEnergyDeliveredL1"] = round(self.decode_from_registers(energy_data.registers,62,4,self._client.DATATYPE.FLOAT64),2) 
+            self.data["socket_"+str(socket)+"_realEnergyDeliveredL2"] =   round(self.decode_from_registers(energy_data.registers,66,4,self._client.DATATYPE.FLOAT64),2) 
+            self.data["socket_"+str(socket)+"_realEnergyDeliveredL3"] =   round(self.decode_from_registers(energy_data.registers,70,4,self._client.DATATYPE.FLOAT64),2) 
+            self.data["socket_"+str(socket)+"_realEnergyDeliveredSum"] =   round(self.decode_from_registers(energy_data.registers,74,4,self._client.DATATYPE.FLOAT64),2) 
+            self.data["socket_"+str(socket)+"_realEnergyConsumedL1"] =  round(self.decode_from_registers(energy_data.registers,78,4,self._client.DATATYPE.FLOAT64),2) 
+            self.data["socket_"+str(socket)+"_realEnergyConsumedL2"] =   round(self.decode_from_registers(energy_data.registers,82,4,self._client.DATATYPE.FLOAT64),2) 
+            self.data["socket_"+str(socket)+"_realEnergyConsumedL3"] =  round(self.decode_from_registers(energy_data.registers,86,4,self._client.DATATYPE.FLOAT64),2) 
+            self.data["socket_"+str(socket)+"_realEnergyConsumedSum"] =   round(self.decode_from_registers(energy_data.registers,88,4,self._client.DATATYPE.FLOAT64),2)     
+            self.data["socket_"+str(socket)+"_apparantEnergyL1"] =  round(self.decode_from_registers(energy_data.registers,92,4,self._client.DATATYPE.FLOAT64),2) 
+            self.data["socket_"+str(socket)+"_apparantEnergyL2"] =   round(self.decode_from_registers(energy_data.registers,96,4,self._client.DATATYPE.FLOAT64),2) 
+            self.data["socket_"+str(socket)+"_apparantEnergyL3"] =  round(self.decode_from_registers(energy_data.registers,100,4,self._client.DATATYPE.FLOAT64),2) 
+            self.data["socket_"+str(socket)+"_apparantEnergySum"] =  round(self.decode_from_registers(energy_data.registers,104,4,self._client.DATATYPE.FLOAT64),2)      
+                    
+            self.data["socket_"+str(socket)+"_reactiveEnergyL1"] =   round(self.decode_from_registers(energy_data.registers,108,4,self._client.DATATYPE.FLOAT64),2) 
+            self.data["socket_"+str(socket)+"_reactiveEnergyL2"] =   round(self.decode_from_registers(energy_data.registers,112,4,self._client.DATATYPE.FLOAT64),2) 
+            self.data["socket_"+str(socket)+"_reactiveEnergyL3"] =  round(self.decode_from_registers(energy_data.registers,116,4,self._client.DATATYPE.FLOAT64),2) 
             self.data["socket_"+str(socket)+"_reactiveEnergySum"] = 0# round(decoder.decode_64bit_float(),2)        
                                             
                             
             status_data = self.read_holding_registers(socket,1200,16)
             if status_data.isError():
                 return False
-            decoder = BinaryPayloadDecoder.fromRegisters(
-                status_data.registers, byteorder=Endian.BIG
-            )
-            self.data["socket_"+str(socket)+"_available"] = decoder.decode_16bit_uint()        
-            self.data["socket_"+str(socket)+"_mode3state"] = self.decode_string(decoder,5)      
-            self.data["socket_"+str(socket)+"_actualMaxCurrent"] =  round(decoder.decode_32bit_float(),2)        
-            self.data[VALID_TIME_S+str(socket)] = decoder.decode_32bit_uint()        
-            self.data[MAX_CURRENT_S+str(socket)] =  round(decoder.decode_32bit_float(),2)        
-            self.data["socket_"+str(socket)+"_saveCurrent"] =  round(decoder.decode_32bit_float(),2)        
-            self.data["socket_"+str(socket)+"_setpointAccounted"] = decoder.decode_16bit_uint()        
-            self.data["socket_"+str(socket)+"_chargephases"] = decoder.decode_16bit_uint()     
+  
+            self.data["socket_"+str(socket)+"_available"] =  self.decode_from_registers(status_data.registers, 0, 1,self._client.DATATYPE.UINT16) 
+            self.data["socket_"+str(socket)+"_mode3state"] =  self.decode_from_registers(status_data.registers, 1, 5, self._client.DATATYPE.STRING).strip('\x00')       
+            self.data["socket_"+str(socket)+"_actualMaxCurrent"] =   round(self.decode_from_registers(status_data.registers,6,2,self._client.DATATYPE.FLOAT32),2)   
+            self.data[VALID_TIME_S+str(socket)] = self.decode_from_registers(status_data.registers, 8, 2,self._client.DATATYPE.UINT32) 
+            self.data[MAX_CURRENT_S+str(socket)] =  round(self.decode_from_registers(status_data.registers,10,2,self._client.DATATYPE.FLOAT32),2)      
+            self.data["socket_"+str(socket)+"_saveCurrent"] =  round(self.decode_from_registers(status_data.registers,12,2,self._client.DATATYPE.FLOAT32),2)       
+            self.data["socket_"+str(socket)+"_setpointAccounted"] =  self.decode_from_registers(status_data.registers, 14, 1,self._client.DATATYPE.UINT16)    
+            self.data["socket_"+str(socket)+"_chargephases"] =  self.decode_from_registers(status_data.registers, 15, 1,self._client.DATATYPE.UINT16) 
             
             if self.data["socket_"+str(socket)+"_mode3state"] in ["A","E","F"]:
                 self.data["socket_"+str(socket)+"_carconnected"] = 0             
@@ -384,30 +379,33 @@ class AlfenModbusHub:
         
         
     def read_modbus_data_product(self):
-        identification_data = self.read_holding_registers(self._address,100,79)
+        identification_data = self.read_holding_registers(self._address, 100, 79)
         if identification_data.isError():
             return False
-        decoder = BinaryPayloadDecoder.fromRegisters(
-            identification_data.registers, byteorder=Endian.BIG
+
+        self.data["name"] = self.decode_from_registers(identification_data.registers, 0, 17, self._client.DATATYPE.STRING).strip('\x00')
+        self.data["manufacturer"] = self.decode_from_registers(identification_data.registers, 17, 5, self._client.DATATYPE.STRING).strip('\x00')
+        self.data["modbustableVersion"] = self.decode_from_registers(identification_data.registers, 22, 1,self._client.DATATYPE.INT16)
+        self.data["firmwareVersion"] = self.decode_from_registers(identification_data.registers, 23, 17, self._client.DATATYPE.STRING).strip('\x00')
+        self.data["platformType"] = self.decode_from_registers(identification_data.registers, 40, 17, self._client.DATATYPE.STRING).strip('\x00')
+        self.data["serial"] = self.decode_from_registers(identification_data.registers, 57, 11, self._client.DATATYPE.STRING).strip('\x00')
+
+        year    = self.decode_from_registers(identification_data.registers, 68, 1,self._client.DATATYPE.INT16)
+        month   = self.decode_from_registers(identification_data.registers, 69, 1,self._client.DATATYPE.INT16)
+        day     = self.decode_from_registers(identification_data.registers, 70, 1,self._client.DATATYPE.INT16)
+        hour    = self.decode_from_registers(identification_data.registers, 71, 1,self._client.DATATYPE.INT16)
+        minute  = self.decode_from_registers(identification_data.registers, 72, 1,self._client.DATATYPE.INT16)
+        second  = self.decode_from_registers(identification_data.registers, 73, 1,self._client.DATATYPE.INT16)
+        uptime  = self.decode_from_registers(identification_data.registers, 74, 4,self._client.DATATYPE.UINT64)
+        utcoffset = self.decode_from_registers(identification_data.registers, 78, 1,self._client.DATATYPE.INT16)
+
+        # Tijdconversie
+        self.data["stationTime"] = datetime(
+            year, month, day, hour, minute, second,
+            tzinfo=tzoffset("", utcoffset * 60)
         )
-         
-        self.data["name"] = self.decode_string(decoder,17)
-        self.data["manufacturer"] = self.decode_string(decoder,5)
-        self.data["modbustableVersion"] = decoder.decode_16bit_int()
-        self.data["firmwareVersion"] =self.decode_string(decoder,17)
-        self.data["platformType"] =self.decode_string(decoder,17)        
-        self.data["serial"] =self.decode_string(decoder,11)
-        
-        year = decoder.decode_16bit_int()
-        month = decoder.decode_16bit_int()
-        day = decoder.decode_16bit_int()
-        hour = decoder.decode_16bit_int()   
-        minute = decoder.decode_16bit_int()
-        second = decoder.decode_16bit_int()
-        uptime = decoder.decode_64bit_uint()
-        utcoffset = decoder.decode_16bit_int()
-        
-        self.data["stationTime"] = datetime(year,month,day,hour,minute,second,tzinfo=tzoffset("",offset=utcoffset*60))       
-        lastBoot = self.data["stationTime"] - timedelta(milliseconds=uptime)
-        self.data["lastBoot"] = lastBoot - timedelta(microseconds=lastBoot.microsecond)
+
+        last_boot = self.data["stationTime"] - timedelta(milliseconds=uptime)
+        self.data["lastBoot"] = last_boot.replace(microsecond=0)
+
         return True

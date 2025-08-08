@@ -7,9 +7,6 @@ from .const import (
     CONTROL_SLAVE_MAX_CURRENT,
 )
 
-from pymodbus.constants import Endian
-from pymodbus.payload import BinaryPayloadBuilder
-
 from homeassistant.const import CONF_NAME
 from homeassistant.components.number import (
     PLATFORM_SCHEMA,
@@ -124,17 +121,17 @@ class AlfenNumber(NumberEntity):
             return self._hub.data[self._key]
 
     def update_value(self):
-        builder = BinaryPayloadBuilder(byteorder=Endian.BIG, wordorder=Endian.BIG)
         value = self._hub.data[self._key]
-        if "socket_"+str(self._socket)+"_saveCurrent" in self._hub.data:
-            self._attr_native_max_value = self._hub.data["socket_"+str(self._socket)+"_saveCurrent"]
+        if "MAX_CURRENT_S"+str(self._socket) in self._hub.data:
+            self._attr_native_max_value = self._hub.data["MAX_CURRENT_S"+str(self._socket)]
         _LOGGER.debug("Updating value to: %f",value)
-        if self._fmt == "u":
-            builder.add_16bit_uint(int(value))
-        elif self._fmt == "f":
-            builder.add_32bit_float(float(value))
 
-        self._hub.write_registers(unit=self._socket, address=self._register, payload=builder.to_registers())
+        if self._fmt == "u":
+            payload = self._hub._client.convert_to_registers(int(value), data_type=self._hub._client.DATATYPE.UINT16, word_order="big")
+        elif self._fmt == "f":
+            payload = self._hub._client.convert_to_registers(float(value), data_type=self._hub._client.DATATYPE.FLOAT32, word_order="big")
+
+        self._hub.write_registers(unit=self._socket, address=self._register, payload=payload)
 
 
     async def async_set_native_value(self, value: float) -> None:
