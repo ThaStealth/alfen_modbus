@@ -110,8 +110,8 @@ class AlfenSensor(SensorEntity):
         self._icon = icon
         self._device_info = device_info
         self._attr_state_class = SensorStateClass.MEASUREMENT
-        if self._unit_of_measurement == UnitOfEnergy.KILO_WATT_HOUR :
-            self._attr_state_class = STATE_CLASS_TOTAL_INCREASING
+        if self._unit_of_measurement == UnitOfEnergy.KILO_WATT_HOUR or self._unit_of_measurement == UnitOfEnergy.WATT_HOUR:
+            self._attr_state_class = SensorStateClass.TOTAL_INCREASING
             self._attr_device_class = SensorDeviceClass.ENERGY
         if self._unit_of_measurement == UnitOfPower.WATT :
             self._attr_device_class = SensorDeviceClass.POWER
