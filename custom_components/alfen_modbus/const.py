@@ -215,5 +215,5 @@ CONTROL_PHASE = [
 
 
 CONTROL_SLAVE_MAX_CURRENT = [
-    ["Max Current Limit S", MAX_CURRENT_S, 1210, "f", {"min": 0, "max": 32, "unit": "A"}],
+    ["Max Current Limit S", MAX_CURRENT_S, 1210, "f", {"min": 0, "max": 32, "unit": "A", "mode": "slider", "step": 0.1}]
 ]
