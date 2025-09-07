@@ -160,6 +160,7 @@ class AlfenModbusHub:
             self._unsub_interval_method = async_track_time_interval(
                 self._hass, self.async_refresh_modbus_data, self._scan_interval
             )
+            self.read_modbus_data()
 
         self._sensors.append(update_callback)
         if refresh_callback is not None:
