@@ -224,14 +224,14 @@ class AlfenModbusHub:
         """Read holding registers."""
         with self._lock:
             return self._client.read_holding_registers(
-                address=address, count=count, slave=unit
+                address=address, count=count, device_id=unit
             )
 
     def write_registers(self, unit, address, payload):
         """Write registers."""
         with self._lock:
             return self._client.write_registers(
-                address=address, values=payload, slave=unit
+                address=address, values=payload, device_id=unit
             )
             
     def refresh_max_current(self):
