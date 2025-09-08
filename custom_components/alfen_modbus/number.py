@@ -89,6 +89,10 @@ class AlfenNumber(NumberEntity):
         self._attr_native_max_value = attrs["max"]
         if "unit" in attrs.keys():
             self._attr_native_unit_of_measurement = attrs["unit"]
+        if "mode" in attrs.keys():
+            self._attr_mode = attrs["mode"]
+        if "step" in attrs.keys():
+            self._attr_native_step = attrs["step"]
 
     async def async_added_to_hass(self) -> None:
         """Register callbacks."""
