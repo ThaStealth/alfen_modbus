@@ -28,6 +28,7 @@ from .const import (
     DEFAULT_READ_SOCKET2,
     VALID_TIME_S,
     MAX_CURRENT_S,
+    CONTROL_PHASE_MODES
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -376,6 +377,9 @@ class AlfenModbusHub:
             if "socket_"+str(socket)+"_chargingStartWh" in self.data and "socket_"+str(socket)+"_chargingStart" in self.data and self.data["socket_"+str(socket)+"_carcharging"] == 1:     
                 self.data["socket_"+str(socket)+"_currentSession"] = self.data["socket_"+str(socket)+"_realEnergyDeliveredSum"] - self.data["socket_"+str(socket)+"_chargingStartWh"]               
                 self.data["socket_"+str(socket)+"_currentSessionDuration"] = self.data["stationTime"] - self.data["socket_"+str(socket)+"_chargingStart"]
+
+            if self.data["socket_"+str(socket)+"_chargephases"] in CONTROL_PHASE_MODES:
+                self.data["usephases_S"+str(socket)] = CONTROL_PHASE_MODES[self.data["socket_"+str(socket)+"_chargephases"]]
         return True           
         
         
