@@ -9,10 +9,7 @@ from .const import (
 )
 
 from homeassistant.const import CONF_NAME
-from homeassistant.components.select import (
-    PLATFORM_SCHEMA,
-    SelectEntity,
-)
+from homeassistant.components.select import SelectEntity
 
 from homeassistant.core import callback
 
@@ -26,6 +23,8 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
         "identifiers": {(DOMAIN, hub_name)},
         "name": hub_name,
         "manufacturer": ATTR_MANUFACTURER,
+        "model": hub.data.get("platformType", "Unknown"),
+        "sw_version": hub.data.get("firmwareVersion", "Unknown"),
     }
 
     entities = []
@@ -84,13 +83,11 @@ class AlfenSelect(SelectEntity):
         """Initialize the selector."""
         self._platform_name = platform_name
         self._hub = hub
-        self._device_info = device_info
         self._name = name+str(socket)
         self._socket = socket
         self._key = key+str(socket)
         self._register = register
         self._option_dict = options
-        self._attr_device_info = device_info
         self._attr_options = list(options.values())
 
     async def async_added_to_hass(self) -> None:
@@ -107,7 +104,7 @@ class AlfenSelect(SelectEntity):
     @property
     def name(self) -> str:
         """Return the name."""
-        return f"{self._platform_name} ({self._name})"
+        return f"{self._platform_name} {self._name}"
 
     @property
     def unique_id(self) -> Optional[str]:
@@ -127,7 +124,17 @@ class AlfenSelect(SelectEntity):
         """Change the selected option."""
         new_mode = get_key(self._option_dict, option)
         payload = self._hub._client.convert_to_registers(int(new_mode), data_type=self._hub._client.DATATYPE.UINT16, word_order="big")                   
-        self._hub.write_registers(unit=self._socket, address=self._register, payload=payload)       
+        await self._hub.write_registers(unit=self._socket, address=self._register, payload=payload)       
         self._hub.data[self._key] = option
+        self.hass.async_create_task(self._hub.async_refresh_modbus_data())
         self.async_write_ha_state()
 
+    @property
+    def device_info(self) -> Optional[Dict[str, Any]]:
+        return {
+            "identifiers": {(DOMAIN, self._platform_name)},
+            "name": self._hub.data.get("name", self._platform_name),
+            "manufacturer": ATTR_MANUFACTURER,
+            "model": self._hub.data.get("platformType", "Unknown"),
+            "sw_version": self._hub.data.get("firmwareVersion", "Unknown"),
+        }

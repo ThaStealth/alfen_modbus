@@ -1,12 +1,18 @@
 {
   "domain": "alfen_modbus",
   "name": "Alfen Modbus",
-  "codeowners": ["@thastealth"],
-  "config_flow": true,  
-  "dependencies": [],  
-  "documentation": "https://github.com/thastealth/alfen_modbus",
+  "codeowners": [
+    "@straybiker"
+  ],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/straybiker/alfen_modbus",
+  "homeassistant": "2024.4.0",
+  "integration_type": "hub",
   "iot_class": "local_polling",
-  "issue_tracker": "https://github.com/ThaStealth/alfen_modbus/issues",
-  "requirements": ["pymodbus>=3.11.1"],  
-  "version": "0.1.6"
+  "issue_tracker": "https://github.com/straybiker/alfen_modbus/issues",
+  "requirements": [
+    "pymodbus==3.11.2"
+  ],
+  "version": "1.0.0"
 }

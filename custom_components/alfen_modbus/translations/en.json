@@ -2,20 +2,32 @@
   "config": {
     "step": {
       "user": {
-        "title": "Define your Alfen modbus connection",
+        "title": "Alfen Modbus Connection",
+        "description": "Configure your Alfen EV charger connection",
         "data": {
-          "host": "The ip-address of your Alfen device",
-          "name": "The prefix to be used for your Alfen sensors",
-          "port": "The TCP port on which to connect to the Alfen",
-          "modbus_address": "The modbus address",
-          "read_scn": "Read SCN (Smart Charging Network) registers",
-          "read_socket_2": "Read socket 2 registers",
-          "scan_interval": "The polling frequency of the modbus registers in seconds"
+          "host": "Host",
+          "name": "Name",
+          "port": "Port",
+          "modbus_address": "Modbus Address",
+          "read_scn": "Read SCN",
+          "read_socket_2": "Read Socket 2",
+          "scan_interval": "Scan Interval"
+        },
+        "data_description": {
+          "host": "The IP address or hostname of your Alfen device",
+          "name": "Prefix for sensor names",
+          "port": "TCP port (default: 502)",
+          "modbus_address": "Modbus slave address (default: 200)",
+          "read_scn": "Enable Smart Charging Network registers",
+          "read_socket_2": "Enable socket 2 for dual socket units",
+          "scan_interval": "Polling interval in seconds"
         }
       }
     },
     "error": {
-      "already_configured": "Device is already configured"
+      "already_configured": "Device is already configured",
+      "invalid_host": "Invalid IP address or hostname",
+      "cannot_connect": "Cannot connect to the device"
     },
     "abort": {
       "already_configured": "Device is already configured"

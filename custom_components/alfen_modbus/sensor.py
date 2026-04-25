@@ -6,7 +6,6 @@ from .const import (
     SOCKET2_SENSOR_TYPES,
     SCN_SENSOR_TYPES,
     DOMAIN,
-    ATTR_STATUS_DESCRIPTION,
     METER_TYPE,
     METER_STATE_MODES,
     AVAILABILITY_MODES,
@@ -15,17 +14,14 @@ from .const import (
     ATTR_MANUFACTURER,
 )
 from datetime import datetime
-from homeassistant.helpers.entity import Entity
 from homeassistant.const import CONF_NAME, UnitOfEnergy, UnitOfPower
 from homeassistant.components.sensor import (
-    PLATFORM_SCHEMA,
     SensorStateClass,
     SensorEntity,
     SensorDeviceClass
 )
 
 from homeassistant.core import callback
-from homeassistant.util import dt as dt_util
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -38,6 +34,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
         "identifiers": {(DOMAIN, hub_name)},
         "name": hub_name,
         "manufacturer": ATTR_MANUFACTURER,
+        "model": hub.data.get("platformType", "Unknown"),
+        "sw_version": hub.data.get("firmwareVersion", "Unknown"),
     }
     
     entities = []
@@ -127,11 +125,6 @@ class AlfenSensor(SensorEntity):
     def _modbus_data_updated(self):
         self.async_write_ha_state()
 
-    @callback
-    def _update_state(self):
-        if self._key in self._hub.data:
-            self._state = self._hub.data[self._key]
-
     @property
     def name(self):
         """Return the name."""
@@ -179,4 +172,10 @@ class AlfenSensor(SensorEntity):
 
     @property
     def device_info(self) -> Optional[Dict[str, Any]]:
-        return self._device_info
+        return {
+            "identifiers": {(DOMAIN, self._platform_name)},
+            "name": self._hub.data.get("name", self._platform_name),
+            "manufacturer": ATTR_MANUFACTURER,
+            "model": self._hub.data.get("platformType", "Unknown"),
+            "sw_version": self._hub.data.get("firmwareVersion", "Unknown"),
+        }

@@ -18,4 +18,4 @@ Home assistant Custom Component for reading data from Alfen EV charger through m
 ### Configuration
 Go to the integrations page in your configuration and click on new integration -> Alfen Modbus
 
-<img style="border: 5px solid #767676;border-radius: 10px;max-width: 350px;width: 100%;box-sizing: border-box;" src="https://github.com/ThaStealth/alfen_homeassistant/blob/master/demo.png?raw=true" alt="Demo">
+<img style="border: 5px solid #767676;border-radius: 10px;max-width: 350px;width: 100%;box-sizing: border-box;" src="https://github.com/straybiker/alfen_modbus/blob/master/demo.png?raw=true" alt="Demo">
