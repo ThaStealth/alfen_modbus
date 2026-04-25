@@ -1,8 +1,8 @@
 # Alfen Modbus for Home Assistant
 
 [![HACS Default](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
-[![GitHub Release](https://img.shields.io/github/v/release/straybiker/alfen_modbus)](https://github.com/straybiker/alfen_modbus/releases)
-[![License](https://img.shields.io/github/license/straybiker/alfen_modbus)](LICENSE)
+[![GitHub Release](https://img.shields.io/github/v/release/straybiker/alfen_modbus)](https://github.com/thastealth/alfen_modbus/releases)
+[![License](https://img.shields.io/github/license/thastealth/alfen_modbus)](LICENSE)
 
 Home Assistant integration for **Alfen Eve NG9xx** series EV chargers via Modbus TCP.
 
@@ -85,25 +85,6 @@ See the [Alfen Smart Charging Manual](https://knowledge.alfen.com/space/IN/63976
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-
-## Changelog
-
-### v1.0.0
-
-- **Stable release** - First stable release for HACS
-- **Binary sensors** - Added `car_connected` and `car_charging` binary sensors
-- **Improved config flow** - Enhanced UI with descriptions and connection testing
-- **Options flow** - Reconfigure host, port, and settings after setup
-- **pymodbus 3.11 compatibility** - Updated API calls for latest pymodbus
-
-### v0.2.0
-
-- **Max current protection** - The max current slider now dynamically limits to the station's actual max current (Register 1100), preventing values higher than the hardware allows
-- **pymodbus 3.11 compatibility** - Updated API calls to use `device_id` parameter (replaces deprecated `slave`)
-
-### v0.1.9
-
-- Initial release
 
 ## License
 
