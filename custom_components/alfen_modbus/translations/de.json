@@ -26,8 +26,11 @@
       "backoffice": {
         "name": "Backoffice"
       },
-      "socket_n": {
-        "name": "Steckdose {socket_number}"
+      "carcharging": {
+        "name": "Steckdose {socket_number} Ladestatus"
+      },
+      "carconnected": {
+        "name": "Steckdose {socket_number} Verbindungsstatus"
       }
     }
   }
