@@ -34,7 +34,7 @@
     }
   },
   "entity": {
-    "binary_sensors": {
+    "binary_sensor": {
       "backoffice": {
         "name": "Backoffice"
       },
