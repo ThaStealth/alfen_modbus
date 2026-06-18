@@ -20,5 +20,15 @@
     "abort": {
       "already_configured": "Der Wechselrichter ist bereits konfiguriert."
     }
+  },
+  "entities": {
+    "binary_sensors": {
+      "backoffice": {
+        "name": "Backoffice"
+      },
+      "socket_n": {
+        "name": "Steckdose {socket_number}"
+      }
+    }
   }
 }
