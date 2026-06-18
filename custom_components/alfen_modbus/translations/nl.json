@@ -20,5 +20,15 @@
     "abort": {
       "already_configured": "Apparaat is al geconfigureerd"
     }
+  },
+  "entities": {
+    "binary_sensors": {
+      "backoffice": {
+        "name": "Backoffice"
+      },
+      "socket_n": {
+        "name": "Socket {socket_number}"
+      }
+    }
   }
 }
