@@ -33,6 +33,16 @@
       "already_configured": "Device is already configured"
     }
   },
+  "entities": {
+    "binary_sensors": {
+      "backoffice": {
+        "name": "Backoffice"
+      },
+      "socket_n": {
+        "name": "Socket {socket_number}"
+      }
+    }
+  },
   "options": {
     "step": {
       "init": {
