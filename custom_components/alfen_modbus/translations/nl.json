@@ -21,7 +21,7 @@
       "already_configured": "Apparaat is al geconfigureerd"
     }
   },
-  "entities": {
+  "entity": {
     "binary_sensors": {
       "backoffice": {
         "name": "Backoffice"
