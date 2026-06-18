@@ -10,7 +10,7 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.const import CONF_NAME, EntityCategory
 from homeassistant.core import callback
 
-from .const import DOMAIN, ATTR_MANUFACTURER
+from .const import DOMAIN, DEFAULT_MANUFACTURER
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -39,21 +39,21 @@ SOCKET_BINARY_SENSOR_ENTITY_DESCRIPTORS: tuple[BinarySensorEntityDescription, ..
 
 async def async_setup_entry(hass, entry, async_add_entities) -> None:
     """Set up Alfen binary sensors."""
-    hub_name = entry.data[CONF_NAME]
-    hub = hass.data[DOMAIN][hub_name]["hub"]
+    name = entry.data[CONF_NAME]
+    hub = hass.data[DOMAIN][name]["hub"]
     device_info = {
-        "identifiers": {(DOMAIN, hub_name)},
-        "name": hub.data.get("name", hub_name),
-        "manufacturer": ATTR_MANUFACTURER,
-        "model": hub.data.get("platformType", "Unknown"),
-        "sw_version": hub.data.get("firmwareVersion", "Unknown"),
+        "identifiers": {(DOMAIN, name)},
+        "serial_number": hub.data.get("serial", None),
+        "manufacturer": hub.data.get("manufacturer", DEFAULT_MANUFACTURER),
+        "model": hub.data.get("platformType", None),
+        "sw_version": hub.data.get("firmwareVersion", None),
     }
 
     sockets = [1, 2] if hub.has_socket_2 else [1]
     entities: list[AlfenBinarySensor] = []
     entities.extend(
         AlfenBinarySensor(
-            hub_name,
+            name,
             hub,
             device_info,
             entity_description,
@@ -63,7 +63,7 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
     )
     entities.extend(
         AlfenBinarySensor(
-            hub_name,
+            name,
             hub,
             device_info,
             entity_description,
@@ -78,11 +78,12 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
 class AlfenBinarySensor(BinarySensorEntity):
     """Representation of an Alfen Modbus binary sensor."""
 
+    _attr_has_entity_name = True
     _attr_should_poll = False
 
     def __init__(
         self,
-        platform_name,
+        name,
         hub,
         device_info,
         entity_description: BinarySensorEntityDescription,
@@ -98,8 +99,10 @@ class AlfenBinarySensor(BinarySensorEntity):
             }
         else:
             self.key = entity_description.key
-        self._attr_unique_id = f"{platform_name}_{self.key}"
+
+        self._attr_unique_id = f"{name}_{self.key}"
         self._attr_device_info = device_info
+        self._attr_translation_key = entity_description.translation_key if hasattr(entity_description, "translation_key") else entity_description.key
 
     async def async_added_to_hass(self) -> None:
         """Register callbacks."""
