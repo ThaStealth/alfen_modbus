@@ -10,6 +10,7 @@ from homeassistant.const import CONF_NAME
 from homeassistant.core import callback
 
 from .const import DOMAIN, ATTR_MANUFACTURER
+from .entity import AlfenEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -69,7 +70,7 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
     return True
 
 
-class AlfenBinarySensor(BinarySensorEntity):
+class AlfenBinarySensor(AlfenEntity, BinarySensorEntity):
     """Representation of an Alfen Modbus binary sensor."""
 
     def __init__(
@@ -85,27 +86,14 @@ class AlfenBinarySensor(BinarySensorEntity):
         icon_off,
     ) -> None:
         """Initialize the binary sensor."""
+        super().__init__(hub, device_info)
         self._platform_name = platform_name
-        self._hub = hub
         self._socket = socket
         self._name = f"S{socket} {name}" if hub.has_socket_2 else name
         self._key = f"socket_{socket}_{key}"
         self._attr_device_class = device_class
         self._icon_on = icon_on
         self._icon_off = icon_off
-
-    async def async_added_to_hass(self) -> None:
-        """Register callbacks."""
-        self._hub.async_add_alfen_sensor(self._modbus_data_updated)
-
-    async def async_will_remove_from_hass(self) -> None:
-        """Remove callbacks."""
-        self._hub.async_remove_alfen_sensor(self._modbus_data_updated)
-
-    @callback
-    def _modbus_data_updated(self) -> None:
-        """Handle updated data from the hub."""
-        self.async_write_ha_state()
 
     @property
     def name(self) -> str:
@@ -128,19 +116,3 @@ class AlfenBinarySensor(BinarySensorEntity):
     def icon(self) -> str:
         """Return the icon based on state."""
         return self._icon_on if self.is_on else self._icon_off
-
-    @property
-    def should_poll(self) -> bool:
-        """Data is delivered by the hub."""
-        return False
-
-    @property
-    def device_info(self) -> Optional[Dict[str, Any]]:
-        """Return device info."""
-        return {
-            "identifiers": {(DOMAIN, self._platform_name)},
-            "name": self._hub.data.get("name", self._platform_name),
-            "manufacturer": ATTR_MANUFACTURER,
-            "model": self._hub.data.get("platformType", "Unknown"),
-            "sw_version": self._hub.data.get("firmwareVersion", "Unknown"),
-        }
