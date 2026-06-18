@@ -36,10 +36,13 @@
   "entity": {
     "binary_sensor": {
       "backoffice": {
-        "name": "Backoffice"
+        "name": "Back office"
       },
-      "socket_n": {
-        "name": "Socket {socket_number}"
+      "carcharging": {
+        "name": "Socket {socket_number} charging state"
+      },
+      "carconnected": {
+        "name": "Socket {socket_number} connection state"
       }
     }
   }
