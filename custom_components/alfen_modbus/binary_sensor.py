@@ -1,7 +1,6 @@
 """Binary sensor platform for Alfen Modbus."""
 import logging
 
-
 from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
     BinarySensorDeviceClass,
@@ -14,10 +13,10 @@ from .const import DOMAIN, DEFAULT_MANUFACTURER
 
 _LOGGER = logging.getLogger(__name__)
 
-
 BINARY_SENSOR_ENTITY_DESCRIPTORS: tuple[BinarySensorEntityDescription, ...] = (
     BinarySensorEntityDescription(
         key="backoffice",
+        translation_key="backoffice",
         device_class=BinarySensorDeviceClass.CONNECTIVITY,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
@@ -26,12 +25,12 @@ BINARY_SENSOR_ENTITY_DESCRIPTORS: tuple[BinarySensorEntityDescription, ...] = (
 SOCKET_BINARY_SENSOR_ENTITY_DESCRIPTORS: tuple[BinarySensorEntityDescription, ...] = (
     BinarySensorEntityDescription(
         key="carconnected",
-        translation_key="socket_n",
+        translation_key="carconnected",
         device_class=BinarySensorDeviceClass.PLUG,
     ),
     BinarySensorEntityDescription(
         key="carcharging",
-        translation_key="socket_n",
+        translation_key="carcharging",
         device_class=BinarySensorDeviceClass.BATTERY_CHARGING,
     ),
 )
@@ -99,10 +98,8 @@ class AlfenBinarySensor(BinarySensorEntity):
             }
         else:
             self.key = entity_description.key
-
         self._attr_unique_id = f"{name}_{self.key}"
         self._attr_device_info = device_info
-        self._attr_translation_key = entity_description.translation_key if hasattr(entity_description, "translation_key") else entity_description.key
 
     async def async_added_to_hass(self) -> None:
         """Register callbacks."""
