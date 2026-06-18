@@ -43,7 +43,7 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
     hub = hass.data[DOMAIN][hub_name]["hub"]
     device_info = {
         "identifiers": {(DOMAIN, hub_name)},
-        "name": hub_name, #self._hub.data.get("name", self._platform_name),
+        "name": hub.data.get("name", hub_name),
         "manufacturer": ATTR_MANUFACTURER,
         "model": hub.data.get("platformType", "Unknown"),
         "sw_version": hub.data.get("firmwareVersion", "Unknown"),
