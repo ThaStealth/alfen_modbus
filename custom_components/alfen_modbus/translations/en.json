@@ -33,7 +33,7 @@
       "already_configured": "Device is already configured"
     }
   },
-  "entities": {
+  "entity": {
     "binary_sensors": {
       "backoffice": {
         "name": "Backoffice"
