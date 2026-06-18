@@ -21,8 +21,8 @@
       "already_configured": "Der Wechselrichter ist bereits konfiguriert."
     }
   },
-  "entities": {
-    "binary_sensors": {
+  "entity": {
+    "binary_sensor": {
       "backoffice": {
         "name": "Backoffice"
       },
