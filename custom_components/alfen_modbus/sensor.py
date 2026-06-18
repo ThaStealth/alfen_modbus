@@ -99,6 +99,7 @@ class AlfenSensor(AlfenEntity, SensorEntity):
 
     def __init__(self, platform_name, hub, device_info, name, key, unit, icon):
         """Initialize the sensor."""
+        super().__init__(hub, device_info)
         self._platform_name = platform_name
         self._key = key
         if not hub.has_socket_2:
