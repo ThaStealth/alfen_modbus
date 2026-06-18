@@ -9,6 +9,7 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.const import CONF_NAME
 from homeassistant.core import callback
 
+from . import AlfenConfigEntry
 from .const import DOMAIN, ATTR_MANUFACTURER
 
 _LOGGER = logging.getLogger(__name__)
@@ -18,11 +19,10 @@ BINARY_SENSOR_TYPES = [
     ["Car Charging", "carcharging", BinarySensorDeviceClass.BATTERY_CHARGING, "mdi:battery-charging", "mdi:battery-off"],
 ]
 
-
-async def async_setup_entry(hass, entry, async_add_entities) -> None:
+async def async_setup_entry(hass, entry: AlfenConfigEntry, async_add_entities) -> None:
     """Set up Alfen binary sensors."""
     hub_name = entry.data[CONF_NAME]
-    hub = hass.data[DOMAIN][hub_name]["hub"]
+    hub = entry.runtime_data
 
     device_info = {
         "identifiers": {(DOMAIN, hub_name)},
