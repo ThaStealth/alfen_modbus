@@ -13,7 +13,6 @@ from .const import (
     CONTROL_PHASE_MODES,
     ATTR_MANUFACTURER,
 )
-from datetime import datetime
 from homeassistant.const import CONF_NAME, UnitOfEnergy, UnitOfPower
 from homeassistant.components.sensor import (
     SensorStateClass,

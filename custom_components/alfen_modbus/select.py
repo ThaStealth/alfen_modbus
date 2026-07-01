@@ -5,7 +5,6 @@ from .const import (
     DOMAIN,
     ATTR_MANUFACTURER,
     CONTROL_PHASE,
-    CONTROL_PHASE_MODES,
 )
 
 from homeassistant.const import CONF_NAME
