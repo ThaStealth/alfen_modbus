@@ -20,5 +20,18 @@
     "abort": {
       "already_configured": "Apparaat is al geconfigureerd"
     }
+  },
+  "entity": {
+    "binary_sensor": {
+      "backoffice": {
+        "name": "Back office"
+      },
+      "carcharging": {
+        "name": "Socket {socket_number} charging state"
+      },
+      "carconnected": {
+        "name": "Socket {socket_number} connection state"
+      }
+    }
   }
 }
