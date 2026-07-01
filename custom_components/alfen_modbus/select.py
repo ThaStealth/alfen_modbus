@@ -13,6 +13,8 @@ from homeassistant.components.select import SelectEntity
 
 from homeassistant.core import callback
 
+from .entity import AlfenEntity
+
 _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, entry, async_add_entities) -> None:
@@ -67,7 +69,7 @@ def get_key(my_dict, search):
             return k
     return None
 
-class AlfenSelect(SelectEntity):
+class AlfenSelect(AlfenEntity, SelectEntity):
     """Representation of an Alfen Modbus select."""
 
     def __init__(self,
@@ -81,25 +83,14 @@ class AlfenSelect(SelectEntity):
                  options
     ) -> None:
         """Initialize the selector."""
+        super().__init__(hub, device_info)
         self._platform_name = platform_name
-        self._hub = hub
         self._name = name+str(socket)
         self._socket = socket
         self._key = key+str(socket)
         self._register = register
         self._option_dict = options
         self._attr_options = list(options.values())
-
-    async def async_added_to_hass(self) -> None:
-        """Register callbacks."""
-        self._hub.async_add_alfen_sensor(self._modbus_data_updated)
-
-    async def async_will_remove_from_hass(self) -> None:
-        self._hub.async_remove_alfen_sensor(self._modbus_data_updated)
-
-    @callback
-    def _modbus_data_updated(self) -> None:
-        self.async_write_ha_state()
 
     @property
     def name(self) -> str:
@@ -109,11 +100,6 @@ class AlfenSelect(SelectEntity):
     @property
     def unique_id(self) -> Optional[str]:
         return f"{self._platform_name}_{self._key}"
-
-    @property
-    def should_poll(self) -> bool:
-        """Data is delivered by the hub"""
-        return False
 
     @property
     def current_option(self) -> str:
@@ -128,13 +114,3 @@ class AlfenSelect(SelectEntity):
         self._hub.data[self._key] = option
         self.hass.async_create_task(self._hub.async_refresh_modbus_data())
         self.async_write_ha_state()
-
-    @property
-    def device_info(self) -> Optional[Dict[str, Any]]:
-        return {
-            "identifiers": {(DOMAIN, self._platform_name)},
-            "name": self._hub.data.get("name", self._platform_name),
-            "manufacturer": ATTR_MANUFACTURER,
-            "model": self._hub.data.get("platformType", "Unknown"),
-            "sw_version": self._hub.data.get("firmwareVersion", "Unknown"),
-        }

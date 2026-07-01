@@ -10,6 +10,7 @@ from homeassistant.const import CONF_NAME, EntityCategory
 from homeassistant.core import callback
 
 from .const import DOMAIN, DEFAULT_MANUFACTURER
+from .entity import AlfenEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -75,7 +76,7 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
     async_add_entities(entities)
 
 
-class AlfenBinarySensor(BinarySensorEntity):
+class AlfenBinarySensor(AlfenEntity, BinarySensorEntity):
     """Representation of an Alfen Modbus binary sensor."""
 
     _attr_has_entity_name = True
@@ -90,8 +91,8 @@ class AlfenBinarySensor(BinarySensorEntity):
         socket: int | None,
     ) -> None:
         """Initialize the binary sensor."""
+        super().__init__(hub, device_info)
         self.entity_description = entity_description
-        self._hub = hub
         if socket is not None:
             self.key = f"socket_{socket}_{entity_description.key}"
             self._attr_translation_placeholders = {
@@ -100,20 +101,6 @@ class AlfenBinarySensor(BinarySensorEntity):
         else:
             self.key = entity_description.key
         self._attr_unique_id = f"{name}_{self.key}"
-        self._attr_device_info = device_info
-
-    async def async_added_to_hass(self) -> None:
-        """Register callbacks."""
-        self._hub.async_add_alfen_sensor(self._modbus_data_updated)
-
-    async def async_will_remove_from_hass(self) -> None:
-        """Remove callbacks."""
-        self._hub.async_remove_alfen_sensor(self._modbus_data_updated)
-
-    @callback
-    def _modbus_data_updated(self) -> None:
-        """Handle updated data from the hub."""
-        self.async_write_ha_state()
 
     @property
     def is_on(self) -> bool:
