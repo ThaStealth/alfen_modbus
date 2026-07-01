@@ -1,25 +1,24 @@
 import logging
 from typing import Optional, Dict, Any
 
+from homeassistant.components.select import SelectEntity
+from homeassistant.const import CONF_NAME
+from homeassistant.core import callback
+
+from . import AlfenConfigEntry
 from .const import (
     DOMAIN,
     ATTR_MANUFACTURER,
     CONTROL_PHASE,
     CONTROL_PHASE_MODES,
 )
-
-from homeassistant.const import CONF_NAME
-from homeassistant.components.select import SelectEntity
-
-from homeassistant.core import callback
-
 from .entity import AlfenEntity
 
 _LOGGER = logging.getLogger(__name__)
 
-async def async_setup_entry(hass, entry, async_add_entities) -> None:
+async def async_setup_entry(hass, entry: AlfenConfigEntry, async_add_entities) -> None:
     hub_name = entry.data[CONF_NAME]
-    hub = hass.data[DOMAIN][hub_name]["hub"]
+    hub = entry.runtime_data
 
     device_info = {
         "identifiers": {(DOMAIN, hub_name)},
