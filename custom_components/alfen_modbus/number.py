@@ -6,6 +6,7 @@ from homeassistant.const import CONF_NAME
 from homeassistant.core import callback
 
 from . import AlfenConfigEntry
+from .entity import AlfenEntity
 from .const import (
     DOMAIN,
     ATTR_MANUFACTURER,
@@ -74,9 +75,9 @@ class AlfenNumber(NumberEntity):
                  fmt,
                  attrs
     ) -> None:
-        """Initialize the selector."""
+        """Initialize the number."""
+        super().__init__(hub, device_info)
         self._platform_name = platform_name
-        self._hub = hub
         self._name = name+str(socket)
         self._socket = socket
         self._key = key+str(socket)
@@ -93,14 +94,10 @@ class AlfenNumber(NumberEntity):
 
     async def async_added_to_hass(self) -> None:
         """Register callbacks."""
-        self._hub.async_add_alfen_sensor(self._modbus_data_updated,self.update_value)
+        self._hub.async_add_alfen_sensor(self._modbus_data_updated, self.update_value)
 
     async def async_will_remove_from_hass(self) -> None:
-        self._hub.async_remove_alfen_sensor(self._modbus_data_updated,self.update_value)
-
-    @callback
-    def _modbus_data_updated(self) -> None:
-        self.async_write_ha_state()
+        self._hub.async_remove_alfen_sensor(self._modbus_data_updated, self.update_value)
 
     @property
     def name(self) -> str:
@@ -110,11 +107,6 @@ class AlfenNumber(NumberEntity):
     @property
     def unique_id(self) -> Optional[str]:
         return f"{self._platform_name}_{self._key}"
-
-    @property
-    def should_poll(self) -> bool:
-        """Data is delivered by the hub"""
-        return False
 
     @property
     def native_value(self) -> float:
@@ -157,13 +149,3 @@ class AlfenNumber(NumberEntity):
         await self.update_value()       
         self.hass.async_create_task(self._hub.async_refresh_modbus_data())
         self.async_write_ha_state()
-
-    @property
-    def device_info(self) -> Optional[Dict[str, Any]]:
-        return {
-            "identifiers": {(DOMAIN, self._platform_name)},
-            "name": self._hub.data.get("name", self._platform_name),
-            "manufacturer": ATTR_MANUFACTURER,
-            "model": self._hub.data.get("platformType", "Unknown"),
-            "sw_version": self._hub.data.get("firmwareVersion", "Unknown"),
-        }

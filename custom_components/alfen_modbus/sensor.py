@@ -24,6 +24,7 @@ from homeassistant.components.sensor import (
 from homeassistant.core import callback
 
 from . import AlfenConfigEntry
+from .entity import AlfenEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -94,13 +95,13 @@ async def async_setup_entry(hass, entry: AlfenConfigEntry, async_add_entities):
     return True
 
 
-class AlfenSensor(SensorEntity):
+class AlfenSensor(AlfenEntity, SensorEntity):
     """Representation of an Alfen Modbus sensor."""
 
     def __init__(self, platform_name, hub, device_info, name, key, unit, icon):
         """Initialize the sensor."""
+        super().__init__(hub, device_info)
         self._platform_name = platform_name
-        self._hub = hub
         self._key = key
         if not hub.has_socket_2:
             if name.startswith("S1 "):
@@ -115,17 +116,6 @@ class AlfenSensor(SensorEntity):
             self._attr_device_class = SensorDeviceClass.ENERGY
         if self._unit_of_measurement == UnitOfPower.WATT :
             self._attr_device_class = SensorDeviceClass.POWER
-
-    async def async_added_to_hass(self) -> None:
-        """Register callbacks."""
-        self._hub.async_add_alfen_sensor(self._modbus_data_updated)
-
-    async def async_will_remove_from_hass(self) -> None:
-        self._hub.async_remove_alfen_sensor(self._modbus_data_updated)
-
-    @callback
-    def _modbus_data_updated(self):
-        self.async_write_ha_state()
 
     @property
     def name(self):
@@ -166,18 +156,3 @@ class AlfenSensor(SensorEntity):
     @property
     def extra_state_attributes(self):         
         return None
-
-    @property
-    def should_poll(self) -> bool:
-        """Data is delivered by the hub"""
-        return False
-
-    @property
-    def device_info(self) -> Optional[Dict[str, Any]]:
-        return {
-            "identifiers": {(DOMAIN, self._platform_name)},
-            "name": self._hub.data.get("name", self._platform_name),
-            "manufacturer": ATTR_MANUFACTURER,
-            "model": self._hub.data.get("platformType", "Unknown"),
-            "sw_version": self._hub.data.get("firmwareVersion", "Unknown"),
-        }
