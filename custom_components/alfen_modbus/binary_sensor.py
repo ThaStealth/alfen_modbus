@@ -40,7 +40,7 @@ SOCKET_BINARY_SENSOR_ENTITY_DESCRIPTORS: tuple[BinarySensorEntityDescription, ..
 async def async_setup_entry(hass, entry, async_add_entities) -> None:
     """Set up Alfen binary sensors."""
     hub_name = entry.data[CONF_NAME]
-    hub = hass.data[DOMAIN][name]["hub"]
+    hub = hass.data[DOMAIN][hub_name]["hub"]
     device_info = {
         "identifiers": {(DOMAIN, hub_name)},
         "serial_number": hub.data.get("serial", None),
@@ -64,7 +64,7 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
     )
     entities.extend(
         AlfenBinarySensor(
-            name,
+            hub_name,
             hub_hub,
             device_info,
             entity_description,
