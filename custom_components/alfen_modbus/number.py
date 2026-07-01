@@ -6,12 +6,12 @@ from homeassistant.const import CONF_NAME
 from homeassistant.core import callback
 
 from . import AlfenConfigEntry
-from .entity import AlfenEntity
 from .const import (
     DOMAIN,
     ATTR_MANUFACTURER,
     CONTROL_SLAVE_MAX_CURRENT,
 )
+from .entity import AlfenEntity
 
 _LOGGER = logging.getLogger(__name__)
 
