@@ -380,7 +380,7 @@ class AlfenModbusHub:
             self.data["socket_"+str(socket)+"_powerL3"] =  round(self.decode_from_registers(energy_data.registers,32,2,self._client.DATATYPE.FLOAT32),2)
             self.data["socket_"+str(socket)+"_powerSum"] =   round(self.decode_from_registers(energy_data.registers,34,2,self._client.DATATYPE.FLOAT32),2)
             
-            self.data["socket_"+str(socket)+"_frequency"] =   round(self.decode_from_registers(energy_data.registers,36,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_frequency"] =   round(self.decode_from_registers(energy_data.registers,36,2,self._client.DATATYPE.FLOAT32),3)
             
             self.data["socket_"+str(socket)+"_realPowerL1"] =   round(self.decode_from_registers(energy_data.registers,38,2,self._client.DATATYPE.FLOAT32),2)
             self.data["socket_"+str(socket)+"_realPowerL2"] =   round(self.decode_from_registers(energy_data.registers,40,2,self._client.DATATYPE.FLOAT32),2)
