@@ -62,7 +62,7 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
     async_add_entities(entities)
     return True
 
-class AlfenNumber(NumberEntity):
+class AlfenNumber(AlfenEntity, NumberEntity):
     """Representation of an Alfen Modbus number."""
 
     def __init__(self,

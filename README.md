@@ -1,7 +1,7 @@
 # Alfen Modbus for Home Assistant
 
 [![HACS Default](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
-[![GitHub Release](https://img.shields.io/github/v/release/straybiker/alfen_modbus)](https://github.com/thastealth/alfen_modbus/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/thastealth/alfen_modbus)](https://github.com/thastealth/alfen_modbus/releases)
 [![License](https://img.shields.io/github/license/thastealth/alfen_modbus)](LICENSE)
 
 Home Assistant integration for **Alfen Eve NG9xx and AHPxx** series EV chargers via Modbus TCP.
