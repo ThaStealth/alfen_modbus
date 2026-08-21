@@ -133,13 +133,16 @@ def read_socket_info(client, socket_id):
     log.info(f"SOCKET {socket_id} MEASUREMENTS (Unit {socket_id})")
     log.info("=" * 60)
     
-    # Read meter registers 300-424 (125 registers)
-    result = client.read_holding_registers(address=300, count=125, device_id=socket_id)
-    if result.isError():
-        log.error(f"Failed to read socket {socket_id} meters: {result}")
-        return False
-    
-    regs = result.registers
+    # Read meter registers 300-425 (126 registers) as two value-aligned chunks,
+    # since a single FC3 read is capped at 125 registers and firmware rejects
+    # reads that partially cover a defined value.
+    regs = []
+    for address, count in ((300, 62), (362, 64)):
+        result = client.read_holding_registers(address=address, count=count, device_id=socket_id)
+        if result.isError():
+            log.error(f"Failed to read socket {socket_id} meters at {address}: {result}")
+            return False
+        regs.extend(result.registers)
     
     log.info("Meter Info:")
     log.info(f"  State:           {decode_uint16(regs, 0)}")
@@ -210,17 +213,17 @@ def read_socket_info(client, socket_id):
     
     log.info("")
     log.info("Apparent Energy (VAh):")
-    log.info(f"  L1:              {decode_float64(regs, 92):.2f}")
-    log.info(f"  L2:              {decode_float64(regs, 96):.2f}")
-    log.info(f"  L3:              {decode_float64(regs, 100):.2f}")
-    log.info(f"  Sum:             {decode_float64(regs, 104):.2f}")
+    log.info(f"  L1:              {decode_float64(regs, 94):.2f}")
+    log.info(f"  L2:              {decode_float64(regs, 98):.2f}")
+    log.info(f"  L3:              {decode_float64(regs, 102):.2f}")
+    log.info(f"  Sum:             {decode_float64(regs, 106):.2f}")
     
     log.info("")
     log.info("Reactive Energy (VArh):")
-    log.info(f"  L1:              {decode_float64(regs, 108):.2f}")
-    log.info(f"  L2:              {decode_float64(regs, 112):.2f}")
-    log.info(f"  L3:              {decode_float64(regs, 116):.2f}")
-    log.info(f"  Sum:             {decode_float64(regs, 120):.2f}")
+    log.info(f"  L1:              {decode_float64(regs, 110):.2f}")
+    log.info(f"  L2:              {decode_float64(regs, 114):.2f}")
+    log.info(f"  L3:              {decode_float64(regs, 118):.2f}")
+    log.info(f"  Sum:             {decode_float64(regs, 122):.2f}")
     
     # Read socket status 1200-1215
     result = client.read_holding_registers(address=1200, count=16, device_id=socket_id)
