@@ -420,21 +420,24 @@ class AlfenModbusHub:
                 return False
   
             self.data["socket_"+str(socket)+"_available"] =  self.decode_from_registers(status_data.registers, 0, 1,self._client.DATATYPE.UINT16) 
-            self.data["socket_"+str(socket)+"_mode3state"] =  self.decode_from_registers(status_data.registers, 1, 5, self._client.DATATYPE.STRING).strip('\x00')       
-            self.data["socket_"+str(socket)+"_actualMaxCurrent"] =   round(self.decode_from_registers(status_data.registers,6,2,self._client.DATATYPE.FLOAT32),2)   
-            self.data[VALID_TIME_S+str(socket)] = self.decode_from_registers(status_data.registers, 8, 2,self._client.DATATYPE.UINT32) 
-            self.data[MAX_CURRENT_S+str(socket)] =  round(self.decode_from_registers(status_data.registers,10,2,self._client.DATATYPE.FLOAT32),2)      
-            self.data["socket_"+str(socket)+"_saveCurrent"] =  round(self.decode_from_registers(status_data.registers,12,2,self._client.DATATYPE.FLOAT32),2)       
-            self.data["socket_"+str(socket)+"_setpointAccounted"] =  self.decode_from_registers(status_data.registers, 14, 1,self._client.DATATYPE.UINT16)    
-            self.data["socket_"+str(socket)+"_chargephases"] =  self.decode_from_registers(status_data.registers, 15, 1,self._client.DATATYPE.UINT16) 
-            
-            if self.data["socket_"+str(socket)+"_mode3state"] in ["A","E","F"]:
-                self.data["socket_"+str(socket)+"_carconnected"] = 0             
+            mode3 = self.decode_from_registers(status_data.registers, 1, 5, self._client.DATATYPE.STRING).strip('\x00').strip().upper()
+            self.data["socket_"+str(socket)+"_mode3state"] = mode3
+            self.data["socket_"+str(socket)+"_actualMaxCurrent"] =   round(self.decode_from_registers(status_data.registers,6,2,self._client.DATATYPE.FLOAT32),2)
+            self.data[VALID_TIME_S+str(socket)] = self.decode_from_registers(status_data.registers, 8, 2,self._client.DATATYPE.UINT32)
+            self.data[MAX_CURRENT_S+str(socket)] =  round(self.decode_from_registers(status_data.registers,10,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_saveCurrent"] =  round(self.decode_from_registers(status_data.registers,12,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["socket_"+str(socket)+"_setpointAccounted"] =  self.decode_from_registers(status_data.registers, 14, 1,self._client.DATATYPE.UINT16)
+            self.data["socket_"+str(socket)+"_chargephases"] =  self.decode_from_registers(status_data.registers, 15, 1,self._client.DATATYPE.UINT16)
+
+            # IEC 61851 state families: A/E/F idle, B connected, C/D charging.
+            # Prefix matching (A1, C2, FF, ...) - exact match misclassifies variants.
+            if not mode3 or mode3.startswith(("A", "E", "F")):
+                self.data["socket_"+str(socket)+"_carconnected"] = 0
             else:
-                self.data["socket_"+str(socket)+"_carconnected"] = 1          
-            
-            if self.data["socket_"+str(socket)+"_mode3state"] not in ["C2","D2"]:
-                self.data["socket_"+str(socket)+"_carcharging"] = 0                    
+                self.data["socket_"+str(socket)+"_carconnected"] = 1
+
+            if not mode3.startswith(("C", "D")):
+                self.data["socket_"+str(socket)+"_carcharging"] = 0
             else:
                 if "socket_"+str(socket)+"_carcharging" not in self.data or self.data["socket_"+str(socket)+"_carcharging"] == 0:                    
                     self.data["socket_"+str(socket)+"_chargingStartWh"] = self.data["socket_"+str(socket)+"_realEnergyDeliveredSum"]
