@@ -185,20 +185,25 @@ async def test_station_data(client, unit, result):
 
 async def test_socket_energy_data(client, socket_id, result):
     """
-    Tests read_modbus_data_socket() - Registers 300-424 (125 registers)
+    Tests read_modbus_data_socket() - Registers 300-425 (126 registers, read
+    as two value-aligned chunks)
     
     This is called from: read_modbus_data_socket() in __init__.py
     Socket 1 uses unit=1, Socket 2 uses unit=2
     """
-    log.info("\n=== Test: Socket %d Energy Data (Unit %d, Registers 300-424) ===" % (socket_id, socket_id))
-    
-    rr = await client.read_holding_registers(300, count=125, device_id=socket_id)
-    if rr.isError():
-        log.error(f"Failed to read socket {socket_id} energy data: {rr}")
-        result.failed += 1
-        return
-    
-    regs = rr.registers
+    log.info("\n=== Test: Socket %d Energy Data (Unit %d, Registers 300-425) ===" % (socket_id, socket_id))
+
+    # Read as two value-aligned chunks (300-361, 362-425); the 126-register
+    # block exceeds the FC3 125-register limit and firmware rejects reads
+    # that partially cover a defined value.
+    regs = []
+    for address, count in ((300, 62), (362, 64)):
+        rr = await client.read_holding_registers(address, count=count, device_id=socket_id)
+        if rr.isError():
+            log.error(f"Failed to read socket {socket_id} energy data at {address}: {rr}")
+            result.failed += 1
+            return
+        regs.extend(rr.registers)
     
     # Decode exactly as HA component does (offsets from register 300)
     meter_state = decode_uint16(regs, 0)
