@@ -3,6 +3,8 @@
 
 Home assistant Custom Component for reading data from Alfen EV charger through modbus TCP. Implements Inverter registers from  https://alfen.com/file-download/download/public/1610
 
+Supports both the **Eve NG9xx** and **AHP** charger platforms. AHP requires integration v0.2.1+ and firmware [2.6.0](https://knowledge.alfen.com/categories/CAT-01021/KA-01635) or newer.
+
 ### Features
 
 - Installation through Config Flow UI.
