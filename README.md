@@ -1,10 +1,10 @@
 # Alfen Modbus for Home Assistant
 
 [![HACS Default](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
-[![GitHub Release](https://img.shields.io/github/v/release/straybiker/alfen_modbus)](https://github.com/thastealth/alfen_modbus/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/thastealth/alfen_modbus)](https://github.com/thastealth/alfen_modbus/releases)
 [![License](https://img.shields.io/github/license/thastealth/alfen_modbus)](LICENSE)
 
-Home Assistant integration for **Alfen Eve NG9xx** series EV chargers via Modbus TCP.
+Home Assistant integration for **Alfen Eve NG9xx and AHPxx** series EV chargers via Modbus TCP.
 
 ![Demo](demo.png)
 
@@ -22,9 +22,10 @@ Home Assistant integration for **Alfen Eve NG9xx** series EV chargers via Modbus
 ## Requirements
 
 - Home Assistant **2024.4.0** or newer
-- Alfen Eve NG9xx charger with:
-  - Firmware **4.2.0** or newer (Modbus TCP support)
-  - Firmware **6.4.0+** recommended (fixes power budget reset bug)
+- Alfen Eve (NG9xx or AHPxx) charger with:
+  - (NG9xx) Firmware **4.2.0** or newer (Modbus TCP support)
+  - (NG9xx) Firmware **6.4.0+** recommended (fixes power budget reset bug)
+  - (AHPxx) Firmware **2.6.0+** recommended (Support for Modbus TCP/IP EMS)
   - **Active Load Balancing** license enabled
 - Modbus TCP enabled on the charger
 
@@ -79,7 +80,7 @@ See the [Alfen Smart Charging Manual](https://knowledge.alfen.com/space/IN/63976
 
 ## Known Issues
 
-- Power budget may reset to 0A when no car is connected (fixed in firmware [6.4.0-4210](https://knowledge.alfen.com/space/IN/243466257))
+- Power budget may reset to 0A when no car is connected (fixed in NG9xx firmware [6.4.0-4210](https://knowledge.alfen.com/space/IN/243466257))
 - **Reallin power meter (post-2021)**: Chargers with a Reallin power meter produced after 2021 only export a subset of measurement values. Per-phase energy, apparent energy, and reactive energy sensors will show as "unavailable" (NaN). This is a hardware limitation, not a bug.
 
 ## Contributing
