@@ -10,6 +10,7 @@ from .const import (
     DOMAIN,
     ATTR_MANUFACTURER,
     CONTROL_SLAVE_MAX_CURRENT,
+    MAX_CURRENT_S,
 )
 from .entity import AlfenEntity
 
@@ -122,9 +123,9 @@ class AlfenNumber(AlfenEntity, NumberEntity):
         # Use actualMaxCurrent (Register 1100) as the hard limit for the slider
         if "actualMaxCurrent" in self._hub.data:
             self._attr_native_max_value = self._hub.data["actualMaxCurrent"]
-        elif "MAX_CURRENT_S"+str(self._socket) in self._hub.data:
+        elif MAX_CURRENT_S+str(self._socket) in self._hub.data:
              # Fallback to previous logic if actualMaxCurrent not available
-            self._attr_native_max_value = self._hub.data["MAX_CURRENT_S"+str(self._socket)]
+            self._attr_native_max_value = self._hub.data[MAX_CURRENT_S+str(self._socket)]
             
         _LOGGER.debug("Updating value to: %f",value)
 
