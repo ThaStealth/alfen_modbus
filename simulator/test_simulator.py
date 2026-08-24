@@ -3,10 +3,12 @@ Test script for Alfen Eve Single Pro Modbus Simulator
 
 Verifies the simulator responds correctly with expected values.
 """
+import argparse
 import asyncio
 import logging
 import struct
-import argparse
+import sys
+
 from pymodbus.client import AsyncModbusTcpClient
 
 # Default Configuration - matches real Alfen hardware
@@ -58,7 +60,7 @@ async def run_test(port):
         name = decode_string(rr.registers, 34)
         log.info(f"Product Name: '{name}'")
         if "Alfen" not in name:
-            log.error(f"Expected product name to contain 'Alfen'")
+            log.error("Expected product name to contain 'Alfen'")
             success = False
         else:
             log.info("✓ Product name verified")
@@ -110,7 +112,7 @@ async def run_test(port):
         
         # Verify voltages are in realistic range
         if not (220 < v_l1n < 245):
-            log.error(f"Voltage L1-N out of expected range (220-245V)")
+            log.error("Voltage L1-N out of expected range (220-245V)")
             success = False
         else:
             log.info("✓ Voltages verified")
@@ -198,7 +200,7 @@ def main():
     args = parser.parse_args()
     
     result = asyncio.run(run_test(args.port))
-    exit(0 if result else 1)
+    sys.exit(0 if result else 1)
 
 if __name__ == "__main__":
     main()

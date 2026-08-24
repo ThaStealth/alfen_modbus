@@ -1,8 +1,13 @@
 """Test script to verify exact addressing behavior of pymodbus 3.11.4"""
 import asyncio
-from pymodbus.server import StartAsyncTcpServer
-from pymodbus.datastore import ModbusSequentialDataBlock, ModbusServerContext, ModbusDeviceContext
+
 from pymodbus.client import AsyncModbusTcpClient
+from pymodbus.datastore import (
+    ModbusDeviceContext,
+    ModbusSequentialDataBlock,
+    ModbusServerContext,
+)
+from pymodbus.server import StartAsyncTcpServer
 
 PORT = 5021  # Use different port to avoid conflicts
 

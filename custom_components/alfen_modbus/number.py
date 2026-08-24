@@ -1,15 +1,13 @@
 import logging
-from typing import Optional, Dict, Any
 
 from homeassistant.components.number import NumberEntity
 from homeassistant.const import CONF_NAME
-from homeassistant.core import callback
 
 from . import AlfenConfigEntry
 from .const import (
-    DOMAIN,
     ATTR_MANUFACTURER,
     CONTROL_SLAVE_MAX_CURRENT,
+    DOMAIN,
     MAX_CURRENT_S,
 )
 from .entity import AlfenEntity
@@ -86,11 +84,11 @@ class AlfenNumber(AlfenEntity, NumberEntity):
         self._fmt = fmt
         self._attr_native_min_value = attrs["min"]
         self._attr_native_max_value = attrs["max"]
-        if "unit" in attrs.keys():
+        if "unit" in attrs:
             self._attr_native_unit_of_measurement = attrs["unit"]
-        if "mode" in attrs.keys():
+        if "mode" in attrs:
             self._attr_mode = attrs["mode"]
-        if "step" in attrs.keys():
+        if "step" in attrs:
             self._attr_native_step = attrs["step"]
 
     async def async_added_to_hass(self) -> None:
@@ -106,7 +104,7 @@ class AlfenNumber(AlfenEntity, NumberEntity):
         return f"{self._platform_name} {self._name}"
 
     @property
-    def unique_id(self) -> Optional[str]:
+    def unique_id(self) -> str | None:
         return f"{self._platform_name}_{self._key}"
 
     @property

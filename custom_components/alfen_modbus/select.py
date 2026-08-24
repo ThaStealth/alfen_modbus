@@ -1,15 +1,13 @@
 import logging
-from typing import Optional, Dict, Any
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.const import CONF_NAME
-from homeassistant.core import callback
 
 from . import AlfenConfigEntry
 from .const import (
-    DOMAIN,
     ATTR_MANUFACTURER,
     CONTROL_PHASE,
+    DOMAIN,
 )
 from .entity import AlfenEntity
 
@@ -96,7 +94,7 @@ class AlfenSelect(AlfenEntity, SelectEntity):
         return f"{self._platform_name} {self._name}"
 
     @property
-    def unique_id(self) -> Optional[str]:
+    def unique_id(self) -> str | None:
         return f"{self._platform_name}_{self._key}"
 
     @property

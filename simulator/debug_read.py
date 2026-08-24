@@ -1,5 +1,7 @@
 import asyncio
+
 from pymodbus.client import AsyncModbusTcpClient
+
 
 async def debug_read():
     client = AsyncModbusTcpClient("127.0.0.1", port=5020)

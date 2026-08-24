@@ -7,10 +7,12 @@ work correctly against the simulator.
 
 Based on: alfen_modbus/custom_components/alfen_modbus/__init__.py
 """
+import argparse
 import asyncio
 import logging
 import struct
-import argparse
+import sys
+
 from pymodbus.client import AsyncModbusTcpClient
 
 # Configuration - matches HA integration defaults
@@ -103,7 +105,7 @@ async def test_product_data(client, unit, result):
     
     This is called from: read_modbus_data_product() in __init__.py
     """
-    log.info("\n=== Test: Product Data (Unit %d, Registers 100-178) ===" % unit)
+    log.info("\n=== Test: Product Data (Unit %d, Registers 100-178) ===", unit)
     
     rr = await client.read_holding_registers(100, count=79, device_id=unit)
     if rr.isError():
@@ -155,7 +157,7 @@ async def test_station_data(client, unit, result):
     
     This is called from: read_modbus_data_station() in __init__.py
     """
-    log.info("\n=== Test: Station Status (Unit %d, Registers 1100-1105) ===" % unit)
+    log.info("\n=== Test: Station Status (Unit %d, Registers 1100-1105) ===", unit)
     
     rr = await client.read_holding_registers(1100, count=6, device_id=unit)
     if rr.isError():
@@ -191,7 +193,7 @@ async def test_socket_energy_data(client, socket_id, result):
     This is called from: read_modbus_data_socket() in __init__.py
     Socket 1 uses unit=1, Socket 2 uses unit=2
     """
-    log.info("\n=== Test: Socket %d Energy Data (Unit %d, Registers 300-425) ===" % (socket_id, socket_id))
+    log.info("\n=== Test: Socket %d Energy Data (Unit %d, Registers 300-425) ===", socket_id, socket_id)
 
     # Read as two value-aligned chunks (300-361, 362-425); the 126-register
     # block exceeds the FC3 125-register limit and firmware rejects reads
@@ -239,6 +241,7 @@ async def test_socket_energy_data(client, socket_id, result):
     e_delivered_sum = round(decode_float64(regs, 74), 2)
     
     log.info(f"  Meter State: {meter_state}")
+    log.info(f"  Meter Age: {meter_age}ms, Meter Type: {meter_type}")
     log.info(f"  Voltages L-N: {v_l1n}V, {v_l2n}V, {v_l3n}V")
     log.info(f"  Voltages L-L: {v_l1l2}V, {v_l2l3}V, {v_l3l1}V")
     log.info(f"  Currents: N={i_n}A, L1={i_l1}A, L2={i_l2}A, L3={i_l3}A, Sum={i_sum}A")
@@ -249,6 +252,7 @@ async def test_socket_energy_data(client, socket_id, result):
     
     # Validations
     result.check("Meter State defined", meter_state in range(16))
+    result.check("Meter Type defined", meter_type in range(5))
     result.check_range("Voltage L1-N", v_l1n, 200, 260)
     result.check_range("Voltage L2-N", v_l2n, 200, 260)
     result.check_range("Voltage L3-N", v_l3n, 200, 260)
@@ -266,7 +270,7 @@ async def test_socket_status_data(client, socket_id, result):
     
     This is the second part of read_modbus_data_socket() in __init__.py
     """
-    log.info("\n=== Test: Socket %d Status (Unit %d, Registers 1200-1215) ===" % (socket_id, socket_id))
+    log.info("\n=== Test: Socket %d Status (Unit %d, Registers 1200-1215) ===", socket_id, socket_id)
     
     rr = await client.read_holding_registers(1200, count=16, device_id=socket_id)
     if rr.isError():
@@ -307,7 +311,7 @@ async def test_socket_status_data(client, socket_id, result):
     car_connected = 0 if mode3_state in ["A", "E", "F"] else 1
     car_charging = 1 if mode3_state in ["C2", "D2"] else 0
     
-    log.info(f"  --- Binary Sensor Derivation ---")
+    log.info("  --- Binary Sensor Derivation ---")
     log.info(f"  Car Connected: {car_connected} (derived from mode3_state='{mode3_state}')")
     log.info(f"  Car Charging: {car_charging} (derived from mode3_state='{mode3_state}')")
     
@@ -324,7 +328,7 @@ async def test_write_max_current(client, socket_id, result):
     
     This replicates the write operation from the HA number entity
     """
-    log.info("\n=== Test: Write Max Current (Socket %d, Register 1210) ===" % socket_id)
+    log.info("\n=== Test: Write Max Current (Socket %d, Register 1210) ===", socket_id)
     
     test_current = 14.5
     
@@ -416,7 +420,7 @@ def main():
     args = parser.parse_args()
     
     success = asyncio.run(run_smoke_tests(args.port))
-    exit(0 if success else 1)
+    sys.exit(0 if success else 1)
 
 
 if __name__ == "__main__":

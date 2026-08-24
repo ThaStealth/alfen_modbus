@@ -9,6 +9,8 @@ Configuration:
 """
 import logging
 import struct
+import sys
+
 from pymodbus.client import ModbusTcpClient
 
 # Import local config (gitignored)
@@ -19,7 +21,7 @@ except ImportError:
     print("Create local_config.py with:")
     print('  ALFEN_HOST = "YOUR_CHARGER_IP"')
     print('  ALFEN_PORT = 502')
-    exit(1)
+    sys.exit(1)
 
 # Logging setup
 logging.basicConfig(level=logging.INFO, format='%(message)s')
