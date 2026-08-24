@@ -10,7 +10,6 @@ from .const import (
     DOMAIN,
     ATTR_MANUFACTURER,
     CONTROL_PHASE,
-    CONTROL_PHASE_MODES,
 )
 from .entity import AlfenEntity
 
