@@ -54,6 +54,8 @@ CONFIG_SCHEMA = vol.Schema(
 
 PLATFORMS = ["binary_sensor", "number", "select", "sensor"]
 
+type AlfenConfigEntry = ConfigEntry[AlfenModbusHub]
+
 
 async def async_setup(hass, config):
     """Set up the Alfen modbus component."""
@@ -61,7 +63,7 @@ async def async_setup(hass, config):
     return True
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_setup_entry(hass: HomeAssistant, entry: AlfenConfigEntry):
     """Set up a alfen mobus."""
     host = entry.data[CONF_HOST]
     name = entry.data[CONF_NAME]
@@ -84,7 +86,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         read_socket2
     )
     """Register the hub."""
-    hass.data[DOMAIN][name] = {"hub": hub}
+    entry.runtime_data = hub
 
     # Read device info before setting up platforms so device_info is available
     hub.connect()
@@ -92,7 +94,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
-
 
 
 async def async_unload_entry(hass, entry):
@@ -335,7 +336,7 @@ class AlfenModbusHub:
     
         self.data["actualMaxCurrent"] =  round(self.decode_from_registers(status_data.registers,0,2,self._client.DATATYPE.FLOAT32),2)
         self.data["boardTemperature"] =  round(self.decode_from_registers(status_data.registers,2,2,self._client.DATATYPE.FLOAT32),3)
-        self.data["backofficeConnected"] = self.decode_from_registers(status_data.registers,4,1,self._client.DATATYPE.UINT16)
+        self.data["backofficeConnected"] = self.data["backoffice"] = self.decode_from_registers(status_data.registers,4,1,self._client.DATATYPE.UINT16)
         self.data["numberOfSockets"] = self.decode_from_registers(status_data.registers,5,1,self._client.DATATYPE.UINT16)
         return True
         
