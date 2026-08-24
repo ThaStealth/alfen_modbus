@@ -336,7 +336,7 @@ class AlfenModbusHub:
     
         self.data["actualMaxCurrent"] =  round(self.decode_from_registers(status_data.registers,0,2,self._client.DATATYPE.FLOAT32),2)
         self.data["boardTemperature"] =  round(self.decode_from_registers(status_data.registers,2,2,self._client.DATATYPE.FLOAT32),2)
-        self.data["backofficeConnected"] = self.decode_from_registers(status_data.registers,4,1,self._client.DATATYPE.UINT16)
+        self.data["backofficeConnected"] = self.data["backoffice"] = self.decode_from_registers(status_data.registers,4,1,self._client.DATATYPE.UINT16)
         self.data["numberOfSockets"] = self.decode_from_registers(status_data.registers,5,1,self._client.DATATYPE.UINT16)
         return True
         
