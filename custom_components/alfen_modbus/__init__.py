@@ -197,7 +197,10 @@ class AlfenModbusHub:
 
     async def _async_close(self):
         async with self._lock:
-            await self._hass.async_add_executor_job(self._client.close)
+            try:
+                await self._hass.async_add_executor_job(self._client.close)
+            except Exception:
+                pass
 
 
 
@@ -352,7 +355,7 @@ class AlfenModbusHub:
 
     async def read_modbus_data_station(self):
         status_data = await self.read_holding_registers(self._address,1100,6)
-        if status_data.isError():
+        if status_data is None or status_data.isError():
             return False
     
         self.data["actualMaxCurrent"] =  round(self.decode_from_registers(status_data.registers,0,2,self._client.DATATYPE.FLOAT32),2)
@@ -364,7 +367,7 @@ class AlfenModbusHub:
     async def read_modbus_data_scn(self):
         if(self.has_scn):
             status_data = await self.read_holding_registers(self._address,1400,32)
-            if status_data.isError():
+            if status_data is None or status_data.isError():
                 return False
 
             self.data["scnName"] = self.decode_from_registers(status_data.registers,0,4,self._client.DATATYPE.STRING).strip('\x00')
@@ -441,7 +444,7 @@ class AlfenModbusHub:
                                             
                             
             status_data = await self.read_holding_registers(socket,1200,16)
-            if status_data.isError():
+            if status_data is None or status_data.isError():
                 return False
   
             self.data["socket_"+str(socket)+"_available"] =  self.decode_from_registers(status_data.registers, 0, 1,self._client.DATATYPE.UINT16) 
@@ -480,7 +483,7 @@ class AlfenModbusHub:
         
     async def read_modbus_data_product(self):
         identification_data = await self.read_holding_registers(self._address, 100, 79)
-        if identification_data.isError():
+        if identification_data is None or identification_data.isError():
             return False
 
         self.data["name"] = self.decode_from_registers(identification_data.registers, 0, 17, self._client.DATATYPE.STRING).strip('\x00')
