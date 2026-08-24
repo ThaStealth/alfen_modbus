@@ -13,7 +13,6 @@ from .const import (
     CONTROL_PHASE_MODES,
     ATTR_MANUFACTURER,
 )
-from datetime import datetime
 from homeassistant.const import CONF_NAME, UnitOfEnergy, UnitOfPower
 from homeassistant.components.sensor import (
     SensorStateClass,
@@ -23,14 +22,15 @@ from homeassistant.components.sensor import (
 
 from homeassistant.core import callback
 
+from . import AlfenConfigEntry
 from .entity import AlfenEntity
 
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass, entry, async_add_entities):
+async def async_setup_entry(hass, entry: AlfenConfigEntry, async_add_entities):
     hub_name = entry.data[CONF_NAME]
-    hub = hass.data[DOMAIN][hub_name]["hub"]
+    hub = entry.runtime_data
     
     device_info = {
         "identifiers": {(DOMAIN, hub_name)},

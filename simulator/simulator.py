@@ -24,6 +24,7 @@ import sys
 import os
 from pymodbus.server import StartAsyncTcpServer
 from pymodbus.datastore import ModbusSequentialDataBlock, ModbusServerContext, ModbusDeviceContext
+from pymodbus.constants import ExcCodes
 from pymodbus.pdu.device import ModbusDeviceIdentification
 
 # Default Configuration - matches real Alfen hardware
@@ -142,6 +143,54 @@ def reg(register):
     return register + 1
 
 # ============================================================================
+# Strict data block (mimics AHP firmware behaviour)
+# ============================================================================
+
+# Value layout of the socket map in client register addresses: (start, length).
+# The 16 float64 energy counters pack 362-425 exactly, ending at 425 inclusive.
+SOCKET_VALUE_LAYOUT = (
+    [(300, 1), (301, 4), (305, 1)]                       # meter state/age/type
+    + [(306 + 2 * i, 2) for i in range(28)]              # float32s, 306-361
+    + [(362 + 4 * i, 4) for i in range(16)]              # float64s, 362-425
+    + [(1200, 1), (1201, 5), (1206, 2), (1208, 2),       # status/control block
+       (1210, 2), (1212, 2), (1214, 1), (1215, 1)]
+)
+
+class StrictValueDataBlock(ModbusSequentialDataBlock):
+    """Data block that rejects reads partially covering a defined value.
+
+    Mirrors strict firmwares (e.g. Alfen AHP): a request is only served when
+    it fully covers every value it touches and contains no unmapped register.
+    Any other request yields Modbus exception 02 (Illegal Data Address).
+    pymodbus 3.11 blocks have no validate(); getValues() receives block
+    addresses (client register + 1, see reg()) and signals range errors by
+    returning ExcCodes.ILLEGAL_ADDRESS, so strictness is enforced there.
+    """
+
+    def __init__(self, value_layout, address=0, size=2000):
+        super().__init__(address, [0] * size)
+        self._address_map = {}
+        self._value_ranges = []
+        for start, length in value_layout:
+            value_id = len(self._value_ranges)
+            block_start = reg(start)
+            self._value_ranges.append((block_start, block_start + length))
+            for block_addr in range(block_start, block_start + length):
+                self._address_map[block_addr] = value_id
+
+    def getValues(self, address, count=1):
+        touched = set()
+        for block_addr in range(address, address + count):
+            value_id = self._address_map.get(block_addr)
+            if value_id is None:
+                return ExcCodes.ILLEGAL_ADDRESS
+            touched.add(value_id)
+        for start, end in (self._value_ranges[i] for i in touched):
+            if start < address or end > address + count:
+                return ExcCodes.ILLEGAL_ADDRESS
+        return super().getValues(address, count)
+
+# ============================================================================
 # Product/Station Context (Unit 200)
 # ============================================================================
 
@@ -182,11 +231,16 @@ def setup_product_context():
 # ============================================================================
 
 def setup_socket_context(socket_id):
-    """Sets up a socket context (Unit 1 or 2)."""
-    block = ModbusSequentialDataBlock(0, [0]*2000)
+    """Sets up a socket context (Unit 1 or 2).
+
+    Uses StrictValueDataBlock so the simulator rejects reads that partially
+    cover a defined value, like the AHP firmware does.
+    """
+    block = StrictValueDataBlock(SOCKET_VALUE_LAYOUT)
     
-    # === Meter Measurements (Registers 300-424) ===
-    # HA reads registers 300-424 (125 registers) and uses offsets from 300
+    # === Meter Measurements (Registers 300-425, 126 registers) ===
+    # HA reads this as two value-aligned chunks (300-361 and 362-425)
+    # and uses offsets from 300 against the concatenated block.
     block.setValues(reg(300), encode_uint16(3))      # Meter State (offset 0)
     block.setValues(reg(301), encode_uint32(1500))   # Meter Age ms (offset 1, 4 regs but read as UINT16)
     block.setValues(reg(305), encode_uint16(1))      # Meter Type (offset 5)
@@ -247,21 +301,20 @@ def setup_socket_context(socket_id):
     block.setValues(reg(386), encode_double(0.0))
     block.setValues(reg(390), encode_double(0.0))
     
-    # Apparent Energy (float64, VAh) - offset 92, 96, 100, 104
-    block.setValues(reg(392), encode_double(15542.0))
-    block.setValues(reg(396), encode_double(15485.0))
-    block.setValues(reg(400), encode_double(15612.0))
-    block.setValues(reg(404), encode_double(46639.0))
+    # Apparent Energy (float64, VAh) - offset 94, 98, 102, 106
+    block.setValues(reg(394), encode_double(15542.0))
+    block.setValues(reg(398), encode_double(15485.0))
+    block.setValues(reg(402), encode_double(15612.0))
+    block.setValues(reg(406), encode_double(46639.0))
     
-    # Reactive Energy (float64, VArh) - offset 108, 112, 116, 120
-    block.setValues(reg(408), encode_double(3024.0))
-    block.setValues(reg(412), encode_double(3189.0))
-    block.setValues(reg(416), encode_double(2956.0))
-    block.setValues(reg(420), encode_double(9169.0))  # Reactive Energy Sum
+    # Reactive Energy (float64, VArh) - offset 110, 114, 118, 122
+    block.setValues(reg(410), encode_double(3024.0))
+    block.setValues(reg(414), encode_double(3189.0))
+    block.setValues(reg(418), encode_double(2956.0))
+    block.setValues(reg(422), encode_double(9169.0))  # Reactive Energy Sum (422-425)
     
     # === Socket Status/Control (Registers 1200-1215) ===
-    # HA reads registers 1200-1215 (16 registers)
-    block.setValues(reg(1200), encode_uint16(1))     # Availability (offset 0)
+    # HA reads registers 1200-1215 (16 registers)    block.setValues(reg(1200), encode_uint16(1))     # Availability (offset 0)
     block.setValues(reg(1201), encode_string("C2", 10))  # Mode 3 State (offset 1, 5 regs)
     block.setValues(reg(1206), encode_float(16.0))   # Actual Applied Max Current (offset 6)
     block.setValues(reg(1208), encode_uint32(60))    # Max Current Valid Time (offset 8)
