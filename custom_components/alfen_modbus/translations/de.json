@@ -20,5 +20,18 @@
     "abort": {
       "already_configured": "Der Wechselrichter ist bereits konfiguriert."
     }
+  },
+  "entity": {
+    "binary_sensor": {
+      "backoffice": {
+        "name": "Backoffice"
+      },
+      "carcharging": {
+        "name": "Steckdose {socket_number} Ladestatus"
+      },
+      "carconnected": {
+        "name": "Steckdose {socket_number} Verbindungsstatus"
+      }
+    }
   }
 }
