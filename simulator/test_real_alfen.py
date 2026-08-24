@@ -121,7 +121,7 @@ def read_product_info(client):
     log.info("")
     log.info("Station Status:")
     log.info(f"  Max Current:     {decode_float32(regs, 0):.1f} A")
-    log.info(f"  Temperature:     {decode_float32(regs, 2):.1f} °C")
+    log.info(f"  Temperature:     {decode_float32(regs, 2):.3f} °C")
     log.info(f"  Backoffice:      {'Connected' if decode_uint16(regs, 4) else 'Disconnected'}")
     log.info(f"  Sockets:         {decode_uint16(regs, 5)}")
 
@@ -174,7 +174,7 @@ def read_socket_info(client, socket_id):
     log.info(f"  Sum:             {decode_float32(regs, 34):.3f}")
     
     log.info("")
-    log.info(f"Frequency:         {decode_float32(regs, 36):.2f} Hz")
+    log.info(f"Frequency:         {decode_float32(regs, 36):.3f} Hz")
     
     log.info("")
     log.info("Real Power (W):")
@@ -199,25 +199,25 @@ def read_socket_info(client, socket_id):
     
     log.info("")
     log.info("Real Energy Delivered (Wh):")
-    log.info(f"  L1:              {decode_float64(regs, 62):.2f}")
-    log.info(f"  L2:              {decode_float64(regs, 66):.2f}")
-    log.info(f"  L3:              {decode_float64(regs, 70):.2f}")
-    log.info(f"  Sum:             {decode_float64(regs, 74):.2f}")
-    
+    log.info(f"  L1:              {decode_float64(regs, 62):.0f}")
+    log.info(f"  L2:              {decode_float64(regs, 66):.0f}")
+    log.info(f"  L3:              {decode_float64(regs, 70):.0f}")
+    log.info(f"  Sum:             {decode_float64(regs, 74):.0f}")
+
     log.info("")
     log.info("Real Energy Consumed (Wh):")
     log.info(f"  L1:              {decode_float64(regs, 78):.2f}")
     log.info(f"  L2:              {decode_float64(regs, 82):.2f}")
     log.info(f"  L3:              {decode_float64(regs, 86):.2f}")
     log.info(f"  Sum:             {decode_float64(regs, 90):.2f}")
-    
+
     log.info("")
     log.info("Apparent Energy (VAh):")
     log.info(f"  L1:              {decode_float64(regs, 94):.2f}")
     log.info(f"  L2:              {decode_float64(regs, 98):.2f}")
     log.info(f"  L3:              {decode_float64(regs, 102):.2f}")
     log.info(f"  Sum:             {decode_float64(regs, 106):.2f}")
-    
+
     log.info("")
     log.info("Reactive Energy (VArh):")
     log.info(f"  L1:              {decode_float64(regs, 110):.2f}")

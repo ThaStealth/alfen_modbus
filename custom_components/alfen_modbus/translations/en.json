@@ -32,5 +32,18 @@
     "abort": {
       "already_configured": "Device is already configured"
     }
+  },
+  "entity": {
+    "binary_sensor": {
+      "backoffice": {
+        "name": "Back office"
+      },
+      "carcharging": {
+        "name": "Socket {socket_number} charging state"
+      },
+      "carconnected": {
+        "name": "Socket {socket_number} connection state"
+      }
+    }
   }
 }
