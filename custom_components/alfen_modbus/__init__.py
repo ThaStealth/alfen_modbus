@@ -61,7 +61,6 @@ type AlfenConfigEntry = ConfigEntry[AlfenModbusHub]
 
 async def async_setup(hass, config):
     """Set up the Alfen modbus component."""
-    hass.data[DOMAIN] = {}
     return True
 
 
@@ -115,11 +114,7 @@ async def async_unload_entry(hass, entry):
             ]
         )
     )
-    if not unload_ok:
-        return False
-
-    hass.data[DOMAIN].pop(entry.data["name"])
-    return True
+    return unload_ok
 
 
 def validate(value, comparison, against):
@@ -161,15 +156,17 @@ class AlfenModbusHub:
         self._refreshInterval = scan_interval
         self._scan_interval = timedelta(seconds=scan_interval)
         self._unsub_interval_method = None
-        self._sensors = []    
-        self._inputs = []    
+        self._sensors = []
+        self._inputs = []
         self.data = {}
+        self._closing = False
 
     @callback
     def async_add_alfen_sensor(self, update_callback, refresh_callback = None):
         """Listen for data updates."""
         # This is the first sensor, set up interval.
         if not self._sensors:
+            self._closing = False
             self._unsub_interval_method = async_track_time_interval(
                 self._hass, self.async_refresh_modbus_data, self._scan_interval
             )
@@ -191,6 +188,9 @@ class AlfenModbusHub:
             """stop the interval timer upon removal of last sensor"""
             self._unsub_interval_method()
             self._unsub_interval_method = None
+            # Block any read still in flight from silently reopening the
+            # connection after we close it below (pymodbus auto-connects).
+            self._closing = True
             # Close under the lock, off the event loop, so this can't race
             # an in-flight executor read/write on the same socket.
             self._hass.async_create_task(self._async_close())
@@ -241,8 +241,15 @@ class AlfenModbusHub:
 
         try:
             async with self._lock:
+                if self._closing:
+                    # Lost the race with teardown: the socket may already be
+                    # closed. Don't let pymodbus silently reopen it here, and
+                    # don't go through the reconnect-retry path below for it.
+                    return None
                 return await self._hass.async_add_executor_job(_do_read)
         except (BrokenPipeError, ConnectionError, OSError, ModbusException) as e:
+            if self._closing:
+                return None
             _LOGGER.warning("Connection error during read, attempting reconnect: %s", e)
             # Try to reconnect once
             def _do_reconnect_and_read():
@@ -285,8 +292,12 @@ class AlfenModbusHub:
 
         try:
             async with self._lock:
+                if self._closing:
+                    return None
                 return await self._hass.async_add_executor_job(_do_write)
         except (BrokenPipeError, ConnectionError, OSError, ModbusException) as e:
+            if self._closing:
+                return None
             _LOGGER.warning("Connection error during write, attempting reconnect: %s", e)
             # Try to reconnect once
             def _do_reconnect_and_write():
@@ -320,6 +331,8 @@ class AlfenModbusHub:
             
 
     async def read_modbus_data(self):
+        if self._closing:
+            return False
         return (
             await self.read_modbus_data_product()
             and await self.read_modbus_data_station()
