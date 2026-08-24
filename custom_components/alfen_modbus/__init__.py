@@ -197,7 +197,7 @@ class AlfenModbusHub:
         async with self._lock:
             try:
                 await self._hass.async_add_executor_job(self._client.close)
-            except (OSError, ModbusException) as err:
+            except Exception as err:  # noqa: BLE001 - teardown must never raise
                 _LOGGER.debug("Error closing Modbus client: %s", err)
 
 
