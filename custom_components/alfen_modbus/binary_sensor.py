@@ -66,7 +66,7 @@ async def async_setup_entry(hass, entry: AlfenConfigEntry, async_add_entities) -
     entities.extend(
         AlfenBinarySensor(
             hub_name,
-            hub_hub,
+            hub,
             device_info,
             entity_description,
             socket,

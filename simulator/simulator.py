@@ -314,7 +314,8 @@ def setup_socket_context(socket_id):
     block.setValues(reg(422), encode_double(9169.0))  # Reactive Energy Sum (422-425)
     
     # === Socket Status/Control (Registers 1200-1215) ===
-    # HA reads registers 1200-1215 (16 registers)    block.setValues(reg(1200), encode_uint16(1))     # Availability (offset 0)
+    # HA reads registers 1200-1215 (16 registers)
+    block.setValues(reg(1200), encode_uint16(1))     # Availability (offset 0)
     block.setValues(reg(1201), encode_string("C2", 10))  # Mode 3 State (offset 1, 5 regs)
     block.setValues(reg(1206), encode_float(16.0))   # Actual Applied Max Current (offset 6)
     block.setValues(reg(1208), encode_uint32(60))    # Max Current Valid Time (offset 8)
