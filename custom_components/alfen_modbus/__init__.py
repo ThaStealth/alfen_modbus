@@ -8,12 +8,14 @@ from typing import Optional
 
 import voluptuous as vol
 from pymodbus.client import ModbusTcpClient
+from pymodbus.exceptions import ModbusException
 
 import homeassistant.helpers.config_validation as cv
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_NAME, CONF_HOST, CONF_PORT, CONF_SCAN_INTERVAL
 from homeassistant.core import HomeAssistant
 from homeassistant.core import callback
+from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.event import async_track_time_interval
 from .const import (
     DOMAIN,
@@ -88,9 +90,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: AlfenConfigEntry):
     """Register the hub."""
     entry.runtime_data = hub
 
-    # Read device info before setting up platforms so device_info is available
-    hub.connect()
-    await hub.read_modbus_data()
+    # Read device info before setting up platforms so device_info is available.
+    # Connecting happens lazily inside read_modbus_data (off the event loop).
+    # Only treat connection-level failures as "not ready yet" (HA will retry
+    # setup automatically); anything else is a real bug and should surface
+    # as a normal traceback instead of retrying forever.
+    try:
+        await hub.read_modbus_data()
+    except (ConnectionError, OSError, ModbusException) as err:
+        _LOGGER.exception("Unable to connect to %s:%s", host, port)
+        raise ConfigEntryNotReady(f"Unable to connect to {host}:{port}") from err
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
@@ -161,11 +170,11 @@ class AlfenModbusHub:
         """Listen for data updates."""
         # This is the first sensor, set up interval.
         if not self._sensors:
-            self.connect()
             self._unsub_interval_method = async_track_time_interval(
                 self._hass, self.async_refresh_modbus_data, self._scan_interval
             )
-            # Schedule initial data read as a task (non-blocking)
+            # Schedule initial data read as a task (non-blocking); pymodbus's
+            # sync client connects on demand from within that executor job.
             self._hass.async_create_task(self.read_modbus_data())
 
         self._sensors.append(update_callback)
@@ -182,7 +191,13 @@ class AlfenModbusHub:
             """stop the interval timer upon removal of last sensor"""
             self._unsub_interval_method()
             self._unsub_interval_method = None
-            self.close()
+            # Close under the lock, off the event loop, so this can't race
+            # an in-flight executor read/write on the same socket.
+            self._hass.async_create_task(self._async_close())
+
+    async def _async_close(self):
+        async with self._lock:
+            await self._hass.async_add_executor_job(self._client.close)
 
 
 
@@ -207,35 +222,6 @@ class AlfenModbusHub:
         """Return the name of this hub."""
         return self._name
 
-    def close(self):
-        """Disconnect client."""
-        self._client.close()
-
-    def connect(self):
-        """Connect client."""
-        self._client.connect()
-
-    def _ensure_connected(self):
-        """Ensure the modbus client is connected, reconnect if necessary.
-        Must be called while holding self._lock."""
-        try:
-            # Check if socket is open (method may vary by pymodbus version)
-            is_open = getattr(self._client, 'is_socket_open', None)
-            if is_open and not is_open():
-                _LOGGER.debug("Modbus connection lost, reconnecting...")
-                try:
-                    self._client.close()
-                except Exception:
-                    pass  # Ignore errors when closing
-                self._client.connect()
-                # Verify reconnection
-                if is_open and not is_open():
-                    raise ConnectionError("Failed to reconnect to modbus device")
-        except AttributeError:
-            # If is_socket_open doesn't exist, just try to connect
-            # The actual read/write will catch connection errors
-            pass
-
     @property
     def has_socket_2(self):
         """Return true if a meter is available"""
@@ -248,25 +234,28 @@ class AlfenModbusHub:
 
     async def read_holding_registers(self, unit, address, count):
         """Read holding registers."""
+        def _do_read():
+            # Runs in the executor thread, off the event loop: pymodbus's
+            # sync client connects on demand inside read_holding_registers.
+            return self._client.read_holding_registers(address=address, count=count, device_id=unit)
+
         try:
             async with self._lock:
-                self._ensure_connected()
-                return await self._hass.async_add_executor_job(
-                    lambda: self._client.read_holding_registers(address=address, count=count, device_id=unit)
-                )
-        except (BrokenPipeError, ConnectionError, OSError) as e:
+                return await self._hass.async_add_executor_job(_do_read)
+        except (BrokenPipeError, ConnectionError, OSError, ModbusException) as e:
             _LOGGER.warning("Connection error during read, attempting reconnect: %s", e)
             # Try to reconnect once
+            def _do_reconnect_and_read():
+                try:
+                    self._client.close()
+                except Exception:
+                    pass
+                self._client.connect()
+                return self._client.read_holding_registers(address=address, count=count, device_id=unit)
+
             try:
                 async with self._lock:
-                    try:
-                        self._client.close()
-                    except Exception:
-                        pass
-                    self._client.connect()
-                    return await self._hass.async_add_executor_job(
-                        lambda: self._client.read_holding_registers(address=address, count=count, device_id=unit)
-                    )
+                    return await self._hass.async_add_executor_job(_do_reconnect_and_read)
             except Exception as retry_error:
                 _LOGGER.error("Failed to reconnect and retry read: %s", retry_error)
                 raise
@@ -289,25 +278,28 @@ class AlfenModbusHub:
 
     async def write_registers(self, unit, address, payload):
         """Write registers."""
+        def _do_write():
+            # Runs in the executor thread, off the event loop: pymodbus's
+            # sync client connects on demand inside write_registers.
+            return self._client.write_registers(address=address, values=payload, device_id=unit)
+
         try:
             async with self._lock:
-                self._ensure_connected()
-                return await self._hass.async_add_executor_job(
-                    lambda: self._client.write_registers(address=address, values=payload, device_id=unit)
-                )
-        except (BrokenPipeError, ConnectionError, OSError) as e:
+                return await self._hass.async_add_executor_job(_do_write)
+        except (BrokenPipeError, ConnectionError, OSError, ModbusException) as e:
             _LOGGER.warning("Connection error during write, attempting reconnect: %s", e)
             # Try to reconnect once
+            def _do_reconnect_and_write():
+                try:
+                    self._client.close()
+                except Exception:
+                    pass
+                self._client.connect()
+                return self._client.write_registers(address=address, values=payload, device_id=unit)
+
             try:
                 async with self._lock:
-                    try:
-                        self._client.close()
-                    except Exception:
-                        pass
-                    self._client.connect()
-                    return await self._hass.async_add_executor_job(
-                        lambda: self._client.write_registers(address=address, values=payload, device_id=unit)
-                    )
+                    return await self._hass.async_add_executor_job(_do_reconnect_and_write)
             except Exception as retry_error:
                 _LOGGER.error("Failed to reconnect and retry write: %s", retry_error)
                 raise
