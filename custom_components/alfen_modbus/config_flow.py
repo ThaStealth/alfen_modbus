@@ -3,23 +3,23 @@ import logging
 import re
 
 import voluptuous as vol
+from homeassistant import config_entries
+from homeassistant.const import CONF_HOST, CONF_NAME, CONF_PORT, CONF_SCAN_INTERVAL
+from homeassistant.core import HomeAssistant, callback
 from pymodbus.client import ModbusTcpClient
 
-from homeassistant import config_entries
-from homeassistant.const import CONF_NAME, CONF_HOST, CONF_PORT, CONF_SCAN_INTERVAL
 from .const import (
-    DOMAIN,
-    DEFAULT_NAME,
-    DEFAULT_SCAN_INTERVAL,
-    DEFAULT_PORT,
-    DEFAULT_MODBUS_ADDRESS,
     CONF_MODBUS_ADDRESS,
     CONF_READ_SCN,
     CONF_READ_SOCKET2,
+    DEFAULT_MODBUS_ADDRESS,
+    DEFAULT_NAME,
+    DEFAULT_PORT,
     DEFAULT_READ_SCN,
     DEFAULT_READ_SOCKET2,
+    DEFAULT_SCAN_INTERVAL,
+    DOMAIN,
 )
-from homeassistant.core import HomeAssistant, callback
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ async def async_test_connection(hass: HomeAssistant, host: str, port: int) -> bo
             await hass.async_add_executor_job(client.close)
             return True
         return False
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - any failure means "can't connect"
         _LOGGER.debug("Connection test failed: %s", e)
         return False
 
@@ -64,9 +64,9 @@ async def async_test_connection(hass: HomeAssistant, host: str, port: int) -> bo
 @callback
 def alfen_modbus_entries(hass: HomeAssistant):
     """Return the hosts already configured."""
-    return set(
+    return {
         entry.data[CONF_HOST] for entry in hass.config_entries.async_entries(DOMAIN)
-    )
+    }
 
 
 class AlfenModbusConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -83,9 +83,7 @@ class AlfenModbusConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     def _host_in_configuration_exists(self, host) -> bool:
         """Return True if host exists in configuration."""
-        if host in alfen_modbus_entries(self.hass):
-            return True
-        return False
+        return host in alfen_modbus_entries(self.hass)
 
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
@@ -127,9 +125,10 @@ class AlfenModbusOptionsFlowHandler(config_entries.OptionsFlow):
             new_host = user_input.get(CONF_HOST, current_host)
             new_port = user_input.get(CONF_PORT, current_port)
 
-            if new_host != current_host or new_port != current_port:
-                if not await async_test_connection(self.hass, new_host, new_port):
-                    errors["base"] = "cannot_connect"
+            if (new_host != current_host or new_port != current_port) and not await async_test_connection(
+                self.hass, new_host, new_port
+            ):
+                errors["base"] = "cannot_connect"
 
             if not errors:
                 # Merge options into data for reload

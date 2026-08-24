@@ -1,28 +1,26 @@
 import logging
-from typing import Optional, Dict, Any
+
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorEntity,
+    SensorStateClass,
+)
+from homeassistant.const import CONF_NAME, UnitOfEnergy, UnitOfPower
+
+from . import AlfenConfigEntry
 from .const import (
-    SENSOR_TYPES,
-    SOCKET1_SENSOR_TYPES,
-    SOCKET2_SENSOR_TYPES,
-    SCN_SENSOR_TYPES,
-    DOMAIN,
-    METER_TYPE,
-    METER_STATE_MODES,
+    ATTR_MANUFACTURER,
     AVAILABILITY_MODES,
     BOOLEAN_EXPLAINED,
     CONTROL_PHASE_MODES,
-    ATTR_MANUFACTURER,
+    DOMAIN,
+    METER_STATE_MODES,
+    METER_TYPE,
+    SCN_SENSOR_TYPES,
+    SENSOR_TYPES,
+    SOCKET1_SENSOR_TYPES,
+    SOCKET2_SENSOR_TYPES,
 )
-from homeassistant.const import CONF_NAME, UnitOfEnergy, UnitOfPower
-from homeassistant.components.sensor import (
-    SensorStateClass,
-    SensorEntity,
-    SensorDeviceClass
-)
-
-from homeassistant.core import callback
-
-from . import AlfenConfigEntry
 from .entity import AlfenEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -102,9 +100,8 @@ class AlfenSensor(AlfenEntity, SensorEntity):
         super().__init__(hub, device_info)
         self._platform_name = platform_name
         self._key = key
-        if not hub.has_socket_2:
-            if name.startswith("S1 "):
-                name = name.replace("S1 ","")
+        if not hub.has_socket_2 and name.startswith("S1 "):
+            name = name.replace("S1 ","")
         self._name = name
         self._unit_of_measurement = unit
         self._icon = icon
@@ -122,7 +119,7 @@ class AlfenSensor(AlfenEntity, SensorEntity):
         return f"{self._platform_name} {self._name}"
 
     @property
-    def unique_id(self) -> Optional[str]:
+    def unique_id(self) -> str | None:
         return f"{self._platform_name}_{self._key}"
 
     @property

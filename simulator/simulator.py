@@ -15,17 +15,22 @@ Register addressing:
   at block[N] to have it appear at register N+1 from client's perspective.
   Therefore, to have client read register N, we store at block[N-1].
 """
+import argparse
 import asyncio
 import logging
+import os
 import struct
-import argparse
 import subprocess
 import sys
-import os
-from pymodbus.server import StartAsyncTcpServer
-from pymodbus.datastore import ModbusSequentialDataBlock, ModbusServerContext, ModbusDeviceContext
+
 from pymodbus.constants import ExcCodes
+from pymodbus.datastore import (
+    ModbusDeviceContext,
+    ModbusSequentialDataBlock,
+    ModbusServerContext,
+)
 from pymodbus.pdu.device import ModbusDeviceIdentification
+from pymodbus.server import StartAsyncTcpServer
 
 # Default Configuration - matches real Alfen hardware
 DEFAULT_PORT = 502  # Standard Modbus TCP port
@@ -45,10 +50,10 @@ def kill_ghost_processes(port):
         try:
             # Find process using the port
             result = subprocess.run(
-                ['powershell', '-Command', 
-                 f'Get-NetTCPConnection -LocalPort {port} -ErrorAction SilentlyContinue | '
-                 f'Select-Object -ExpandProperty OwningProcess'],
-                capture_output=True, text=True, timeout=5
+                ['powershell', '-Command',
+                 (f'Get-NetTCPConnection -LocalPort {port} -ErrorAction SilentlyContinue | '
+                  'Select-Object -ExpandProperty OwningProcess')],
+                capture_output=True, text=True, timeout=5, check=False
             )
             pids = [pid.strip() for pid in result.stdout.strip().split('\n') if pid.strip()]
             
@@ -58,8 +63,8 @@ def kill_ghost_processes(port):
                     pid_int = int(pid)
                     if pid_int != current_pid:
                         log.warning(f"Killing ghost process {pid_int} on port {port}")
-                        subprocess.run(['taskkill', '/F', '/PID', str(pid_int)], 
-                                      capture_output=True, timeout=5)
+                        subprocess.run(['taskkill', '/F', '/PID', str(pid_int)],
+                                      capture_output=True, timeout=5, check=False)
                 except (ValueError, subprocess.TimeoutExpired):
                     pass
                     
@@ -67,14 +72,14 @@ def kill_ghost_processes(port):
                 import time
                 time.sleep(1)  # Wait for port to be released
                 
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 - best-effort cleanup, never fatal
             log.debug(f"Ghost process check failed (non-critical): {e}")
     else:
         # Linux/Mac: use lsof
         try:
             result = subprocess.run(
                 ['lsof', '-ti', f':{port}'],
-                capture_output=True, text=True, timeout=5
+                capture_output=True, text=True, timeout=5, check=False
             )
             pids = [pid.strip() for pid in result.stdout.strip().split('\n') if pid.strip()]
             
@@ -92,7 +97,7 @@ def kill_ghost_processes(port):
                 import time
                 time.sleep(1)
                 
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 - best-effort cleanup, never fatal
             log.debug(f"Ghost process check failed (non-critical): {e}")
 
 # ============================================================================
@@ -208,7 +213,7 @@ def setup_product_context():
     
     # Time registers (168-178)
     import datetime
-    now = datetime.datetime.now()
+    now = datetime.datetime.now()  # noqa: DTZ005 - simulates the charger's local wall clock
     block.setValues(reg(168), encode_int16(now.year))
     block.setValues(reg(169), encode_int16(now.month))
     block.setValues(reg(170), encode_int16(now.day))
@@ -347,8 +352,8 @@ async def update_simulation(context):
                 if isinstance(values, list) and len(values) == 2:
                     # Write to Actual Applied Max Current (register 1206)
                     slave.setValues(3, 1206, values)
-            except Exception:
-                pass
+            except Exception as err:  # noqa: BLE001 - keep the mirror loop alive
+                log.debug("Max current mirror failed for unit %s: %s", unit, err)
 
 # ============================================================================
 # Main
@@ -374,9 +379,9 @@ async def run_server(port):
     identity.MajorMinorRevision = '5.16.0'
 
     log.info(f"Starting Alfen Eve Simulator on port {port}...")
-    log.info(f"  Unit 200: Product/Station information")
-    log.info(f"  Unit 1: Socket 1")
-    log.info(f"  Unit 2: Socket 2")
+    log.info("  Unit 200: Product/Station information")
+    log.info("  Unit 1: Socket 1")
+    log.info("  Unit 2: Socket 2")
     
     server_task = asyncio.create_task(StartAsyncTcpServer(
         context=store,

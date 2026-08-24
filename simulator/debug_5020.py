@@ -1,5 +1,6 @@
 """Debug script to test the actual simulator on port 5020"""
 import asyncio
+
 from pymodbus.client import AsyncModbusTcpClient
 
 PORT = 5020
@@ -34,7 +35,7 @@ async def run():
             try:
                 val = struct.unpack('>f', b)[0]
                 print(f"  Register {addr}: {val:.2f}")
-            except:
+            except struct.error:
                 print(f"  Register {addr}: {b.hex()}")
     
     client.close()

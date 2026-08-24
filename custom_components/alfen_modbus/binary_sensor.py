@@ -2,15 +2,14 @@
 import logging
 
 from homeassistant.components.binary_sensor import (
-    BinarySensorEntity,
     BinarySensorDeviceClass,
+    BinarySensorEntity,
     BinarySensorEntityDescription,
 )
 from homeassistant.const import CONF_NAME, EntityCategory
-from homeassistant.core import callback
 
 from . import AlfenConfigEntry
-from .const import DOMAIN, DEFAULT_MANUFACTURER
+from .const import DEFAULT_MANUFACTURER, DOMAIN
 from .entity import AlfenEntity
 
 _LOGGER = logging.getLogger(__name__)

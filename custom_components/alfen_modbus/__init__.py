@@ -2,34 +2,32 @@
 import asyncio
 import logging
 import operator
-from datetime import datetime, timedelta  
-from dateutil.tz import tzoffset
-from typing import Optional
+from datetime import datetime, timedelta
 
+import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
+from dateutil.tz import tzoffset
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_HOST, CONF_NAME, CONF_PORT, CONF_SCAN_INTERVAL
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers.event import async_track_time_interval
 from pymodbus.client import ModbusTcpClient
 from pymodbus.exceptions import ModbusException
 
-import homeassistant.helpers.config_validation as cv
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_NAME, CONF_HOST, CONF_PORT, CONF_SCAN_INTERVAL
-from homeassistant.core import HomeAssistant
-from homeassistant.core import callback
-from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers.event import async_track_time_interval
 from .const import (
-    DOMAIN,
-    DEFAULT_NAME,
-    DEFAULT_SCAN_INTERVAL,
-    DEFAULT_MODBUS_ADDRESS,
     CONF_MODBUS_ADDRESS,
     CONF_READ_SCN,
     CONF_READ_SOCKET2,
+    CONTROL_PHASE_MODES,
+    DEFAULT_MODBUS_ADDRESS,
+    DEFAULT_NAME,
     DEFAULT_READ_SCN,
     DEFAULT_READ_SOCKET2,
-    VALID_TIME_S,
+    DEFAULT_SCAN_INTERVAL,
+    DOMAIN,
     MAX_CURRENT_S,
-    CONTROL_PHASE_MODES
+    VALID_TIME_S,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -199,19 +197,19 @@ class AlfenModbusHub:
         async with self._lock:
             try:
                 await self._hass.async_add_executor_job(self._client.close)
-            except Exception:
-                pass
+            except Exception as err:  # noqa: BLE001 - teardown must never raise
+                _LOGGER.debug("Error closing Modbus client: %s", err)
 
 
 
-    async def async_refresh_modbus_data(self, _now: Optional[int] = None) -> None:
+    async def async_refresh_modbus_data(self, _now: int | None = None) -> None:
         """Time to update."""
         if not self._sensors:
             return
 
         try:
             update_result = await self.read_modbus_data()
-        except Exception as e:
+        except Exception:
             _LOGGER.exception("Error reading modbus data")
             update_result = False
 
@@ -258,8 +256,8 @@ class AlfenModbusHub:
             def _do_reconnect_and_read():
                 try:
                     self._client.close()
-                except Exception:
-                    pass
+                except (OSError, ModbusException) as close_err:
+                    _LOGGER.debug("Error closing Modbus client before reconnect: %s", close_err)
                 self._client.connect()
                 return self._client.read_holding_registers(address=address, count=count, device_id=unit)
 
@@ -306,8 +304,8 @@ class AlfenModbusHub:
             def _do_reconnect_and_write():
                 try:
                     self._client.close()
-                except Exception:
-                    pass
+                except (OSError, ModbusException) as close_err:
+                    _LOGGER.debug("Error closing Modbus client before reconnect: %s", close_err)
                 self._client.connect()
                 return self._client.write_registers(address=address, values=payload, device_id=unit)
 
