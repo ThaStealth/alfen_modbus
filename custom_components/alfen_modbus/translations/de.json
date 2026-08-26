@@ -77,6 +77,32 @@
           "off": "Nicht verbunden"
         }
       }
+    },
+    "sensor": {
+      "backofficeconnected": {
+        "state": {
+          "on": "Verbunden",
+          "off": "Nicht verbunden"
+        }
+      },
+      "setpointaccounted": {
+        "state": {
+          "on": "Ja",
+          "off": "Nein"
+        }
+      },
+      "carconnected": {
+        "state": {
+          "on": "Verbunden",
+          "off": "Nicht verbunden"
+        }
+      },
+      "carcharging": {
+        "state": {
+          "on": "Lädt",
+          "off": "Lädt nicht"
+        }
+      }
     }
   }
 }

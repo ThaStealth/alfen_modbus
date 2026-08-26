@@ -178,7 +178,20 @@ SCN_MAX_CURRENT_ENABLED = {
 
 BOOLEAN_EXPLAINED = {
     1: True,
-    0: False,    
+    0: False,
+}
+
+# Maps sensor keys whose value comes from BOOLEAN_EXPLAINED to the
+# translation_key used to render "on"/"off" as a localized enum state
+# instead of the raw Python boolean.
+ENUM_SENSOR_TRANSLATION_KEYS = {
+    "backofficeConnected": "backofficeconnected",
+    "socket_1_setpointAccounted": "setpointaccounted",
+    "socket_2_setpointAccounted": "setpointaccounted",
+    "socket_1_carconnected": "carconnected",
+    "socket_2_carconnected": "carconnected",
+    "socket_1_carcharging": "carcharging",
+    "socket_2_carcharging": "carcharging",
 }
 
 METER_STATE_MODES = {    

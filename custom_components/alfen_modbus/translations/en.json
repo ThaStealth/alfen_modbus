@@ -77,6 +77,32 @@
           "off": "Not connected"
         }
       }
+    },
+    "sensor": {
+      "backofficeconnected": {
+        "state": {
+          "on": "Connected",
+          "off": "Not connected"
+        }
+      },
+      "setpointaccounted": {
+        "state": {
+          "on": "Yes",
+          "off": "No"
+        }
+      },
+      "carconnected": {
+        "state": {
+          "on": "Connected",
+          "off": "Not connected"
+        }
+      },
+      "carcharging": {
+        "state": {
+          "on": "Charging",
+          "off": "Not charging"
+        }
+      }
     }
   }
 }

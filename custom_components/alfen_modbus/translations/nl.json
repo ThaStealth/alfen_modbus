@@ -76,6 +76,32 @@
           "off": "Niet aangesloten"
         }
       }
+    },
+    "sensor": {
+      "backofficeconnected": {
+        "state": {
+          "on": "Verbonden",
+          "off": "Niet verbonden"
+        }
+      },
+      "setpointaccounted": {
+        "state": {
+          "on": "Ja",
+          "off": "Nee"
+        }
+      },
+      "carconnected": {
+        "state": {
+          "on": "Aangesloten",
+          "off": "Niet aangesloten"
+        }
+      },
+      "carcharging": {
+        "state": {
+          "on": "Opladen",
+          "off": "Niet opladen"
+        }
+      }
     }
   }
 }

@@ -14,6 +14,7 @@ from .const import (
     BOOLEAN_EXPLAINED,
     CONTROL_PHASE_MODES,
     DOMAIN,
+    ENUM_SENSOR_TRANSLATION_KEYS,
     METER_STATE_MODES,
     METER_TYPE,
     SCN_SENSOR_TYPES,
@@ -112,6 +113,11 @@ class AlfenSensor(AlfenEntity, SensorEntity):
             self._attr_device_class = SensorDeviceClass.ENERGY
         if self._unit_of_measurement == UnitOfPower.WATT :
             self._attr_device_class = SensorDeviceClass.POWER
+        if self._key in ENUM_SENSOR_TRANSLATION_KEYS:
+            self._attr_state_class = None
+            self._attr_device_class = SensorDeviceClass.ENUM
+            self._attr_options = ["on", "off"]
+            self._attr_translation_key = ENUM_SENSOR_TRANSLATION_KEYS[self._key]
 
     @property
     def name(self):
@@ -142,8 +148,8 @@ class AlfenSensor(AlfenEntity, SensorEntity):
                 return METER_STATE_MODES[self._hub.data[self._key]]     
             elif self._key in ["socket_1_available", "socket_2_available"] and self._hub.data[self._key] in AVAILABILITY_MODES:
                 return AVAILABILITY_MODES[self._hub.data[self._key]]   
-            elif self._key in ["backofficeConnected","socket_1_setpointAccounted", "socket_2_setpointAccounted","socket_1_carconnected","socket_2_carconnected","socket_1_carcharging","socket_2_carcharging"] and self._hub.data[self._key] in BOOLEAN_EXPLAINED:
-                return BOOLEAN_EXPLAINED[self._hub.data[self._key]]        
+            elif self._key in ENUM_SENSOR_TRANSLATION_KEYS and self._hub.data[self._key] in BOOLEAN_EXPLAINED:
+                return "on" if BOOLEAN_EXPLAINED[self._hub.data[self._key]] else "off"
             elif self._key in ["socket_1_chargephases", "socket_2_chargephases"] and self._hub.data[self._key] in CONTROL_PHASE_MODES:
                 return CONTROL_PHASE_MODES[self._hub.data[self._key]]  
             else:
