@@ -2,11 +2,12 @@
   "config": {
     "step": {
       "user": {
-        "title": "Definieer uw Alfen modbus-verbinding",
+        "title": "Alfen Modbus-verbinding",
+        "description": "Configureer de verbinding met uw Alfen-laadstation",
         "data": {
-          "host": "Het ip-adres van uw Alfen-omvormer",
-          "name": "Het voorvoegsel dat moet worden gebruikt voor uw Alfen-sensoren",
-          "port": "De TCP-poort waarop verbinding moet worden gemaakt met de Alfen-omvormer",
+          "host": "Host",
+          "name": "Naam",
+          "port": "Poort",
           "modbus_address": "Modbus adres",
           "read_scn": "Lees SCN (Smart Charging Network) data",
           "read_socket_2": "Lees 2e socket data",

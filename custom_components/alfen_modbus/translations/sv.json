@@ -1,0 +1,538 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Alfen Modbus-anslutning",
+        "description": "Konfigurera anslutningen till din Alfen-laddstation",
+        "data": {
+          "host": "Värd",
+          "name": "Namn",
+          "port": "Port",
+          "modbus_address": "Modbus-adress",
+          "read_scn": "Läs SCN",
+          "read_socket_2": "Läs uttag 2",
+          "scan_interval": "Avfrågningsintervall"
+        },
+        "data_description": {
+          "host": "IP-adressen eller värdnamnet för din Alfen-enhet",
+          "name": "Prefix för sensornamn",
+          "port": "TCP-port (standard: 502)",
+          "modbus_address": "Modbus-slavadress (standard: 200)",
+          "read_scn": "Aktivera Smart Charging Network-register",
+          "read_socket_2": "Aktivera uttag 2 för enheter med två uttag",
+          "scan_interval": "Avfrågningsintervall i sekunder"
+        }
+      }
+    },
+    "error": {
+      "already_configured": "Enheten är redan konfigurerad",
+      "invalid_host": "Ogiltig IP-adress eller värdnamn",
+      "cannot_connect": "Det går inte att ansluta till enheten"
+    },
+    "abort": {
+      "already_configured": "Enheten är redan konfigurerad"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Alfen Modbus-alternativ",
+        "description": "Konfigurera om anslutningen till din Alfen-laddstation",
+        "data": {
+          "host": "Värd",
+          "port": "Port",
+          "read_scn": "Läs SCN",
+          "read_socket_2": "Läs uttag 2",
+          "scan_interval": "Avfrågningsintervall"
+        },
+        "data_description": {
+          "host": "IP-adressen eller värdnamnet för din Alfen-enhet",
+          "port": "TCP-port (standard: 502)",
+          "read_scn": "Aktivera Smart Charging Network-register",
+          "read_socket_2": "Aktivera uttag 2 för enheter med två uttag",
+          "scan_interval": "Avfrågningsintervall i sekunder"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Det går inte att ansluta till enheten"
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "backoffice": {
+        "name": "Backoffice"
+      },
+      "carconnected_socket": {
+        "name": "Uttag {socket_number} anslutningsstatus",
+        "state": {
+          "on": "Ansluten",
+          "off": "Inte ansluten"
+        }
+      },
+      "carconnected": {
+        "name": "Anslutningsstatus",
+        "state": {
+          "on": "Ansluten",
+          "off": "Inte ansluten"
+        }
+      },
+      "carcharging_socket": {
+        "name": "Uttag {socket_number} laddningsstatus",
+        "state": {
+          "on": "Laddar",
+          "off": "Laddar inte"
+        }
+      },
+      "carcharging": {
+        "name": "Laddningsstatus",
+        "state": {
+          "on": "Laddar",
+          "off": "Laddar inte"
+        }
+      }
+    },
+    "sensor": {
+      "name": {
+        "name": "Namn"
+      },
+      "manufacturer": {
+        "name": "Tillverkare"
+      },
+      "modbus_table_version": {
+        "name": "Modbus-tabellversion"
+      },
+      "firmware_version": {
+        "name": "Firmwareversion"
+      },
+      "platform_type": {
+        "name": "Plattformstyp"
+      },
+      "serial": {
+        "name": "Serienummer"
+      },
+      "current_time": {
+        "name": "Aktuell tid"
+      },
+      "last_boot": {
+        "name": "Senaste omstart"
+      },
+      "actual_max_current": {
+        "name": "Faktisk maxström"
+      },
+      "board_temperature": {
+        "name": "Kretskortstemperatur"
+      },
+      "backoffice_connected": {
+        "name": "Backoffice ansluten",
+        "state": {
+          "on": "Ansluten",
+          "off": "Inte ansluten"
+        }
+      },
+      "number_of_sockets": {
+        "name": "Antal uttag"
+      },
+      "scn_name": {
+        "name": "SCN-namn"
+      },
+      "number_of_scn_sockets": {
+        "name": "Antal SCN-uttag"
+      },
+      "meter_state_socket": {
+        "name": "Uttag {socket_number} mätarstatus"
+      },
+      "meter_state": {
+        "name": "Mätarstatus"
+      },
+      "meter_reading_age_socket": {
+        "name": "Uttag {socket_number} ålder på mätaravläsning"
+      },
+      "meter_reading_age": {
+        "name": "Ålder på mätaravläsning"
+      },
+      "meter_type_socket": {
+        "name": "Uttag {socket_number} mätartyp"
+      },
+      "meter_type": {
+        "name": "Mätartyp"
+      },
+      "voltage_l1_n_socket": {
+        "name": "Uttag {socket_number} spänning L1-N"
+      },
+      "voltage_l1_n": {
+        "name": "Spänning L1-N"
+      },
+      "voltage_l2_n_socket": {
+        "name": "Uttag {socket_number} spänning L2-N"
+      },
+      "voltage_l2_n": {
+        "name": "Spänning L2-N"
+      },
+      "voltage_l3_n_socket": {
+        "name": "Uttag {socket_number} spänning L3-N"
+      },
+      "voltage_l3_n": {
+        "name": "Spänning L3-N"
+      },
+      "voltage_l1_l2_socket": {
+        "name": "Uttag {socket_number} spänning L1-L2"
+      },
+      "voltage_l1_l2": {
+        "name": "Spänning L1-L2"
+      },
+      "voltage_l2_l3_socket": {
+        "name": "Uttag {socket_number} spänning L2-L3"
+      },
+      "voltage_l2_l3": {
+        "name": "Spänning L2-L3"
+      },
+      "voltage_l3_l1_socket": {
+        "name": "Uttag {socket_number} spänning L3-L1"
+      },
+      "voltage_l3_l1": {
+        "name": "Spänning L3-L1"
+      },
+      "current_n_socket": {
+        "name": "Uttag {socket_number} ström N"
+      },
+      "current_n": {
+        "name": "Ström N"
+      },
+      "current_l1_socket": {
+        "name": "Uttag {socket_number} ström L1"
+      },
+      "current_l1": {
+        "name": "Ström L1"
+      },
+      "current_l2_socket": {
+        "name": "Uttag {socket_number} ström L2"
+      },
+      "current_l2": {
+        "name": "Ström L2"
+      },
+      "current_l3_socket": {
+        "name": "Uttag {socket_number} ström L3"
+      },
+      "current_l3": {
+        "name": "Ström L3"
+      },
+      "current_total_socket": {
+        "name": "Uttag {socket_number} total ström"
+      },
+      "current_total": {
+        "name": "Total ström"
+      },
+      "power_factor_l1_socket": {
+        "name": "Uttag {socket_number} effektfaktor L1"
+      },
+      "power_factor_l1": {
+        "name": "Effektfaktor L1"
+      },
+      "power_factor_l2_socket": {
+        "name": "Uttag {socket_number} effektfaktor L2"
+      },
+      "power_factor_l2": {
+        "name": "Effektfaktor L2"
+      },
+      "power_factor_l3_socket": {
+        "name": "Uttag {socket_number} effektfaktor L3"
+      },
+      "power_factor_l3": {
+        "name": "Effektfaktor L3"
+      },
+      "power_factor_sum_socket": {
+        "name": "Uttag {socket_number} effektfaktor totalt"
+      },
+      "power_factor_sum": {
+        "name": "Effektfaktor totalt"
+      },
+      "frequency_socket": {
+        "name": "Uttag {socket_number} frekvens"
+      },
+      "frequency": {
+        "name": "Frekvens"
+      },
+      "real_power_l1_socket": {
+        "name": "Uttag {socket_number} aktiv effekt L1"
+      },
+      "real_power_l1": {
+        "name": "Aktiv effekt L1"
+      },
+      "real_power_l2_socket": {
+        "name": "Uttag {socket_number} aktiv effekt L2"
+      },
+      "real_power_l2": {
+        "name": "Aktiv effekt L2"
+      },
+      "real_power_l3_socket": {
+        "name": "Uttag {socket_number} aktiv effekt L3"
+      },
+      "real_power_l3": {
+        "name": "Aktiv effekt L3"
+      },
+      "real_power_sum_socket": {
+        "name": "Uttag {socket_number} aktiv effekt totalt"
+      },
+      "real_power_sum": {
+        "name": "Aktiv effekt totalt"
+      },
+      "apparent_power_l1_socket": {
+        "name": "Uttag {socket_number} skenbar effekt L1"
+      },
+      "apparent_power_l1": {
+        "name": "Skenbar effekt L1"
+      },
+      "apparent_power_l2_socket": {
+        "name": "Uttag {socket_number} skenbar effekt L2"
+      },
+      "apparent_power_l2": {
+        "name": "Skenbar effekt L2"
+      },
+      "apparent_power_l3_socket": {
+        "name": "Uttag {socket_number} skenbar effekt L3"
+      },
+      "apparent_power_l3": {
+        "name": "Skenbar effekt L3"
+      },
+      "apparent_power_sum_socket": {
+        "name": "Uttag {socket_number} skenbar effekt totalt"
+      },
+      "apparent_power_sum": {
+        "name": "Skenbar effekt totalt"
+      },
+      "reactive_power_l1_socket": {
+        "name": "Uttag {socket_number} reaktiv effekt L1"
+      },
+      "reactive_power_l1": {
+        "name": "Reaktiv effekt L1"
+      },
+      "reactive_power_l2_socket": {
+        "name": "Uttag {socket_number} reaktiv effekt L2"
+      },
+      "reactive_power_l2": {
+        "name": "Reaktiv effekt L2"
+      },
+      "reactive_power_l3_socket": {
+        "name": "Uttag {socket_number} reaktiv effekt L3"
+      },
+      "reactive_power_l3": {
+        "name": "Reaktiv effekt L3"
+      },
+      "reactive_power_sum_socket": {
+        "name": "Uttag {socket_number} reaktiv effekt totalt"
+      },
+      "reactive_power_sum": {
+        "name": "Reaktiv effekt totalt"
+      },
+      "real_energy_delivered_l1_socket": {
+        "name": "Uttag {socket_number} levererad aktiv energi L1"
+      },
+      "real_energy_delivered_l1": {
+        "name": "Levererad aktiv energi L1"
+      },
+      "real_energy_delivered_l2_socket": {
+        "name": "Uttag {socket_number} levererad aktiv energi L2"
+      },
+      "real_energy_delivered_l2": {
+        "name": "Levererad aktiv energi L2"
+      },
+      "real_energy_delivered_l3_socket": {
+        "name": "Uttag {socket_number} levererad aktiv energi L3"
+      },
+      "real_energy_delivered_l3": {
+        "name": "Levererad aktiv energi L3"
+      },
+      "real_energy_delivered_sum_socket": {
+        "name": "Uttag {socket_number} levererad aktiv energi totalt"
+      },
+      "real_energy_delivered_sum": {
+        "name": "Levererad aktiv energi totalt"
+      },
+      "real_energy_consumed_l1_socket": {
+        "name": "Uttag {socket_number} förbrukad aktiv energi L1"
+      },
+      "real_energy_consumed_l1": {
+        "name": "Förbrukad aktiv energi L1"
+      },
+      "real_energy_consumed_l2_socket": {
+        "name": "Uttag {socket_number} förbrukad aktiv energi L2"
+      },
+      "real_energy_consumed_l2": {
+        "name": "Förbrukad aktiv energi L2"
+      },
+      "real_energy_consumed_l3_socket": {
+        "name": "Uttag {socket_number} förbrukad aktiv energi L3"
+      },
+      "real_energy_consumed_l3": {
+        "name": "Förbrukad aktiv energi L3"
+      },
+      "real_energy_consumed_sum_socket": {
+        "name": "Uttag {socket_number} förbrukad aktiv energi totalt"
+      },
+      "real_energy_consumed_sum": {
+        "name": "Förbrukad aktiv energi totalt"
+      },
+      "apparent_energy_l1_socket": {
+        "name": "Uttag {socket_number} skenbar energi L1"
+      },
+      "apparent_energy_l1": {
+        "name": "Skenbar energi L1"
+      },
+      "apparent_energy_l2_socket": {
+        "name": "Uttag {socket_number} skenbar energi L2"
+      },
+      "apparent_energy_l2": {
+        "name": "Skenbar energi L2"
+      },
+      "apparent_energy_l3_socket": {
+        "name": "Uttag {socket_number} skenbar energi L3"
+      },
+      "apparent_energy_l3": {
+        "name": "Skenbar energi L3"
+      },
+      "apparent_energy_sum_socket": {
+        "name": "Uttag {socket_number} skenbar energi totalt"
+      },
+      "apparent_energy_sum": {
+        "name": "Skenbar energi totalt"
+      },
+      "reactive_energy_l1_socket": {
+        "name": "Uttag {socket_number} reaktiv energi L1"
+      },
+      "reactive_energy_l1": {
+        "name": "Reaktiv energi L1"
+      },
+      "reactive_energy_l2_socket": {
+        "name": "Uttag {socket_number} reaktiv energi L2"
+      },
+      "reactive_energy_l2": {
+        "name": "Reaktiv energi L2"
+      },
+      "reactive_energy_l3_socket": {
+        "name": "Uttag {socket_number} reaktiv energi L3"
+      },
+      "reactive_energy_l3": {
+        "name": "Reaktiv energi L3"
+      },
+      "reactive_energy_sum_socket": {
+        "name": "Uttag {socket_number} reaktiv energi totalt"
+      },
+      "reactive_energy_sum": {
+        "name": "Reaktiv energi totalt"
+      },
+      "availability_socket": {
+        "name": "Uttag {socket_number} tillgänglighet"
+      },
+      "availability": {
+        "name": "Tillgänglighet"
+      },
+      "mode_3_state_socket": {
+        "name": "Uttag {socket_number} läge 3-status"
+      },
+      "mode_3_state": {
+        "name": "Läge 3-status"
+      },
+      "actual_applied_max_current_socket": {
+        "name": "Uttag {socket_number} faktiskt tillämpad maxström"
+      },
+      "actual_applied_max_current": {
+        "name": "Faktiskt tillämpad maxström"
+      },
+      "max_current_valid_time_socket": {
+        "name": "Uttag {socket_number} giltighetstid för maxström"
+      },
+      "max_current_valid_time": {
+        "name": "Giltighetstid för maxström"
+      },
+      "max_current_socket": {
+        "name": "Uttag {socket_number} maxström"
+      },
+      "max_current": {
+        "name": "Maxström"
+      },
+      "active_load_balancing_safe_current_socket": {
+        "name": "Uttag {socket_number} säker ström vid aktiv lastbalansering"
+      },
+      "active_load_balancing_safe_current": {
+        "name": "Säker ström vid aktiv lastbalansering"
+      },
+      "received_sp_accounted_for_socket": {
+        "name": "Uttag {socket_number} mottaget börvärde beaktat",
+        "state": {
+          "on": "Ja",
+          "off": "Nej"
+        }
+      },
+      "received_sp_accounted_for": {
+        "name": "Mottaget börvärde beaktat",
+        "state": {
+          "on": "Ja",
+          "off": "Nej"
+        }
+      },
+      "charging_mode_socket": {
+        "name": "Uttag {socket_number} laddningsläge"
+      },
+      "charging_mode": {
+        "name": "Laddningsläge"
+      },
+      "car_charging_socket": {
+        "name": "Uttag {socket_number} bilen laddar",
+        "state": {
+          "on": "Laddar",
+          "off": "Laddar inte"
+        }
+      },
+      "car_charging": {
+        "name": "Bilen laddar",
+        "state": {
+          "on": "Laddar",
+          "off": "Laddar inte"
+        }
+      },
+      "car_connected_socket": {
+        "name": "Uttag {socket_number} bil ansluten",
+        "state": {
+          "on": "Ansluten",
+          "off": "Inte ansluten"
+        }
+      },
+      "car_connected": {
+        "name": "Bil ansluten",
+        "state": {
+          "on": "Ansluten",
+          "off": "Inte ansluten"
+        }
+      },
+      "current_session_wh_socket": {
+        "name": "Uttag {socket_number} aktuell session Wh"
+      },
+      "current_session_wh": {
+        "name": "Aktuell session Wh"
+      },
+      "current_session_duration_socket": {
+        "name": "Uttag {socket_number} aktuell sessionslängd"
+      },
+      "current_session_duration": {
+        "name": "Aktuell sessionslängd"
+      }
+    },
+    "number": {
+      "max_current_limit_socket": {
+        "name": "Uttag {socket_number} maxströmgräns"
+      },
+      "max_current_limit": {
+        "name": "Maxströmgräns"
+      }
+    },
+    "select": {
+      "usable_phases_socket": {
+        "name": "Uttag {socket_number} användbara faser"
+      },
+      "usable_phases": {
+        "name": "Användbara faser"
+      }
+    }
+  }
+}

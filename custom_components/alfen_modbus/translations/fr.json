@@ -1,0 +1,538 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connexion Modbus Alfen",
+        "description": "Configurez la connexion à votre borne de recharge Alfen",
+        "data": {
+          "host": "Hôte",
+          "name": "Nom",
+          "port": "Port",
+          "modbus_address": "Adresse Modbus",
+          "read_scn": "Lire le SCN",
+          "read_socket_2": "Lire la prise 2",
+          "scan_interval": "Intervalle d’interrogation"
+        },
+        "data_description": {
+          "host": "L’adresse IP ou le nom d’hôte de votre appareil Alfen",
+          "name": "Préfixe pour les noms des capteurs",
+          "port": "Port TCP (par défaut : 502)",
+          "modbus_address": "Adresse esclave Modbus (par défaut : 200)",
+          "read_scn": "Activer les registres Smart Charging Network",
+          "read_socket_2": "Activer la prise 2 pour les unités à double prise",
+          "scan_interval": "Intervalle d’interrogation en secondes"
+        }
+      }
+    },
+    "error": {
+      "already_configured": "L’appareil est déjà configuré",
+      "invalid_host": "Adresse IP ou nom d’hôte invalide",
+      "cannot_connect": "Impossible de se connecter à l’appareil"
+    },
+    "abort": {
+      "already_configured": "L’appareil est déjà configuré"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options Modbus Alfen",
+        "description": "Reconfigurez la connexion à votre borne de recharge Alfen",
+        "data": {
+          "host": "Hôte",
+          "port": "Port",
+          "read_scn": "Lire le SCN",
+          "read_socket_2": "Lire la prise 2",
+          "scan_interval": "Intervalle d’interrogation"
+        },
+        "data_description": {
+          "host": "L’adresse IP ou le nom d’hôte de votre appareil Alfen",
+          "port": "Port TCP (par défaut : 502)",
+          "read_scn": "Activer les registres Smart Charging Network",
+          "read_socket_2": "Activer la prise 2 pour les unités à double prise",
+          "scan_interval": "Intervalle d’interrogation en secondes"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Impossible de se connecter à l’appareil"
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "backoffice": {
+        "name": "Back-office"
+      },
+      "carconnected_socket": {
+        "name": "Prise {socket_number} état de connexion",
+        "state": {
+          "on": "Connecté",
+          "off": "Non connecté"
+        }
+      },
+      "carconnected": {
+        "name": "État de connexion",
+        "state": {
+          "on": "Connecté",
+          "off": "Non connecté"
+        }
+      },
+      "carcharging_socket": {
+        "name": "Prise {socket_number} état de charge",
+        "state": {
+          "on": "En charge",
+          "off": "Pas en charge"
+        }
+      },
+      "carcharging": {
+        "name": "État de charge",
+        "state": {
+          "on": "En charge",
+          "off": "Pas en charge"
+        }
+      }
+    },
+    "sensor": {
+      "name": {
+        "name": "Nom"
+      },
+      "manufacturer": {
+        "name": "Fabricant"
+      },
+      "modbus_table_version": {
+        "name": "Version de la table Modbus"
+      },
+      "firmware_version": {
+        "name": "Version du firmware"
+      },
+      "platform_type": {
+        "name": "Type de plateforme"
+      },
+      "serial": {
+        "name": "Numéro de série"
+      },
+      "current_time": {
+        "name": "Heure actuelle"
+      },
+      "last_boot": {
+        "name": "Dernier démarrage"
+      },
+      "actual_max_current": {
+        "name": "Courant maximal réel"
+      },
+      "board_temperature": {
+        "name": "Température de la carte"
+      },
+      "backoffice_connected": {
+        "name": "Back-office connecté",
+        "state": {
+          "on": "Connecté",
+          "off": "Non connecté"
+        }
+      },
+      "number_of_sockets": {
+        "name": "Nombre de prises"
+      },
+      "scn_name": {
+        "name": "Nom SCN"
+      },
+      "number_of_scn_sockets": {
+        "name": "Nombre de prises SCN"
+      },
+      "meter_state_socket": {
+        "name": "Prise {socket_number} état du compteur"
+      },
+      "meter_state": {
+        "name": "État du compteur"
+      },
+      "meter_reading_age_socket": {
+        "name": "Prise {socket_number} âge du relevé du compteur"
+      },
+      "meter_reading_age": {
+        "name": "Âge du relevé du compteur"
+      },
+      "meter_type_socket": {
+        "name": "Prise {socket_number} type de compteur"
+      },
+      "meter_type": {
+        "name": "Type de compteur"
+      },
+      "voltage_l1_n_socket": {
+        "name": "Prise {socket_number} tension L1-N"
+      },
+      "voltage_l1_n": {
+        "name": "Tension L1-N"
+      },
+      "voltage_l2_n_socket": {
+        "name": "Prise {socket_number} tension L2-N"
+      },
+      "voltage_l2_n": {
+        "name": "Tension L2-N"
+      },
+      "voltage_l3_n_socket": {
+        "name": "Prise {socket_number} tension L3-N"
+      },
+      "voltage_l3_n": {
+        "name": "Tension L3-N"
+      },
+      "voltage_l1_l2_socket": {
+        "name": "Prise {socket_number} tension L1-L2"
+      },
+      "voltage_l1_l2": {
+        "name": "Tension L1-L2"
+      },
+      "voltage_l2_l3_socket": {
+        "name": "Prise {socket_number} tension L2-L3"
+      },
+      "voltage_l2_l3": {
+        "name": "Tension L2-L3"
+      },
+      "voltage_l3_l1_socket": {
+        "name": "Prise {socket_number} tension L3-L1"
+      },
+      "voltage_l3_l1": {
+        "name": "Tension L3-L1"
+      },
+      "current_n_socket": {
+        "name": "Prise {socket_number} courant N"
+      },
+      "current_n": {
+        "name": "Courant N"
+      },
+      "current_l1_socket": {
+        "name": "Prise {socket_number} courant L1"
+      },
+      "current_l1": {
+        "name": "Courant L1"
+      },
+      "current_l2_socket": {
+        "name": "Prise {socket_number} courant L2"
+      },
+      "current_l2": {
+        "name": "Courant L2"
+      },
+      "current_l3_socket": {
+        "name": "Prise {socket_number} courant L3"
+      },
+      "current_l3": {
+        "name": "Courant L3"
+      },
+      "current_total_socket": {
+        "name": "Prise {socket_number} courant total"
+      },
+      "current_total": {
+        "name": "Courant total"
+      },
+      "power_factor_l1_socket": {
+        "name": "Prise {socket_number} facteur de puissance L1"
+      },
+      "power_factor_l1": {
+        "name": "Facteur de puissance L1"
+      },
+      "power_factor_l2_socket": {
+        "name": "Prise {socket_number} facteur de puissance L2"
+      },
+      "power_factor_l2": {
+        "name": "Facteur de puissance L2"
+      },
+      "power_factor_l3_socket": {
+        "name": "Prise {socket_number} facteur de puissance L3"
+      },
+      "power_factor_l3": {
+        "name": "Facteur de puissance L3"
+      },
+      "power_factor_sum_socket": {
+        "name": "Prise {socket_number} facteur de puissance total"
+      },
+      "power_factor_sum": {
+        "name": "Facteur de puissance total"
+      },
+      "frequency_socket": {
+        "name": "Prise {socket_number} fréquence"
+      },
+      "frequency": {
+        "name": "Fréquence"
+      },
+      "real_power_l1_socket": {
+        "name": "Prise {socket_number} puissance active L1"
+      },
+      "real_power_l1": {
+        "name": "Puissance active L1"
+      },
+      "real_power_l2_socket": {
+        "name": "Prise {socket_number} puissance active L2"
+      },
+      "real_power_l2": {
+        "name": "Puissance active L2"
+      },
+      "real_power_l3_socket": {
+        "name": "Prise {socket_number} puissance active L3"
+      },
+      "real_power_l3": {
+        "name": "Puissance active L3"
+      },
+      "real_power_sum_socket": {
+        "name": "Prise {socket_number} puissance active totale"
+      },
+      "real_power_sum": {
+        "name": "Puissance active totale"
+      },
+      "apparent_power_l1_socket": {
+        "name": "Prise {socket_number} puissance apparente L1"
+      },
+      "apparent_power_l1": {
+        "name": "Puissance apparente L1"
+      },
+      "apparent_power_l2_socket": {
+        "name": "Prise {socket_number} puissance apparente L2"
+      },
+      "apparent_power_l2": {
+        "name": "Puissance apparente L2"
+      },
+      "apparent_power_l3_socket": {
+        "name": "Prise {socket_number} puissance apparente L3"
+      },
+      "apparent_power_l3": {
+        "name": "Puissance apparente L3"
+      },
+      "apparent_power_sum_socket": {
+        "name": "Prise {socket_number} puissance apparente totale"
+      },
+      "apparent_power_sum": {
+        "name": "Puissance apparente totale"
+      },
+      "reactive_power_l1_socket": {
+        "name": "Prise {socket_number} puissance réactive L1"
+      },
+      "reactive_power_l1": {
+        "name": "Puissance réactive L1"
+      },
+      "reactive_power_l2_socket": {
+        "name": "Prise {socket_number} puissance réactive L2"
+      },
+      "reactive_power_l2": {
+        "name": "Puissance réactive L2"
+      },
+      "reactive_power_l3_socket": {
+        "name": "Prise {socket_number} puissance réactive L3"
+      },
+      "reactive_power_l3": {
+        "name": "Puissance réactive L3"
+      },
+      "reactive_power_sum_socket": {
+        "name": "Prise {socket_number} puissance réactive totale"
+      },
+      "reactive_power_sum": {
+        "name": "Puissance réactive totale"
+      },
+      "real_energy_delivered_l1_socket": {
+        "name": "Prise {socket_number} énergie active fournie L1"
+      },
+      "real_energy_delivered_l1": {
+        "name": "Énergie active fournie L1"
+      },
+      "real_energy_delivered_l2_socket": {
+        "name": "Prise {socket_number} énergie active fournie L2"
+      },
+      "real_energy_delivered_l2": {
+        "name": "Énergie active fournie L2"
+      },
+      "real_energy_delivered_l3_socket": {
+        "name": "Prise {socket_number} énergie active fournie L3"
+      },
+      "real_energy_delivered_l3": {
+        "name": "Énergie active fournie L3"
+      },
+      "real_energy_delivered_sum_socket": {
+        "name": "Prise {socket_number} énergie active fournie totale"
+      },
+      "real_energy_delivered_sum": {
+        "name": "Énergie active fournie totale"
+      },
+      "real_energy_consumed_l1_socket": {
+        "name": "Prise {socket_number} énergie active consommée L1"
+      },
+      "real_energy_consumed_l1": {
+        "name": "Énergie active consommée L1"
+      },
+      "real_energy_consumed_l2_socket": {
+        "name": "Prise {socket_number} énergie active consommée L2"
+      },
+      "real_energy_consumed_l2": {
+        "name": "Énergie active consommée L2"
+      },
+      "real_energy_consumed_l3_socket": {
+        "name": "Prise {socket_number} énergie active consommée L3"
+      },
+      "real_energy_consumed_l3": {
+        "name": "Énergie active consommée L3"
+      },
+      "real_energy_consumed_sum_socket": {
+        "name": "Prise {socket_number} énergie active consommée totale"
+      },
+      "real_energy_consumed_sum": {
+        "name": "Énergie active consommée totale"
+      },
+      "apparent_energy_l1_socket": {
+        "name": "Prise {socket_number} énergie apparente L1"
+      },
+      "apparent_energy_l1": {
+        "name": "Énergie apparente L1"
+      },
+      "apparent_energy_l2_socket": {
+        "name": "Prise {socket_number} énergie apparente L2"
+      },
+      "apparent_energy_l2": {
+        "name": "Énergie apparente L2"
+      },
+      "apparent_energy_l3_socket": {
+        "name": "Prise {socket_number} énergie apparente L3"
+      },
+      "apparent_energy_l3": {
+        "name": "Énergie apparente L3"
+      },
+      "apparent_energy_sum_socket": {
+        "name": "Prise {socket_number} énergie apparente totale"
+      },
+      "apparent_energy_sum": {
+        "name": "Énergie apparente totale"
+      },
+      "reactive_energy_l1_socket": {
+        "name": "Prise {socket_number} énergie réactive L1"
+      },
+      "reactive_energy_l1": {
+        "name": "Énergie réactive L1"
+      },
+      "reactive_energy_l2_socket": {
+        "name": "Prise {socket_number} énergie réactive L2"
+      },
+      "reactive_energy_l2": {
+        "name": "Énergie réactive L2"
+      },
+      "reactive_energy_l3_socket": {
+        "name": "Prise {socket_number} énergie réactive L3"
+      },
+      "reactive_energy_l3": {
+        "name": "Énergie réactive L3"
+      },
+      "reactive_energy_sum_socket": {
+        "name": "Prise {socket_number} énergie réactive totale"
+      },
+      "reactive_energy_sum": {
+        "name": "Énergie réactive totale"
+      },
+      "availability_socket": {
+        "name": "Prise {socket_number} disponibilité"
+      },
+      "availability": {
+        "name": "Disponibilité"
+      },
+      "mode_3_state_socket": {
+        "name": "Prise {socket_number} état du mode 3"
+      },
+      "mode_3_state": {
+        "name": "État du mode 3"
+      },
+      "actual_applied_max_current_socket": {
+        "name": "Prise {socket_number} courant maximal réellement appliqué"
+      },
+      "actual_applied_max_current": {
+        "name": "Courant maximal réellement appliqué"
+      },
+      "max_current_valid_time_socket": {
+        "name": "Prise {socket_number} durée de validité du courant maximal"
+      },
+      "max_current_valid_time": {
+        "name": "Durée de validité du courant maximal"
+      },
+      "max_current_socket": {
+        "name": "Prise {socket_number} courant maximal"
+      },
+      "max_current": {
+        "name": "Courant maximal"
+      },
+      "active_load_balancing_safe_current_socket": {
+        "name": "Prise {socket_number} courant de sécurité de l’équilibrage de charge actif"
+      },
+      "active_load_balancing_safe_current": {
+        "name": "Courant de sécurité de l’équilibrage de charge actif"
+      },
+      "received_sp_accounted_for_socket": {
+        "name": "Prise {socket_number} consigne reçue prise en compte",
+        "state": {
+          "on": "Oui",
+          "off": "Non"
+        }
+      },
+      "received_sp_accounted_for": {
+        "name": "Consigne reçue prise en compte",
+        "state": {
+          "on": "Oui",
+          "off": "Non"
+        }
+      },
+      "charging_mode_socket": {
+        "name": "Prise {socket_number} mode de charge"
+      },
+      "charging_mode": {
+        "name": "Mode de charge"
+      },
+      "car_charging_socket": {
+        "name": "Prise {socket_number} charge du véhicule",
+        "state": {
+          "on": "En charge",
+          "off": "Pas en charge"
+        }
+      },
+      "car_charging": {
+        "name": "Charge du véhicule",
+        "state": {
+          "on": "En charge",
+          "off": "Pas en charge"
+        }
+      },
+      "car_connected_socket": {
+        "name": "Prise {socket_number} véhicule connecté",
+        "state": {
+          "on": "Connecté",
+          "off": "Non connecté"
+        }
+      },
+      "car_connected": {
+        "name": "Véhicule connecté",
+        "state": {
+          "on": "Connecté",
+          "off": "Non connecté"
+        }
+      },
+      "current_session_wh_socket": {
+        "name": "Prise {socket_number} session en cours Wh"
+      },
+      "current_session_wh": {
+        "name": "Session en cours Wh"
+      },
+      "current_session_duration_socket": {
+        "name": "Prise {socket_number} durée de la session en cours"
+      },
+      "current_session_duration": {
+        "name": "Durée de la session en cours"
+      }
+    },
+    "number": {
+      "max_current_limit_socket": {
+        "name": "Prise {socket_number} limite de courant maximal"
+      },
+      "max_current_limit": {
+        "name": "Limite de courant maximal"
+      }
+    },
+    "select": {
+      "usable_phases_socket": {
+        "name": "Prise {socket_number} phases utilisables"
+      },
+      "usable_phases": {
+        "name": "Phases utilisables"
+      }
+    }
+  }
+}

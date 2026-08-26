@@ -1,0 +1,538 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Alfen Modbus -yhteys",
+        "description": "Määritä Alfen-latausaseman yhteys",
+        "data": {
+          "host": "Isäntä",
+          "name": "Nimi",
+          "port": "Portti",
+          "modbus_address": "Modbus-osoite",
+          "read_scn": "Lue SCN",
+          "read_socket_2": "Lue pistoke 2",
+          "scan_interval": "Kyselyväli"
+        },
+        "data_description": {
+          "host": "Alfen-laitteesi IP-osoite tai isäntänimi",
+          "name": "Anturien nimien etuliite",
+          "port": "TCP-portti (oletus: 502)",
+          "modbus_address": "Modbus-orjaosoite (oletus: 200)",
+          "read_scn": "Ota käyttöön Smart Charging Network -rekisterit",
+          "read_socket_2": "Ota käyttöön pistoke 2 kaksoispistokeyksiköille",
+          "scan_interval": "Kyselyväli sekunteina"
+        }
+      }
+    },
+    "error": {
+      "already_configured": "Laite on jo määritetty",
+      "invalid_host": "Virheellinen IP-osoite tai isäntänimi",
+      "cannot_connect": "Laitteeseen ei saada yhteyttä"
+    },
+    "abort": {
+      "already_configured": "Laite on jo määritetty"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Alfen Modbus -asetukset",
+        "description": "Määritä Alfen-latausaseman yhteys uudelleen",
+        "data": {
+          "host": "Isäntä",
+          "port": "Portti",
+          "read_scn": "Lue SCN",
+          "read_socket_2": "Lue pistoke 2",
+          "scan_interval": "Kyselyväli"
+        },
+        "data_description": {
+          "host": "Alfen-laitteesi IP-osoite tai isäntänimi",
+          "port": "TCP-portti (oletus: 502)",
+          "read_scn": "Ota käyttöön Smart Charging Network -rekisterit",
+          "read_socket_2": "Ota käyttöön pistoke 2 kaksoispistokeyksiköille",
+          "scan_interval": "Kyselyväli sekunteina"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Laitteeseen ei saada yhteyttä"
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "backoffice": {
+        "name": "Taustajärjestelmä"
+      },
+      "carconnected_socket": {
+        "name": "Pistoke {socket_number} yhteystila",
+        "state": {
+          "on": "Yhdistetty",
+          "off": "Ei yhdistetty"
+        }
+      },
+      "carconnected": {
+        "name": "Yhteystila",
+        "state": {
+          "on": "Yhdistetty",
+          "off": "Ei yhdistetty"
+        }
+      },
+      "carcharging_socket": {
+        "name": "Pistoke {socket_number} latautila",
+        "state": {
+          "on": "Lataa",
+          "off": "Ei lataa"
+        }
+      },
+      "carcharging": {
+        "name": "Latautila",
+        "state": {
+          "on": "Lataa",
+          "off": "Ei lataa"
+        }
+      }
+    },
+    "sensor": {
+      "name": {
+        "name": "Nimi"
+      },
+      "manufacturer": {
+        "name": "Valmistaja"
+      },
+      "modbus_table_version": {
+        "name": "Modbus-taulukon versio"
+      },
+      "firmware_version": {
+        "name": "Laiteohjelmiston versio"
+      },
+      "platform_type": {
+        "name": "Alustatyyppi"
+      },
+      "serial": {
+        "name": "Sarjanumero"
+      },
+      "current_time": {
+        "name": "Nykyinen aika"
+      },
+      "last_boot": {
+        "name": "Viimeisin käynnistys"
+      },
+      "actual_max_current": {
+        "name": "Todellinen maksimivirta"
+      },
+      "board_temperature": {
+        "name": "Piirilevyn lämpötila"
+      },
+      "backoffice_connected": {
+        "name": "Taustajärjestelmä yhdistetty",
+        "state": {
+          "on": "Yhdistetty",
+          "off": "Ei yhdistetty"
+        }
+      },
+      "number_of_sockets": {
+        "name": "Pistokkeiden määrä"
+      },
+      "scn_name": {
+        "name": "SCN-nimi"
+      },
+      "number_of_scn_sockets": {
+        "name": "SCN-pistokkeiden määrä"
+      },
+      "meter_state_socket": {
+        "name": "Pistoke {socket_number} mittarin tila"
+      },
+      "meter_state": {
+        "name": "Mittarin tila"
+      },
+      "meter_reading_age_socket": {
+        "name": "Pistoke {socket_number} mittarilukeman ikä"
+      },
+      "meter_reading_age": {
+        "name": "Mittarilukeman ikä"
+      },
+      "meter_type_socket": {
+        "name": "Pistoke {socket_number} mittarin tyyppi"
+      },
+      "meter_type": {
+        "name": "Mittarin tyyppi"
+      },
+      "voltage_l1_n_socket": {
+        "name": "Pistoke {socket_number} jännite L1-N"
+      },
+      "voltage_l1_n": {
+        "name": "Jännite L1-N"
+      },
+      "voltage_l2_n_socket": {
+        "name": "Pistoke {socket_number} jännite L2-N"
+      },
+      "voltage_l2_n": {
+        "name": "Jännite L2-N"
+      },
+      "voltage_l3_n_socket": {
+        "name": "Pistoke {socket_number} jännite L3-N"
+      },
+      "voltage_l3_n": {
+        "name": "Jännite L3-N"
+      },
+      "voltage_l1_l2_socket": {
+        "name": "Pistoke {socket_number} jännite L1-L2"
+      },
+      "voltage_l1_l2": {
+        "name": "Jännite L1-L2"
+      },
+      "voltage_l2_l3_socket": {
+        "name": "Pistoke {socket_number} jännite L2-L3"
+      },
+      "voltage_l2_l3": {
+        "name": "Jännite L2-L3"
+      },
+      "voltage_l3_l1_socket": {
+        "name": "Pistoke {socket_number} jännite L3-L1"
+      },
+      "voltage_l3_l1": {
+        "name": "Jännite L3-L1"
+      },
+      "current_n_socket": {
+        "name": "Pistoke {socket_number} virta N"
+      },
+      "current_n": {
+        "name": "Virta N"
+      },
+      "current_l1_socket": {
+        "name": "Pistoke {socket_number} virta L1"
+      },
+      "current_l1": {
+        "name": "Virta L1"
+      },
+      "current_l2_socket": {
+        "name": "Pistoke {socket_number} virta L2"
+      },
+      "current_l2": {
+        "name": "Virta L2"
+      },
+      "current_l3_socket": {
+        "name": "Pistoke {socket_number} virta L3"
+      },
+      "current_l3": {
+        "name": "Virta L3"
+      },
+      "current_total_socket": {
+        "name": "Pistoke {socket_number} kokonaisvirta"
+      },
+      "current_total": {
+        "name": "Kokonaisvirta"
+      },
+      "power_factor_l1_socket": {
+        "name": "Pistoke {socket_number} tehokerroin L1"
+      },
+      "power_factor_l1": {
+        "name": "Tehokerroin L1"
+      },
+      "power_factor_l2_socket": {
+        "name": "Pistoke {socket_number} tehokerroin L2"
+      },
+      "power_factor_l2": {
+        "name": "Tehokerroin L2"
+      },
+      "power_factor_l3_socket": {
+        "name": "Pistoke {socket_number} tehokerroin L3"
+      },
+      "power_factor_l3": {
+        "name": "Tehokerroin L3"
+      },
+      "power_factor_sum_socket": {
+        "name": "Pistoke {socket_number} tehokerroin yhteensä"
+      },
+      "power_factor_sum": {
+        "name": "Tehokerroin yhteensä"
+      },
+      "frequency_socket": {
+        "name": "Pistoke {socket_number} taajuus"
+      },
+      "frequency": {
+        "name": "Taajuus"
+      },
+      "real_power_l1_socket": {
+        "name": "Pistoke {socket_number} pätöteho L1"
+      },
+      "real_power_l1": {
+        "name": "Pätöteho L1"
+      },
+      "real_power_l2_socket": {
+        "name": "Pistoke {socket_number} pätöteho L2"
+      },
+      "real_power_l2": {
+        "name": "Pätöteho L2"
+      },
+      "real_power_l3_socket": {
+        "name": "Pistoke {socket_number} pätöteho L3"
+      },
+      "real_power_l3": {
+        "name": "Pätöteho L3"
+      },
+      "real_power_sum_socket": {
+        "name": "Pistoke {socket_number} pätöteho yhteensä"
+      },
+      "real_power_sum": {
+        "name": "Pätöteho yhteensä"
+      },
+      "apparent_power_l1_socket": {
+        "name": "Pistoke {socket_number} näennäisteho L1"
+      },
+      "apparent_power_l1": {
+        "name": "Näennäisteho L1"
+      },
+      "apparent_power_l2_socket": {
+        "name": "Pistoke {socket_number} näennäisteho L2"
+      },
+      "apparent_power_l2": {
+        "name": "Näennäisteho L2"
+      },
+      "apparent_power_l3_socket": {
+        "name": "Pistoke {socket_number} näennäisteho L3"
+      },
+      "apparent_power_l3": {
+        "name": "Näennäisteho L3"
+      },
+      "apparent_power_sum_socket": {
+        "name": "Pistoke {socket_number} näennäisteho yhteensä"
+      },
+      "apparent_power_sum": {
+        "name": "Näennäisteho yhteensä"
+      },
+      "reactive_power_l1_socket": {
+        "name": "Pistoke {socket_number} loisteho L1"
+      },
+      "reactive_power_l1": {
+        "name": "Loisteho L1"
+      },
+      "reactive_power_l2_socket": {
+        "name": "Pistoke {socket_number} loisteho L2"
+      },
+      "reactive_power_l2": {
+        "name": "Loisteho L2"
+      },
+      "reactive_power_l3_socket": {
+        "name": "Pistoke {socket_number} loisteho L3"
+      },
+      "reactive_power_l3": {
+        "name": "Loisteho L3"
+      },
+      "reactive_power_sum_socket": {
+        "name": "Pistoke {socket_number} loisteho yhteensä"
+      },
+      "reactive_power_sum": {
+        "name": "Loisteho yhteensä"
+      },
+      "real_energy_delivered_l1_socket": {
+        "name": "Pistoke {socket_number} toimitettu pätöenergia L1"
+      },
+      "real_energy_delivered_l1": {
+        "name": "Toimitettu pätöenergia L1"
+      },
+      "real_energy_delivered_l2_socket": {
+        "name": "Pistoke {socket_number} toimitettu pätöenergia L2"
+      },
+      "real_energy_delivered_l2": {
+        "name": "Toimitettu pätöenergia L2"
+      },
+      "real_energy_delivered_l3_socket": {
+        "name": "Pistoke {socket_number} toimitettu pätöenergia L3"
+      },
+      "real_energy_delivered_l3": {
+        "name": "Toimitettu pätöenergia L3"
+      },
+      "real_energy_delivered_sum_socket": {
+        "name": "Pistoke {socket_number} toimitettu pätöenergia yhteensä"
+      },
+      "real_energy_delivered_sum": {
+        "name": "Toimitettu pätöenergia yhteensä"
+      },
+      "real_energy_consumed_l1_socket": {
+        "name": "Pistoke {socket_number} kulutettu pätöenergia L1"
+      },
+      "real_energy_consumed_l1": {
+        "name": "Kulutettu pätöenergia L1"
+      },
+      "real_energy_consumed_l2_socket": {
+        "name": "Pistoke {socket_number} kulutettu pätöenergia L2"
+      },
+      "real_energy_consumed_l2": {
+        "name": "Kulutettu pätöenergia L2"
+      },
+      "real_energy_consumed_l3_socket": {
+        "name": "Pistoke {socket_number} kulutettu pätöenergia L3"
+      },
+      "real_energy_consumed_l3": {
+        "name": "Kulutettu pätöenergia L3"
+      },
+      "real_energy_consumed_sum_socket": {
+        "name": "Pistoke {socket_number} kulutettu pätöenergia yhteensä"
+      },
+      "real_energy_consumed_sum": {
+        "name": "Kulutettu pätöenergia yhteensä"
+      },
+      "apparent_energy_l1_socket": {
+        "name": "Pistoke {socket_number} näennäisenergia L1"
+      },
+      "apparent_energy_l1": {
+        "name": "Näennäisenergia L1"
+      },
+      "apparent_energy_l2_socket": {
+        "name": "Pistoke {socket_number} näennäisenergia L2"
+      },
+      "apparent_energy_l2": {
+        "name": "Näennäisenergia L2"
+      },
+      "apparent_energy_l3_socket": {
+        "name": "Pistoke {socket_number} näennäisenergia L3"
+      },
+      "apparent_energy_l3": {
+        "name": "Näennäisenergia L3"
+      },
+      "apparent_energy_sum_socket": {
+        "name": "Pistoke {socket_number} näennäisenergia yhteensä"
+      },
+      "apparent_energy_sum": {
+        "name": "Näennäisenergia yhteensä"
+      },
+      "reactive_energy_l1_socket": {
+        "name": "Pistoke {socket_number} loisenergia L1"
+      },
+      "reactive_energy_l1": {
+        "name": "Loisenergia L1"
+      },
+      "reactive_energy_l2_socket": {
+        "name": "Pistoke {socket_number} loisenergia L2"
+      },
+      "reactive_energy_l2": {
+        "name": "Loisenergia L2"
+      },
+      "reactive_energy_l3_socket": {
+        "name": "Pistoke {socket_number} loisenergia L3"
+      },
+      "reactive_energy_l3": {
+        "name": "Loisenergia L3"
+      },
+      "reactive_energy_sum_socket": {
+        "name": "Pistoke {socket_number} loisenergia yhteensä"
+      },
+      "reactive_energy_sum": {
+        "name": "Loisenergia yhteensä"
+      },
+      "availability_socket": {
+        "name": "Pistoke {socket_number} käytettävyys"
+      },
+      "availability": {
+        "name": "Käytettävyys"
+      },
+      "mode_3_state_socket": {
+        "name": "Pistoke {socket_number} mode 3 -tila"
+      },
+      "mode_3_state": {
+        "name": "Mode 3 -tila"
+      },
+      "actual_applied_max_current_socket": {
+        "name": "Pistoke {socket_number} todellinen sovellettu maksimivirta"
+      },
+      "actual_applied_max_current": {
+        "name": "Todellinen sovellettu maksimivirta"
+      },
+      "max_current_valid_time_socket": {
+        "name": "Pistoke {socket_number} maksimivirran voimassaoloaika"
+      },
+      "max_current_valid_time": {
+        "name": "Maksimivirran voimassaoloaika"
+      },
+      "max_current_socket": {
+        "name": "Pistoke {socket_number} maksimivirta"
+      },
+      "max_current": {
+        "name": "Maksimivirta"
+      },
+      "active_load_balancing_safe_current_socket": {
+        "name": "Pistoke {socket_number} aktiivisen kuormantasauksen turvavirta"
+      },
+      "active_load_balancing_safe_current": {
+        "name": "Aktiivisen kuormantasauksen turvavirta"
+      },
+      "received_sp_accounted_for_socket": {
+        "name": "Pistoke {socket_number} vastaanotettu asetusarvo huomioitu",
+        "state": {
+          "on": "Kyllä",
+          "off": "Ei"
+        }
+      },
+      "received_sp_accounted_for": {
+        "name": "Vastaanotettu asetusarvo huomioitu",
+        "state": {
+          "on": "Kyllä",
+          "off": "Ei"
+        }
+      },
+      "charging_mode_socket": {
+        "name": "Pistoke {socket_number} latausmoodi"
+      },
+      "charging_mode": {
+        "name": "Latausmoodi"
+      },
+      "car_charging_socket": {
+        "name": "Pistoke {socket_number} auto latautuu",
+        "state": {
+          "on": "Lataa",
+          "off": "Ei lataa"
+        }
+      },
+      "car_charging": {
+        "name": "Auto latautuu",
+        "state": {
+          "on": "Lataa",
+          "off": "Ei lataa"
+        }
+      },
+      "car_connected_socket": {
+        "name": "Pistoke {socket_number} auto kytketty",
+        "state": {
+          "on": "Yhdistetty",
+          "off": "Ei yhdistetty"
+        }
+      },
+      "car_connected": {
+        "name": "Auto kytketty",
+        "state": {
+          "on": "Yhdistetty",
+          "off": "Ei yhdistetty"
+        }
+      },
+      "current_session_wh_socket": {
+        "name": "Pistoke {socket_number} nykyinen istunto Wh"
+      },
+      "current_session_wh": {
+        "name": "Nykyinen istunto Wh"
+      },
+      "current_session_duration_socket": {
+        "name": "Pistoke {socket_number} nykyisen istunnon kesto"
+      },
+      "current_session_duration": {
+        "name": "Nykyisen istunnon kesto"
+      }
+    },
+    "number": {
+      "max_current_limit_socket": {
+        "name": "Pistoke {socket_number} maksimivirtaraja"
+      },
+      "max_current_limit": {
+        "name": "Maksimivirtaraja"
+      }
+    },
+    "select": {
+      "usable_phases_socket": {
+        "name": "Pistoke {socket_number} käytettävät vaiheet"
+      },
+      "usable_phases": {
+        "name": "Käytettävät vaiheet"
+      }
+    }
+  }
+}
