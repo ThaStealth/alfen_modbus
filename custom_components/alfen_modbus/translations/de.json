@@ -2,23 +2,60 @@
   "config": {
     "step": {
       "user": {
-        "title": "Konfiguriere Deine modbus-Verbindung zum Alfen Wechselrichter.",
+        "title": "Alfen Modbus-Verbindung",
+        "description": "Konfiguriere die Verbindung zu deiner Alfen-Ladestation",
         "data": {
-          "host": "Die IP-Adresse des Alfen Wechselrichters",
-          "name": "Das Prefix, das für die Alfen Sensoren verwendet werden soll",
-          "port": "Der TCP Port des Alfen Wechselrichters (z.B. 502)",
-		  "modbus_address": "Modbus-Adresse",
-          "read_meter_1": "Lese die Stände des Zähler 1 (nur für Modelle mit Zähler)",
-          "read_meter_2": "Lese die Stände des Zähler 2 (nur für Modelle mit Zähler)",
-          "scan_interval": "Das Abfrageintervall der modbus Register in Sekunden"
+          "host": "Host",
+          "name": "Name",
+          "port": "Port",
+          "modbus_address": "Modbus-Adresse",
+          "read_scn": "SCN lesen",
+          "read_socket_2": "Steckdose 2 lesen",
+          "scan_interval": "Abfrageintervall"
+        },
+        "data_description": {
+          "host": "Die IP-Adresse oder der Hostname deiner Alfen-Ladestation",
+          "name": "Präfix für die Sensornamen",
+          "port": "TCP-Port (Standard: 502)",
+          "modbus_address": "Modbus-Slave-Adresse (Standard: 200)",
+          "read_scn": "Smart Charging Network-Register aktivieren",
+          "read_socket_2": "Steckdose 2 für Geräte mit zwei Steckdosen aktivieren",
+          "scan_interval": "Abfrageintervall in Sekunden"
         }
       }
     },
     "error": {
-      "already_configured": "Der Wechselrichter ist bereits konfiguriert.,"
+      "already_configured": "Gerät ist bereits konfiguriert",
+      "invalid_host": "Ungültige IP-Adresse oder Hostname",
+      "cannot_connect": "Verbindung zum Gerät nicht möglich"
     },
     "abort": {
-      "already_configured": "Der Wechselrichter ist bereits konfiguriert."
+      "already_configured": "Gerät ist bereits konfiguriert"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Alfen Modbus-Optionen",
+        "description": "Verbindung zu deiner Alfen-Ladestation neu konfigurieren",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "read_scn": "SCN lesen",
+          "read_socket_2": "Steckdose 2 lesen",
+          "scan_interval": "Abfrageintervall"
+        },
+        "data_description": {
+          "host": "Die IP-Adresse oder der Hostname deiner Alfen-Ladestation",
+          "port": "TCP-Port (Standard: 502)",
+          "read_scn": "Smart Charging Network-Register aktivieren",
+          "read_socket_2": "Steckdose 2 für Geräte mit zwei Steckdosen aktivieren",
+          "scan_interval": "Abfrageintervall in Sekunden"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung zum Gerät nicht möglich"
     }
   },
   "entity": {
@@ -27,10 +64,18 @@
         "name": "Backoffice"
       },
       "carcharging": {
-        "name": "Steckdose {socket_number} Ladestatus"
+        "name": "Steckdose {socket_number} Ladestatus",
+        "state": {
+          "on": "Lädt",
+          "off": "Lädt nicht"
+        }
       },
       "carconnected": {
-        "name": "Steckdose {socket_number} Verbindungsstatus"
+        "name": "Steckdose {socket_number} Verbindungsstatus",
+        "state": {
+          "on": "Verbunden",
+          "off": "Nicht verbunden"
+        }
       }
     }
   }

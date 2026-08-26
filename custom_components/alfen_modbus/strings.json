@@ -39,10 +39,18 @@
         "name": "Back office"
       },
       "carcharging": {
-        "name": "Socket {socket_number} charging state"
+        "name": "Socket {socket_number} charging state",
+        "state": {
+          "on": "Charging",
+          "off": "Not charging"
+        }
       },
       "carconnected": {
-        "name": "Socket {socket_number} connection state"
+        "name": "Socket {socket_number} connection state",
+        "state": {
+          "on": "Connected",
+          "off": "Not connected"
+        }
       }
     }
   },

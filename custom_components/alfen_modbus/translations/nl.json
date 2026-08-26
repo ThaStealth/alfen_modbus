@@ -11,14 +11,50 @@
           "read_scn": "Lees SCN (Smart Charging Network) data",
           "read_socket_2": "Lees 2e socket data",
           "scan_interval": "De polling-frequentie van de modbus registratie in seconden"
+        },
+        "data_description": {
+          "host": "Het ip-adres of de hostnaam van uw Alfen-laadstation",
+          "name": "Voorvoegsel voor de sensornamen",
+          "port": "TCP-poort (standaard: 502)",
+          "modbus_address": "Modbus slave-adres (standaard: 200)",
+          "read_scn": "Schakel Smart Charging Network-registers in",
+          "read_socket_2": "Schakel 2e socket in voor apparaten met twee sockets",
+          "scan_interval": "Polling-interval in seconden"
         }
       }
     },
     "error": {
-      "already_configured": "Apparaat is al geconfigureerd"
+      "already_configured": "Apparaat is al geconfigureerd",
+      "invalid_host": "Ongeldig ip-adres of hostnaam",
+      "cannot_connect": "Kan geen verbinding maken met het apparaat"
     },
     "abort": {
       "already_configured": "Apparaat is al geconfigureerd"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Alfen Modbus-opties",
+        "description": "Herconfigureer uw Alfen-laadstation verbinding",
+        "data": {
+          "host": "Host",
+          "port": "Poort",
+          "read_scn": "Lees SCN",
+          "read_socket_2": "Lees 2e socket",
+          "scan_interval": "Polling-interval"
+        },
+        "data_description": {
+          "host": "Het ip-adres of de hostnaam van uw Alfen-laadstation",
+          "port": "TCP-poort (standaard: 502)",
+          "read_scn": "Schakel Smart Charging Network-registers in",
+          "read_socket_2": "Schakel 2e socket in voor apparaten met twee sockets",
+          "scan_interval": "Polling-interval in seconden"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Kan geen verbinding maken met het apparaat"
     }
   },
   "entity": {
@@ -27,10 +63,18 @@
         "name": "Back office"
       },
       "carcharging": {
-        "name": "Socket {socket_number} charging state"
+        "name": "Socket {socket_number} charging state",
+        "state": {
+          "on": "Opladen",
+          "off": "Niet opladen"
+        }
       },
       "carconnected": {
-        "name": "Socket {socket_number} connection state"
+        "name": "Socket {socket_number} connection state",
+        "state": {
+          "on": "Aangesloten",
+          "off": "Niet aangesloten"
+        }
       }
     }
   }

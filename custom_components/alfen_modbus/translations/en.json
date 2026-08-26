@@ -33,16 +33,49 @@
       "already_configured": "Device is already configured"
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Alfen Modbus Options",
+        "description": "Reconfigure your Alfen EV charger connection",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "read_scn": "Read SCN",
+          "read_socket_2": "Read Socket 2",
+          "scan_interval": "Scan Interval"
+        },
+        "data_description": {
+          "host": "The IP address or hostname of your Alfen device",
+          "port": "TCP port (default: 502)",
+          "read_scn": "Enable Smart Charging Network registers",
+          "read_socket_2": "Enable socket 2 for dual socket units",
+          "scan_interval": "Polling interval in seconds"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to the device"
+    }
+  },
   "entity": {
     "binary_sensor": {
       "backoffice": {
         "name": "Back office"
       },
       "carcharging": {
-        "name": "Socket {socket_number} charging state"
+        "name": "Socket {socket_number} charging state",
+        "state": {
+          "on": "Charging",
+          "off": "Not charging"
+        }
       },
       "carconnected": {
-        "name": "Socket {socket_number} connection state"
+        "name": "Socket {socket_number} connection state",
+        "state": {
+          "on": "Connected",
+          "off": "Not connected"
+        }
       }
     }
   }
