@@ -19,8 +19,7 @@ from .const import (
     METER_TYPE,
     SCN_SENSOR_TYPES,
     SENSOR_TYPES,
-    SOCKET1_SENSOR_TYPES,
-    SOCKET2_SENSOR_TYPES,
+    SOCKET_SENSOR_TYPES,
 )
 from .entity import AlfenEntity
 
@@ -51,7 +50,7 @@ async def async_setup_entry(hass, entry: AlfenConfigEntry, async_add_entities):
             sensor_info[3],
         )
         entities.append(sensor)
-    
+
     if hub.read_scn:
         for meter_sensor_info in SCN_SENSOR_TYPES.values():
             sensor = AlfenSensor(
@@ -64,31 +63,23 @@ async def async_setup_entry(hass, entry: AlfenConfigEntry, async_add_entities):
                 meter_sensor_info[3],
             )
             entities.append(sensor)
- 
-    for meter_sensor_info in SOCKET1_SENSOR_TYPES.values():
-        sensor = AlfenSensor(
-            hub_name,
-            hub,
-            device_info,
-            meter_sensor_info[0],
-            meter_sensor_info[1],
-            meter_sensor_info[2],
-            meter_sensor_info[3],
-        )
-        entities.append(sensor)
-        
-    if hub.read_socket_2:
-        for meter_sensor_info in SOCKET2_SENSOR_TYPES.values():
+
+    sockets = [1, 2] if hub.has_socket_2 else [1]
+    for socket in sockets:
+        for meter_sensor_info in SOCKET_SENSOR_TYPES.values():
+            translation_key, key_template, unit, icon = meter_sensor_info
             sensor = AlfenSensor(
                 hub_name,
                 hub,
                 device_info,
-                meter_sensor_info[0],
-                meter_sensor_info[1],
-                meter_sensor_info[2],
-                meter_sensor_info[3],
+                translation_key,
+                key_template.format(socket=socket),
+                unit,
+                icon,
+                socket=socket,
             )
             entities.append(sensor)
+
     async_add_entities(entities)
     return True
 
@@ -96,14 +87,16 @@ async def async_setup_entry(hass, entry: AlfenConfigEntry, async_add_entities):
 class AlfenSensor(AlfenEntity, SensorEntity):
     """Representation of an Alfen Modbus sensor."""
 
-    def __init__(self, platform_name, hub, device_info, name, key, unit, icon):
+    _attr_has_entity_name = True
+
+    def __init__(self, platform_name, hub, device_info, translation_key, key, unit, icon, socket: int | None = None):
         """Initialize the sensor."""
         super().__init__(hub, device_info)
         self._platform_name = platform_name
         self._key = key
-        if not hub.has_socket_2 and name.startswith("S1 "):
-            name = name.replace("S1 ","")
-        self._name = name
+        self._attr_translation_key = translation_key
+        if socket is not None:
+            self._attr_translation_placeholders = {"socket_number": socket}
         self._unit_of_measurement = unit
         self._icon = icon
         self._device_info = device_info
@@ -118,11 +111,6 @@ class AlfenSensor(AlfenEntity, SensorEntity):
             self._attr_device_class = SensorDeviceClass.ENUM
             self._attr_options = ["on", "off"]
             self._attr_translation_key = ENUM_SENSOR_TRANSLATION_KEYS[self._key]
-
-    @property
-    def name(self):
-        """Return the name."""
-        return f"{self._platform_name} {self._name}"
 
     @property
     def unique_id(self) -> str | None:

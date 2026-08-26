@@ -63,12 +63,14 @@ async def async_setup_entry(hass, entry: AlfenConfigEntry, async_add_entities) -
 class AlfenNumber(AlfenEntity, NumberEntity):
     """Representation of an Alfen Modbus number."""
 
+    _attr_has_entity_name = True
+
     def __init__(self,
                  platform_name,
                  hub,
                  device_info,
                  socket,
-                 name,
+                 translation_key,
                  key,
                  register,
                  fmt,
@@ -77,7 +79,8 @@ class AlfenNumber(AlfenEntity, NumberEntity):
         """Initialize the number."""
         super().__init__(hub, device_info)
         self._platform_name = platform_name
-        self._name = name+str(socket)
+        self._attr_translation_key = translation_key
+        self._attr_translation_placeholders = {"socket_number": socket}
         self._socket = socket
         self._key = key+str(socket)
         self._register = register
@@ -97,11 +100,6 @@ class AlfenNumber(AlfenEntity, NumberEntity):
 
     async def async_will_remove_from_hass(self) -> None:
         self._hub.async_remove_alfen_sensor(self._modbus_data_updated, self.update_value)
-
-    @property
-    def name(self) -> str:
-        """Return the name."""
-        return f"{self._platform_name} {self._name}"
 
     @property
     def unique_id(self) -> str | None:

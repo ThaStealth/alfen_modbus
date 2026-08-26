@@ -68,12 +68,14 @@ def get_key(my_dict, search):
 class AlfenSelect(AlfenEntity, SelectEntity):
     """Representation of an Alfen Modbus select."""
 
+    _attr_has_entity_name = True
+
     def __init__(self,
                  platform_name,
                  hub,
                  device_info,
                  socket,
-                 name,
+                 translation_key,
                  key,
                  register,
                  options
@@ -81,17 +83,13 @@ class AlfenSelect(AlfenEntity, SelectEntity):
         """Initialize the selector."""
         super().__init__(hub, device_info)
         self._platform_name = platform_name
-        self._name = name+str(socket)
+        self._attr_translation_key = translation_key
+        self._attr_translation_placeholders = {"socket_number": socket}
         self._socket = socket
         self._key = key+str(socket)
         self._register = register
         self._option_dict = options
         self._attr_options = list(options.values())
-
-    @property
-    def name(self) -> str:
-        """Return the name."""
-        return f"{self._platform_name} {self._name}"
 
     @property
     def unique_id(self) -> str | None:

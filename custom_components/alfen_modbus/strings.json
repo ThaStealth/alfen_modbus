@@ -54,29 +54,250 @@
       }
     },
     "sensor": {
-      "backofficeconnected": {
+      "name": {
+        "name": "Name"
+      },
+      "manufacturer": {
+        "name": "Manufacturer"
+      },
+      "modbus_table_version": {
+        "name": "Modbus table version"
+      },
+      "firmware_version": {
+        "name": "Firmware version"
+      },
+      "platform_type": {
+        "name": "Platform type"
+      },
+      "serial": {
+        "name": "Serial"
+      },
+      "current_time": {
+        "name": "Current time"
+      },
+      "last_boot": {
+        "name": "Last boot"
+      },
+      "actual_max_current": {
+        "name": "Actual max current"
+      },
+      "board_temperature": {
+        "name": "Board temperature"
+      },
+      "backoffice_connected": {
+        "name": "Backoffice connected",
         "state": {
           "on": "Connected",
           "off": "Not connected"
         }
       },
-      "setpointaccounted": {
+      "number_of_sockets": {
+        "name": "Number of sockets"
+      },
+      "scn_name": {
+        "name": "SCN name"
+      },
+      "number_of_scn_sockets": {
+        "name": "Number of SCN sockets"
+      },
+      "meter_state": {
+        "name": "Socket {socket_number} meter state"
+      },
+      "meter_reading_age": {
+        "name": "Socket {socket_number} meter reading age"
+      },
+      "meter_type": {
+        "name": "Socket {socket_number} meter type"
+      },
+      "voltage_l1_n": {
+        "name": "Socket {socket_number} voltage L1-N"
+      },
+      "voltage_l2_n": {
+        "name": "Socket {socket_number} voltage L2-N"
+      },
+      "voltage_l3_n": {
+        "name": "Socket {socket_number} voltage L3-N"
+      },
+      "voltage_l1_l2": {
+        "name": "Socket {socket_number} voltage L1-L2"
+      },
+      "voltage_l2_l3": {
+        "name": "Socket {socket_number} voltage L2-L3"
+      },
+      "voltage_l3_l1": {
+        "name": "Socket {socket_number} voltage L3-L1"
+      },
+      "current_n": {
+        "name": "Socket {socket_number} current N"
+      },
+      "current_l1": {
+        "name": "Socket {socket_number} current L1"
+      },
+      "current_l2": {
+        "name": "Socket {socket_number} current L2"
+      },
+      "current_l3": {
+        "name": "Socket {socket_number} current L3"
+      },
+      "current_total": {
+        "name": "Socket {socket_number} current total"
+      },
+      "power_factor_l1": {
+        "name": "Socket {socket_number} power factor L1"
+      },
+      "power_factor_l2": {
+        "name": "Socket {socket_number} power factor L2"
+      },
+      "power_factor_l3": {
+        "name": "Socket {socket_number} power factor L3"
+      },
+      "power_factor_sum": {
+        "name": "Socket {socket_number} power factor sum"
+      },
+      "frequency": {
+        "name": "Socket {socket_number} frequency"
+      },
+      "real_power_l1": {
+        "name": "Socket {socket_number} real power L1"
+      },
+      "real_power_l2": {
+        "name": "Socket {socket_number} real power L2"
+      },
+      "real_power_l3": {
+        "name": "Socket {socket_number} real power L3"
+      },
+      "real_power_sum": {
+        "name": "Socket {socket_number} real power sum"
+      },
+      "apparent_power_l1": {
+        "name": "Socket {socket_number} apparent power L1"
+      },
+      "apparent_power_l2": {
+        "name": "Socket {socket_number} apparent power L2"
+      },
+      "apparent_power_l3": {
+        "name": "Socket {socket_number} apparent power L3"
+      },
+      "apparent_power_sum": {
+        "name": "Socket {socket_number} apparent power sum"
+      },
+      "reactive_power_l1": {
+        "name": "Socket {socket_number} reactive power L1"
+      },
+      "reactive_power_l2": {
+        "name": "Socket {socket_number} reactive power L2"
+      },
+      "reactive_power_l3": {
+        "name": "Socket {socket_number} reactive power L3"
+      },
+      "reactive_power_sum": {
+        "name": "Socket {socket_number} reactive power sum"
+      },
+      "real_energy_delivered_l1": {
+        "name": "Socket {socket_number} real energy delivered L1"
+      },
+      "real_energy_delivered_l2": {
+        "name": "Socket {socket_number} real energy delivered L2"
+      },
+      "real_energy_delivered_l3": {
+        "name": "Socket {socket_number} real energy delivered L3"
+      },
+      "real_energy_delivered_sum": {
+        "name": "Socket {socket_number} real energy delivered sum"
+      },
+      "real_energy_consumed_l1": {
+        "name": "Socket {socket_number} real energy consumed L1"
+      },
+      "real_energy_consumed_l2": {
+        "name": "Socket {socket_number} real energy consumed L2"
+      },
+      "real_energy_consumed_l3": {
+        "name": "Socket {socket_number} real energy consumed L3"
+      },
+      "real_energy_consumed_sum": {
+        "name": "Socket {socket_number} real energy consumed sum"
+      },
+      "apparent_energy_l1": {
+        "name": "Socket {socket_number} apparent energy L1"
+      },
+      "apparent_energy_l2": {
+        "name": "Socket {socket_number} apparent energy L2"
+      },
+      "apparent_energy_l3": {
+        "name": "Socket {socket_number} apparent energy L3"
+      },
+      "apparent_energy_sum": {
+        "name": "Socket {socket_number} apparent energy sum"
+      },
+      "reactive_energy_l1": {
+        "name": "Socket {socket_number} reactive energy L1"
+      },
+      "reactive_energy_l2": {
+        "name": "Socket {socket_number} reactive energy L2"
+      },
+      "reactive_energy_l3": {
+        "name": "Socket {socket_number} reactive energy L3"
+      },
+      "reactive_energy_sum": {
+        "name": "Socket {socket_number} reactive energy sum"
+      },
+      "availability": {
+        "name": "Socket {socket_number} availability"
+      },
+      "mode_3_state": {
+        "name": "Socket {socket_number} mode 3 state"
+      },
+      "actual_applied_max_current": {
+        "name": "Socket {socket_number} actual applied max current"
+      },
+      "max_current_valid_time": {
+        "name": "Socket {socket_number} max current valid time"
+      },
+      "max_current": {
+        "name": "Socket {socket_number} max current"
+      },
+      "active_load_balancing_safe_current": {
+        "name": "Socket {socket_number} active load balancing safe current"
+      },
+      "received_sp_accounted_for": {
+        "name": "Socket {socket_number} received setpoint accounted for",
         "state": {
           "on": "Yes",
           "off": "No"
         }
       },
-      "carconnected": {
+      "charging_mode": {
+        "name": "Socket {socket_number} charging mode"
+      },
+      "car_charging": {
+        "name": "Socket {socket_number} car charging",
+        "state": {
+          "on": "Charging",
+          "off": "Not charging"
+        }
+      },
+      "car_connected": {
+        "name": "Socket {socket_number} car connected",
         "state": {
           "on": "Connected",
           "off": "Not connected"
         }
       },
-      "carcharging": {
-        "state": {
-          "on": "Charging",
-          "off": "Not charging"
-        }
+      "current_session_wh": {
+        "name": "Socket {socket_number} current session Wh"
+      },
+      "current_session_duration": {
+        "name": "Socket {socket_number} current session duration"
+      }
+    },
+    "number": {
+      "max_current_limit": {
+        "name": "Socket {socket_number} max current limit"
+      }
+    },
+    "select": {
+      "usable_phases": {
+        "name": "Socket {socket_number} usable phases"
       }
     }
   },
