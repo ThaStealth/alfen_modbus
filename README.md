@@ -13,15 +13,16 @@ Home Assistant integration for **Alfen Eve NG9xx** and **AHP** series EV charger
 - 🔌 **Real-time monitoring** - Voltage, current, power, energy for all phases
 - 🚗 **Car status detection** - Connected, charging, disconnected states
 - ⚡ **Load balancing control** - Set maximum charging current dynamically
-- �️ **Max current protection** - Prevents setting current above station limit
-- �📊 **Session tracking** - Energy consumed and duration per charging session
+- 🛡️ **Max current protection** - Prevents setting current above station limit
+- 📊 **Session tracking** - Energy consumed and duration per charging session
 - 🔄 **Auto-renew max current** - Prevents timeout to safe current mode
 - 🏢 **Multi-socket support** - Works with dual socket chargers
 - 🌐 **SCN support** - Smart Charging Network (partial)
+- 🗣️ **Localized UI** - Entity names and states are translated into English, Dutch, German, French, Finnish, Norwegian, Swedish and Danish, following your Home Assistant language setting
 
 ## Requirements
 
-- Home Assistant **2024.4.0** or newer
+- Home Assistant **2025.10.0** or newer
 - A supported Alfen charger (see [Supported Platforms](#supported-platforms)) with:
   - The minimum firmware version for your platform
   - **Active Load Balancing** license enabled
@@ -54,6 +55,14 @@ Home Assistant integration for **Alfen Eve NG9xx** and **AHP** series EV charger
 2. Click **Add Integration**
 3. Search for **Alfen Modbus**
 4. Enter your charger's IP address and port (default: 502)
+
+## Localization
+
+Entity names and on/off states follow the language set in your Home Assistant profile. Currently translated: 🇬🇧 English, 🇳🇱 Dutch, 🇩🇪 German, 🇫🇷 French, 🇫🇮 Finnish, 🇳🇴 Norwegian, 🇸🇪 Swedish and 🇩🇰 Danish. Any other language falls back to English.
+
+Per-socket entities (voltages, currents, power, energy, ...) only show a socket number in the name (e.g. "Socket 2 voltage L1-N") when **Read Socket 2** is enabled; single-socket setups get a plain name instead.
+
+Missing your language or spotted an incorrect translation? Pull requests adding or fixing a `custom_components/alfen_modbus/translations/<lang>.json` file are very welcome.
 
 ## Enabling Modbus on Alfen Charger
 
