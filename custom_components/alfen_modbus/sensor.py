@@ -14,7 +14,7 @@ from .const import (
     BOOLEAN_EXPLAINED,
     CONTROL_PHASE_MODES,
     DOMAIN,
-    ENUM_SENSOR_TRANSLATION_KEYS,
+    ENUM_SENSOR_KEYS,
     METER_STATE_MODES,
     METER_TYPE,
     SCN_SENSOR_TYPES,
@@ -94,9 +94,11 @@ class AlfenSensor(AlfenEntity, SensorEntity):
         super().__init__(hub, device_info)
         self._platform_name = platform_name
         self._key = key
-        self._attr_translation_key = translation_key
-        if socket is not None:
+        if socket is not None and hub.has_socket_2:
+            self._attr_translation_key = f"{translation_key}_socket"
             self._attr_translation_placeholders = {"socket_number": socket}
+        else:
+            self._attr_translation_key = translation_key
         self._unit_of_measurement = unit
         self._icon = icon
         self._device_info = device_info
@@ -106,11 +108,10 @@ class AlfenSensor(AlfenEntity, SensorEntity):
             self._attr_device_class = SensorDeviceClass.ENERGY
         if self._unit_of_measurement == UnitOfPower.WATT :
             self._attr_device_class = SensorDeviceClass.POWER
-        if self._key in ENUM_SENSOR_TRANSLATION_KEYS:
+        if self._key in ENUM_SENSOR_KEYS:
             self._attr_state_class = None
             self._attr_device_class = SensorDeviceClass.ENUM
             self._attr_options = ["on", "off"]
-            self._attr_translation_key = ENUM_SENSOR_TRANSLATION_KEYS[self._key]
 
     @property
     def unique_id(self) -> str | None:
@@ -136,7 +137,7 @@ class AlfenSensor(AlfenEntity, SensorEntity):
                 return METER_STATE_MODES[self._hub.data[self._key]]     
             elif self._key in ["socket_1_available", "socket_2_available"] and self._hub.data[self._key] in AVAILABILITY_MODES:
                 return AVAILABILITY_MODES[self._hub.data[self._key]]   
-            elif self._key in ENUM_SENSOR_TRANSLATION_KEYS and self._hub.data[self._key] in BOOLEAN_EXPLAINED:
+            elif self._key in ENUM_SENSOR_KEYS and self._hub.data[self._key] in BOOLEAN_EXPLAINED:
                 return "on" if BOOLEAN_EXPLAINED[self._hub.data[self._key]] else "off"
             elif self._key in ["socket_1_chargephases", "socket_2_chargephases"] and self._hub.data[self._key] in CONTROL_PHASE_MODES:
                 return CONTROL_PHASE_MODES[self._hub.data[self._key]]  

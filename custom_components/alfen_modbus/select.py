@@ -83,8 +83,11 @@ class AlfenSelect(AlfenEntity, SelectEntity):
         """Initialize the selector."""
         super().__init__(hub, device_info)
         self._platform_name = platform_name
-        self._attr_translation_key = translation_key
-        self._attr_translation_placeholders = {"socket_number": socket}
+        if hub.has_socket_2:
+            self._attr_translation_key = f"{translation_key}_socket"
+            self._attr_translation_placeholders = {"socket_number": socket}
+        else:
+            self._attr_translation_key = translation_key
         self._socket = socket
         self._key = key+str(socket)
         self._register = register

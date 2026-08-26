@@ -63,18 +63,32 @@
       "backoffice": {
         "name": "Backoffice"
       },
-      "carcharging": {
+      "carconnected_socket": {
+        "name": "Steckdose {socket_number} Verbindungsstatus",
+        "state": {
+          "on": "Verbunden",
+          "off": "Nicht verbunden"
+        }
+      },
+      "carconnected": {
+        "name": "Verbindungsstatus",
+        "state": {
+          "on": "Verbunden",
+          "off": "Nicht verbunden"
+        }
+      },
+      "carcharging_socket": {
         "name": "Steckdose {socket_number} Ladestatus",
         "state": {
           "on": "Lädt",
           "off": "Lädt nicht"
         }
       },
-      "carconnected": {
-        "name": "Steckdose {socket_number} Verbindungsstatus",
+      "carcharging": {
+        "name": "Ladestatus",
         "state": {
-          "on": "Verbunden",
-          "off": "Nicht verbunden"
+          "on": "Lädt",
+          "off": "Lädt nicht"
         }
       }
     },
@@ -125,204 +139,399 @@
       "number_of_scn_sockets": {
         "name": "Anzahl der SCN-Steckdosen"
       },
-      "meter_state": {
+      "meter_state_socket": {
         "name": "Steckdose {socket_number} Zählerstatus"
       },
-      "meter_reading_age": {
+      "meter_state": {
+        "name": "Zählerstatus"
+      },
+      "meter_reading_age_socket": {
         "name": "Steckdose {socket_number} Alter des Zählerstands"
       },
-      "meter_type": {
+      "meter_reading_age": {
+        "name": "Alter des Zählerstands"
+      },
+      "meter_type_socket": {
         "name": "Steckdose {socket_number} Zählertyp"
       },
-      "voltage_l1_n": {
+      "meter_type": {
+        "name": "Zählertyp"
+      },
+      "voltage_l1_n_socket": {
         "name": "Steckdose {socket_number} Spannung L1-N"
       },
-      "voltage_l2_n": {
+      "voltage_l1_n": {
+        "name": "Spannung L1-N"
+      },
+      "voltage_l2_n_socket": {
         "name": "Steckdose {socket_number} Spannung L2-N"
       },
-      "voltage_l3_n": {
+      "voltage_l2_n": {
+        "name": "Spannung L2-N"
+      },
+      "voltage_l3_n_socket": {
         "name": "Steckdose {socket_number} Spannung L3-N"
       },
-      "voltage_l1_l2": {
+      "voltage_l3_n": {
+        "name": "Spannung L3-N"
+      },
+      "voltage_l1_l2_socket": {
         "name": "Steckdose {socket_number} Spannung L1-L2"
       },
-      "voltage_l2_l3": {
+      "voltage_l1_l2": {
+        "name": "Spannung L1-L2"
+      },
+      "voltage_l2_l3_socket": {
         "name": "Steckdose {socket_number} Spannung L2-L3"
       },
-      "voltage_l3_l1": {
+      "voltage_l2_l3": {
+        "name": "Spannung L2-L3"
+      },
+      "voltage_l3_l1_socket": {
         "name": "Steckdose {socket_number} Spannung L3-L1"
       },
-      "current_n": {
+      "voltage_l3_l1": {
+        "name": "Spannung L3-L1"
+      },
+      "current_n_socket": {
         "name": "Steckdose {socket_number} Strom N"
       },
-      "current_l1": {
+      "current_n": {
+        "name": "Strom N"
+      },
+      "current_l1_socket": {
         "name": "Steckdose {socket_number} Strom L1"
       },
-      "current_l2": {
+      "current_l1": {
+        "name": "Strom L1"
+      },
+      "current_l2_socket": {
         "name": "Steckdose {socket_number} Strom L2"
       },
-      "current_l3": {
+      "current_l2": {
+        "name": "Strom L2"
+      },
+      "current_l3_socket": {
         "name": "Steckdose {socket_number} Strom L3"
       },
-      "current_total": {
+      "current_l3": {
+        "name": "Strom L3"
+      },
+      "current_total_socket": {
         "name": "Steckdose {socket_number} Gesamtstrom"
       },
-      "power_factor_l1": {
+      "current_total": {
+        "name": "Gesamtstrom"
+      },
+      "power_factor_l1_socket": {
         "name": "Steckdose {socket_number} Leistungsfaktor L1"
       },
-      "power_factor_l2": {
+      "power_factor_l1": {
+        "name": "Leistungsfaktor L1"
+      },
+      "power_factor_l2_socket": {
         "name": "Steckdose {socket_number} Leistungsfaktor L2"
       },
-      "power_factor_l3": {
+      "power_factor_l2": {
+        "name": "Leistungsfaktor L2"
+      },
+      "power_factor_l3_socket": {
         "name": "Steckdose {socket_number} Leistungsfaktor L3"
       },
-      "power_factor_sum": {
+      "power_factor_l3": {
+        "name": "Leistungsfaktor L3"
+      },
+      "power_factor_sum_socket": {
         "name": "Steckdose {socket_number} Leistungsfaktor gesamt"
       },
-      "frequency": {
+      "power_factor_sum": {
+        "name": "Leistungsfaktor gesamt"
+      },
+      "frequency_socket": {
         "name": "Steckdose {socket_number} Frequenz"
       },
-      "real_power_l1": {
+      "frequency": {
+        "name": "Frequenz"
+      },
+      "real_power_l1_socket": {
         "name": "Steckdose {socket_number} Wirkleistung L1"
       },
-      "real_power_l2": {
+      "real_power_l1": {
+        "name": "Wirkleistung L1"
+      },
+      "real_power_l2_socket": {
         "name": "Steckdose {socket_number} Wirkleistung L2"
       },
-      "real_power_l3": {
+      "real_power_l2": {
+        "name": "Wirkleistung L2"
+      },
+      "real_power_l3_socket": {
         "name": "Steckdose {socket_number} Wirkleistung L3"
       },
-      "real_power_sum": {
+      "real_power_l3": {
+        "name": "Wirkleistung L3"
+      },
+      "real_power_sum_socket": {
         "name": "Steckdose {socket_number} Wirkleistung gesamt"
       },
-      "apparent_power_l1": {
+      "real_power_sum": {
+        "name": "Wirkleistung gesamt"
+      },
+      "apparent_power_l1_socket": {
         "name": "Steckdose {socket_number} Scheinleistung L1"
       },
-      "apparent_power_l2": {
+      "apparent_power_l1": {
+        "name": "Scheinleistung L1"
+      },
+      "apparent_power_l2_socket": {
         "name": "Steckdose {socket_number} Scheinleistung L2"
       },
-      "apparent_power_l3": {
+      "apparent_power_l2": {
+        "name": "Scheinleistung L2"
+      },
+      "apparent_power_l3_socket": {
         "name": "Steckdose {socket_number} Scheinleistung L3"
       },
-      "apparent_power_sum": {
+      "apparent_power_l3": {
+        "name": "Scheinleistung L3"
+      },
+      "apparent_power_sum_socket": {
         "name": "Steckdose {socket_number} Scheinleistung gesamt"
       },
-      "reactive_power_l1": {
+      "apparent_power_sum": {
+        "name": "Scheinleistung gesamt"
+      },
+      "reactive_power_l1_socket": {
         "name": "Steckdose {socket_number} Blindleistung L1"
       },
-      "reactive_power_l2": {
+      "reactive_power_l1": {
+        "name": "Blindleistung L1"
+      },
+      "reactive_power_l2_socket": {
         "name": "Steckdose {socket_number} Blindleistung L2"
       },
-      "reactive_power_l3": {
+      "reactive_power_l2": {
+        "name": "Blindleistung L2"
+      },
+      "reactive_power_l3_socket": {
         "name": "Steckdose {socket_number} Blindleistung L3"
       },
-      "reactive_power_sum": {
+      "reactive_power_l3": {
+        "name": "Blindleistung L3"
+      },
+      "reactive_power_sum_socket": {
         "name": "Steckdose {socket_number} Blindleistung gesamt"
       },
-      "real_energy_delivered_l1": {
+      "reactive_power_sum": {
+        "name": "Blindleistung gesamt"
+      },
+      "real_energy_delivered_l1_socket": {
         "name": "Steckdose {socket_number} gelieferte Wirkenergie L1"
       },
-      "real_energy_delivered_l2": {
+      "real_energy_delivered_l1": {
+        "name": "Gelieferte Wirkenergie L1"
+      },
+      "real_energy_delivered_l2_socket": {
         "name": "Steckdose {socket_number} gelieferte Wirkenergie L2"
       },
-      "real_energy_delivered_l3": {
+      "real_energy_delivered_l2": {
+        "name": "Gelieferte Wirkenergie L2"
+      },
+      "real_energy_delivered_l3_socket": {
         "name": "Steckdose {socket_number} gelieferte Wirkenergie L3"
       },
-      "real_energy_delivered_sum": {
+      "real_energy_delivered_l3": {
+        "name": "Gelieferte Wirkenergie L3"
+      },
+      "real_energy_delivered_sum_socket": {
         "name": "Steckdose {socket_number} gelieferte Wirkenergie gesamt"
       },
-      "real_energy_consumed_l1": {
+      "real_energy_delivered_sum": {
+        "name": "Gelieferte Wirkenergie gesamt"
+      },
+      "real_energy_consumed_l1_socket": {
         "name": "Steckdose {socket_number} verbrauchte Wirkenergie L1"
       },
-      "real_energy_consumed_l2": {
+      "real_energy_consumed_l1": {
+        "name": "Verbrauchte Wirkenergie L1"
+      },
+      "real_energy_consumed_l2_socket": {
         "name": "Steckdose {socket_number} verbrauchte Wirkenergie L2"
       },
-      "real_energy_consumed_l3": {
+      "real_energy_consumed_l2": {
+        "name": "Verbrauchte Wirkenergie L2"
+      },
+      "real_energy_consumed_l3_socket": {
         "name": "Steckdose {socket_number} verbrauchte Wirkenergie L3"
       },
-      "real_energy_consumed_sum": {
+      "real_energy_consumed_l3": {
+        "name": "Verbrauchte Wirkenergie L3"
+      },
+      "real_energy_consumed_sum_socket": {
         "name": "Steckdose {socket_number} verbrauchte Wirkenergie gesamt"
       },
-      "apparent_energy_l1": {
+      "real_energy_consumed_sum": {
+        "name": "Verbrauchte Wirkenergie gesamt"
+      },
+      "apparent_energy_l1_socket": {
         "name": "Steckdose {socket_number} Scheinenergie L1"
       },
-      "apparent_energy_l2": {
+      "apparent_energy_l1": {
+        "name": "Scheinenergie L1"
+      },
+      "apparent_energy_l2_socket": {
         "name": "Steckdose {socket_number} Scheinenergie L2"
       },
-      "apparent_energy_l3": {
+      "apparent_energy_l2": {
+        "name": "Scheinenergie L2"
+      },
+      "apparent_energy_l3_socket": {
         "name": "Steckdose {socket_number} Scheinenergie L3"
       },
-      "apparent_energy_sum": {
+      "apparent_energy_l3": {
+        "name": "Scheinenergie L3"
+      },
+      "apparent_energy_sum_socket": {
         "name": "Steckdose {socket_number} Scheinenergie gesamt"
       },
-      "reactive_energy_l1": {
+      "apparent_energy_sum": {
+        "name": "Scheinenergie gesamt"
+      },
+      "reactive_energy_l1_socket": {
         "name": "Steckdose {socket_number} Blindenergie L1"
       },
-      "reactive_energy_l2": {
+      "reactive_energy_l1": {
+        "name": "Blindenergie L1"
+      },
+      "reactive_energy_l2_socket": {
         "name": "Steckdose {socket_number} Blindenergie L2"
       },
-      "reactive_energy_l3": {
+      "reactive_energy_l2": {
+        "name": "Blindenergie L2"
+      },
+      "reactive_energy_l3_socket": {
         "name": "Steckdose {socket_number} Blindenergie L3"
       },
-      "reactive_energy_sum": {
+      "reactive_energy_l3": {
+        "name": "Blindenergie L3"
+      },
+      "reactive_energy_sum_socket": {
         "name": "Steckdose {socket_number} Blindenergie gesamt"
       },
-      "availability": {
+      "reactive_energy_sum": {
+        "name": "Blindenergie gesamt"
+      },
+      "availability_socket": {
         "name": "Steckdose {socket_number} Verfügbarkeit"
       },
-      "mode_3_state": {
+      "availability": {
+        "name": "Verfügbarkeit"
+      },
+      "mode_3_state_socket": {
         "name": "Steckdose {socket_number} Modus-3-Status"
       },
-      "actual_applied_max_current": {
+      "mode_3_state": {
+        "name": "Modus-3-Status"
+      },
+      "actual_applied_max_current_socket": {
         "name": "Steckdose {socket_number} tatsächlich angewendeter maximaler Strom"
       },
-      "max_current_valid_time": {
+      "actual_applied_max_current": {
+        "name": "Tatsächlich angewendeter maximaler Strom"
+      },
+      "max_current_valid_time_socket": {
         "name": "Steckdose {socket_number} Gültigkeitsdauer des maximalen Stroms"
       },
-      "max_current": {
+      "max_current_valid_time": {
+        "name": "Gültigkeitsdauer des maximalen Stroms"
+      },
+      "max_current_socket": {
         "name": "Steckdose {socket_number} maximaler Strom"
       },
-      "active_load_balancing_safe_current": {
+      "max_current": {
+        "name": "Maximaler Strom"
+      },
+      "active_load_balancing_safe_current_socket": {
         "name": "Steckdose {socket_number} sicherer Strom bei aktivem Lastmanagement"
       },
-      "received_sp_accounted_for": {
+      "active_load_balancing_safe_current": {
+        "name": "Sicherer Strom bei aktivem Lastmanagement"
+      },
+      "received_sp_accounted_for_socket": {
         "name": "Steckdose {socket_number} empfangener Sollwert berücksichtigt",
         "state": {
           "on": "Ja",
           "off": "Nein"
         }
       },
-      "charging_mode": {
+      "received_sp_accounted_for": {
+        "name": "Empfangener Sollwert berücksichtigt",
+        "state": {
+          "on": "Ja",
+          "off": "Nein"
+        }
+      },
+      "charging_mode_socket": {
         "name": "Steckdose {socket_number} Lademodus"
       },
-      "car_charging": {
+      "charging_mode": {
+        "name": "Lademodus"
+      },
+      "car_charging_socket": {
         "name": "Steckdose {socket_number} Auto lädt",
         "state": {
           "on": "Lädt",
           "off": "Lädt nicht"
         }
       },
-      "car_connected": {
+      "car_charging": {
+        "name": "Auto lädt",
+        "state": {
+          "on": "Lädt",
+          "off": "Lädt nicht"
+        }
+      },
+      "car_connected_socket": {
         "name": "Steckdose {socket_number} Auto verbunden",
         "state": {
           "on": "Verbunden",
           "off": "Nicht verbunden"
         }
       },
-      "current_session_wh": {
+      "car_connected": {
+        "name": "Auto verbunden",
+        "state": {
+          "on": "Verbunden",
+          "off": "Nicht verbunden"
+        }
+      },
+      "current_session_wh_socket": {
         "name": "Steckdose {socket_number} aktuelle Sitzung Wh"
       },
-      "current_session_duration": {
+      "current_session_wh": {
+        "name": "Aktuelle Sitzung Wh"
+      },
+      "current_session_duration_socket": {
         "name": "Steckdose {socket_number} aktuelle Sitzungsdauer"
+      },
+      "current_session_duration": {
+        "name": "Aktuelle Sitzungsdauer"
       }
     },
     "number": {
-      "max_current_limit": {
+      "max_current_limit_socket": {
         "name": "Steckdose {socket_number} maximales Stromlimit"
+      },
+      "max_current_limit": {
+        "name": "Maximales Stromlimit"
       }
     },
     "select": {
-      "usable_phases": {
+      "usable_phases_socket": {
         "name": "Steckdose {socket_number} nutzbare Phasen"
+      },
+      "usable_phases": {
+        "name": "Nutzbare Phasen"
       }
     }
   }

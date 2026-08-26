@@ -118,17 +118,18 @@ BOOLEAN_EXPLAINED = {
     0: False,
 }
 
-# Maps sensor keys whose value comes from BOOLEAN_EXPLAINED to the
-# translation_key used to render "on"/"off" as a localized enum state
-# instead of the raw Python boolean.
-ENUM_SENSOR_TRANSLATION_KEYS = {
-    "backofficeConnected": "backoffice_connected",
-    "socket_1_setpointAccounted": "received_sp_accounted_for",
-    "socket_2_setpointAccounted": "received_sp_accounted_for",
-    "socket_1_carconnected": "car_connected",
-    "socket_2_carconnected": "car_connected",
-    "socket_1_carcharging": "car_charging",
-    "socket_2_carcharging": "car_charging",
+# Sensor keys whose value comes from BOOLEAN_EXPLAINED and should be
+# rendered as a localized "on"/"off" enum state instead of a raw
+# Python boolean. Their translation_key already comes from
+# SENSOR_TYPES/SOCKET_SENSOR_TYPES.
+ENUM_SENSOR_KEYS = {
+    "backofficeConnected",
+    "socket_1_setpointAccounted",
+    "socket_2_setpointAccounted",
+    "socket_1_carconnected",
+    "socket_2_carconnected",
+    "socket_1_carcharging",
+    "socket_2_carcharging",
 }
 
 METER_STATE_MODES = {    

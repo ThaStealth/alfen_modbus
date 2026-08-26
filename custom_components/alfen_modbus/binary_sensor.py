@@ -95,9 +95,11 @@ class AlfenBinarySensor(AlfenEntity, BinarySensorEntity):
         self.entity_description = entity_description
         if socket is not None:
             self.key = f"socket_{socket}_{entity_description.key}"
-            self._attr_translation_placeholders = {
-                "socket_number": socket,
-            }
+            if hub.has_socket_2:
+                self._attr_translation_key = f"{entity_description.translation_key}_socket"
+                self._attr_translation_placeholders = {
+                    "socket_number": socket,
+                }
         else:
             self.key = entity_description.key
         self._attr_unique_id = f"{name}_{self.key}"
