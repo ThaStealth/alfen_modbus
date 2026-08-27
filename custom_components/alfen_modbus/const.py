@@ -97,6 +97,16 @@ SOCKET_SENSOR_TYPES = {
 SCN_SENSOR_TYPES = {
     "SCN_Name": ["scn_name", "scnName", None, None],
     "Number_of_scn_sockets": ["number_of_scn_sockets", "scnSockets", None, None],
+    "SCN_Total_Consumption_L1": ["scn_total_consumption_l1", "scnTotalConsumptionL1", "A", "mdi:current-ac"],
+    "SCN_Total_Consumption_L2": ["scn_total_consumption_l2", "scnTotalConsumptionL2", "A", "mdi:current-ac"],
+    "SCN_Total_Consumption_L3": ["scn_total_consumption_l3", "scnTotalConsumptionL3", "A", "mdi:current-ac"],
+    "SCN_Actual_Max_Current_L1": ["scn_actual_max_current_l1", "scnActualMaxCurrentL1", "A", "mdi:current-ac"],
+    "SCN_Actual_Max_Current_L2": ["scn_actual_max_current_l2", "scnActualMaxCurrentL2", "A", "mdi:current-ac"],
+    "SCN_Actual_Max_Current_L3": ["scn_actual_max_current_l3", "scnActualMaxCurrentL3", "A", "mdi:current-ac"],
+    "SCN_Max_Current_Valid_Time_L1": ["scn_max_current_valid_time_l1", "scnMaxCurrentValidTimeL1", "s", None],
+    "SCN_Max_Current_Valid_Time_L2": ["scn_max_current_valid_time_l2", "scnMaxCurrentValidTimeL2", "s", None],
+    "SCN_Max_Current_Valid_Time_L3": ["scn_max_current_valid_time_l3", "scnMaxCurrentValidTimeL3", "s", None],
+    "SCN_Safe_Current": ["scn_safe_current", "scnSafeCurrent", "A", "mdi:current-ac"],
 }
 
 
@@ -106,11 +116,6 @@ METER_TYPE = {
     2: "UDP",
     3: "P1",
     4: "Other",
-}
-
-SCN_MAX_CURRENT_ENABLED = {
-    1: "Enabled",
-    0: "Disbled",    
 }
 
 BOOLEAN_EXPLAINED = {
@@ -168,4 +173,15 @@ CONTROL_PHASE = [
 
 CONTROL_SLAVE_MAX_CURRENT = [
     ["max_current_limit", MAX_CURRENT_S, 1210, "f", {"min": 0, "max": 32, "unit": "A", "mode": "slider", "step": 0.1}]
+]
+
+SCN_MAX_CURRENT_L = "scnMaxCurrent"
+SCN_MAX_CURRENT_VALID_TIME_L = "scnMaxCurrentValidTime"
+
+SCN_ACTUAL_MAX_CURRENT_L = "scnActualMaxCurrent"
+
+CONTROL_SCN_MAX_CURRENT = [
+    ["scn_max_current_phase_l1", SCN_MAX_CURRENT_L + "L1", "L1", 1417, {"min": 0, "max": 32, "unit": "A", "mode": "slider", "step": 0.1}],
+    ["scn_max_current_phase_l2", SCN_MAX_CURRENT_L + "L2", "L2", 1419, {"min": 0, "max": 32, "unit": "A", "mode": "slider", "step": 0.1}],
+    ["scn_max_current_phase_l3", SCN_MAX_CURRENT_L + "L3", "L3", 1421, {"min": 0, "max": 32, "unit": "A", "mode": "slider", "step": 0.1}],
 ]

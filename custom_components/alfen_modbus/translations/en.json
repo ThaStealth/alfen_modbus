@@ -90,6 +90,13 @@
           "on": "Charging",
           "off": "Not charging"
         }
+      },
+      "scn_max_current_enabled": {
+        "name": "SCN max current enabled",
+        "state": {
+          "on": "Enabled",
+          "off": "Disabled"
+        }
       }
     },
     "sensor": {
@@ -138,6 +145,36 @@
       },
       "number_of_scn_sockets": {
         "name": "Number of SCN sockets"
+      },
+      "scn_total_consumption_l1": {
+        "name": "SCN total consumption L1"
+      },
+      "scn_total_consumption_l2": {
+        "name": "SCN total consumption L2"
+      },
+      "scn_total_consumption_l3": {
+        "name": "SCN total consumption L3"
+      },
+      "scn_actual_max_current_l1": {
+        "name": "SCN actual max current L1"
+      },
+      "scn_actual_max_current_l2": {
+        "name": "SCN actual max current L2"
+      },
+      "scn_actual_max_current_l3": {
+        "name": "SCN actual max current L3"
+      },
+      "scn_max_current_valid_time_l1": {
+        "name": "SCN max current valid time L1"
+      },
+      "scn_max_current_valid_time_l2": {
+        "name": "SCN max current valid time L2"
+      },
+      "scn_max_current_valid_time_l3": {
+        "name": "SCN max current valid time L3"
+      },
+      "scn_safe_current": {
+        "name": "SCN safe current"
       },
       "meter_state_socket": {
         "name": "Socket {socket_number} meter state"
@@ -524,6 +561,15 @@
       },
       "max_current_limit": {
         "name": "Max current limit"
+      },
+      "scn_max_current_phase_l1": {
+        "name": "SCN max current L1"
+      },
+      "scn_max_current_phase_l2": {
+        "name": "SCN max current L2"
+      },
+      "scn_max_current_phase_l3": {
+        "name": "SCN max current L3"
       }
     },
     "select": {
@@ -533,6 +579,12 @@
       "usable_phases": {
         "name": "Usable phases"
       }
+    }
+  },
+  "issues": {
+    "ng9xx_firmware_outdated": {
+      "title": "Charger firmware has a known power budget reset bug",
+      "description": "This NG9xx charger reports firmware {firmware_version}, which is older than 6.4.0-4210. On older firmware, the power budget can reset to 0A when no car is connected, requiring a charger restart to recover. Upgrade the charger firmware via the Alfen Service Installer app to resolve this."
     }
   }
 }

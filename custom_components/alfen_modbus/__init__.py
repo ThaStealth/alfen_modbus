@@ -27,8 +27,13 @@ from .const import (
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     MAX_CURRENT_S,
+    SCN_MAX_CURRENT_L,
+    SCN_MAX_CURRENT_VALID_TIME_L,
     VALID_TIME_S,
 )
+# SCN_MAX_CURRENT_VALID_TIME_L keys the "SCN max current valid time" sensors below;
+# unlike per-socket max current, SCN max current is not auto-renewed (see number.py).
+from .repairs import async_check_firmware, async_clear_firmware_issue
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -98,6 +103,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: AlfenConfigEntry):
         _LOGGER.exception("Unable to connect to %s:%s", host, port)
         raise ConfigEntryNotReady(f"Unable to connect to {host}:{port}") from err
 
+    async_check_firmware(
+        hass,
+        entry.entry_id,
+        hub.data.get("platformType", ""),
+        hub.data.get("firmwareVersion", ""),
+    )
+
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 
@@ -112,6 +124,8 @@ async def async_unload_entry(hass, entry):
             ]
         )
     )
+    if unload_ok:
+        async_clear_firmware_issue(hass, entry.entry_id)
     return unload_ok
 
 
@@ -370,7 +384,25 @@ class AlfenModbusHub:
 
             self.data["scnName"] = self.decode_from_registers(status_data.registers,0,4,self._client.DATATYPE.STRING).strip('\x00')
             self.data["scnSockets"] =  self.decode_from_registers(status_data.registers,4,1,self._client.DATATYPE.UINT16)
-            #todo, Smart charging network registers
+
+            self.data["scnTotalConsumptionL1"] = round(self.decode_from_registers(status_data.registers,5,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["scnTotalConsumptionL2"] = round(self.decode_from_registers(status_data.registers,7,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["scnTotalConsumptionL3"] = round(self.decode_from_registers(status_data.registers,9,2,self._client.DATATYPE.FLOAT32),2)
+
+            self.data["scnActualMaxCurrentL1"] = round(self.decode_from_registers(status_data.registers,11,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["scnActualMaxCurrentL2"] = round(self.decode_from_registers(status_data.registers,13,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["scnActualMaxCurrentL3"] = round(self.decode_from_registers(status_data.registers,15,2,self._client.DATATYPE.FLOAT32),2)
+
+            self.data[SCN_MAX_CURRENT_L+"L1"] = round(self.decode_from_registers(status_data.registers,17,2,self._client.DATATYPE.FLOAT32),2)
+            self.data[SCN_MAX_CURRENT_L+"L2"] = round(self.decode_from_registers(status_data.registers,19,2,self._client.DATATYPE.FLOAT32),2)
+            self.data[SCN_MAX_CURRENT_L+"L3"] = round(self.decode_from_registers(status_data.registers,21,2,self._client.DATATYPE.FLOAT32),2)
+
+            self.data[SCN_MAX_CURRENT_VALID_TIME_L+"L1"] = self.decode_from_registers(status_data.registers,23,2,self._client.DATATYPE.UINT32)
+            self.data[SCN_MAX_CURRENT_VALID_TIME_L+"L2"] = self.decode_from_registers(status_data.registers,25,2,self._client.DATATYPE.UINT32)
+            self.data[SCN_MAX_CURRENT_VALID_TIME_L+"L3"] = self.decode_from_registers(status_data.registers,27,2,self._client.DATATYPE.UINT32)
+
+            self.data["scnSafeCurrent"] = round(self.decode_from_registers(status_data.registers,29,2,self._client.DATATYPE.FLOAT32),2)
+            self.data["scnMaxCurrentEnabled"] = self.decode_from_registers(status_data.registers,31,1,self._client.DATATYPE.UINT16)
         return True
         
     async def read_modbus_data_socket(self,socket):
@@ -385,7 +417,12 @@ class AlfenModbusHub:
                 return False
      
             self.data["socket_"+str(socket)+"_meterstate"] =  self.decode_from_registers(energy_registers,0,1,self._client.DATATYPE.UINT16)
-            self.data["socket_"+str(socket)+"_meterAge"] =  self.decode_from_registers(energy_registers,1,4,self._client.DATATYPE.UINT16)
+            # Register is UNSIGNED64 in units of 0.001s (milliseconds); convert to whole
+            # seconds to match the sensor's "s" unit. A reserved/unavailable register
+            # reads back as all-1s (NaN per the spec) - surface that as unknown rather
+            # than a bogus multi-million-year age.
+            raw_meter_age = self.decode_from_registers(energy_registers,1,4,self._client.DATATYPE.UINT64)
+            self.data["socket_"+str(socket)+"_meterAge"] = None if raw_meter_age == 0xFFFFFFFFFFFFFFFF else raw_meter_age / 1000
             self.data["socket_"+str(socket)+"_meterType"] =  self.decode_from_registers(energy_registers,5,1,self._client.DATATYPE.UINT16)
             
             self.data["socket_"+str(socket)+"_VL1-N"] =   round(self.decode_from_registers(energy_registers,6,2,self._client.DATATYPE.FLOAT32),2)
@@ -455,23 +492,33 @@ class AlfenModbusHub:
             self.data["socket_"+str(socket)+"_setpointAccounted"] =  self.decode_from_registers(status_data.registers, 14, 1,self._client.DATATYPE.UINT16)
             self.data["socket_"+str(socket)+"_chargephases"] =  self.decode_from_registers(status_data.registers, 15, 1,self._client.DATATYPE.UINT16)
 
-            # IEC 61851 state families: A/E/F idle, B connected, C/D charging.
-            # Prefix matching (A1, C2, FF, ...) - exact match misclassifies variants.
+            # IEC 61851 state families: A/E/F idle, B/C1/D1 connected but not
+            # drawing current, C2/D2 charging (PWM applied - see the Mode 3
+            # State table: only C2 and D2 have "Charging: Yes"). Endswith("2")
+            # rather than an exact-match set, to tolerate trailing junk some
+            # firmware versions have been observed to append to the string.
             if not mode3 or mode3.startswith(("A", "E", "F")):
                 self.data["socket_"+str(socket)+"_carconnected"] = 0
             else:
                 self.data["socket_"+str(socket)+"_carconnected"] = 1
 
-            if not mode3.startswith(("C", "D")):
-                self.data["socket_"+str(socket)+"_carcharging"] = 0
-            else:
-                if "socket_"+str(socket)+"_carcharging" not in self.data or self.data["socket_"+str(socket)+"_carcharging"] == 0:                    
-                    self.data["socket_"+str(socket)+"_chargingStartWh"] = self.data["socket_"+str(socket)+"_realEnergyDeliveredSum"]
-                    self.data["socket_"+str(socket)+"_chargingStart"] = self.data["stationTime"]
+            if mode3.startswith(("C", "D")) and mode3.endswith("2"):
                 self.data["socket_"+str(socket)+"_carcharging"] = 1
-                
-            if "socket_"+str(socket)+"_chargingStartWh" in self.data and "socket_"+str(socket)+"_chargingStart" in self.data and self.data["socket_"+str(socket)+"_carcharging"] == 1:     
-                self.data["socket_"+str(socket)+"_currentSession"] = self.data["socket_"+str(socket)+"_realEnergyDeliveredSum"] - self.data["socket_"+str(socket)+"_chargingStartWh"]               
+            else:
+                self.data["socket_"+str(socket)+"_carcharging"] = 0
+
+            # Session tracks the whole connected period (plug-in to unplug), not
+            # just PWM-active spans, so a brief charging pause (e.g. C2->C1->C2)
+            # doesn't reset the session's accumulated Wh/duration.
+            if self.data["socket_"+str(socket)+"_carconnected"] == 0:
+                self.data.pop("socket_"+str(socket)+"_chargingStartWh", None)
+                self.data.pop("socket_"+str(socket)+"_chargingStart", None)
+            elif "socket_"+str(socket)+"_chargingStartWh" not in self.data:
+                self.data["socket_"+str(socket)+"_chargingStartWh"] = self.data["socket_"+str(socket)+"_realEnergyDeliveredSum"]
+                self.data["socket_"+str(socket)+"_chargingStart"] = self.data["stationTime"]
+
+            if "socket_"+str(socket)+"_chargingStartWh" in self.data and "socket_"+str(socket)+"_chargingStart" in self.data:
+                self.data["socket_"+str(socket)+"_currentSession"] = self.data["socket_"+str(socket)+"_realEnergyDeliveredSum"] - self.data["socket_"+str(socket)+"_chargingStartWh"]
                 self.data["socket_"+str(socket)+"_currentSessionDuration"] = self.data["stationTime"] - self.data["socket_"+str(socket)+"_chargingStart"]
 
             if self.data["socket_"+str(socket)+"_chargephases"] in CONTROL_PHASE_MODES:

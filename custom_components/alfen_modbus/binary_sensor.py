@@ -23,6 +23,14 @@ BINARY_SENSOR_ENTITY_DESCRIPTORS: tuple[BinarySensorEntityDescription, ...] = (
     ),
 )
 
+SCN_BINARY_SENSOR_ENTITY_DESCRIPTORS: tuple[BinarySensorEntityDescription, ...] = (
+    BinarySensorEntityDescription(
+        key="scnMaxCurrentEnabled",
+        translation_key="scn_max_current_enabled",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+)
+
 SOCKET_BINARY_SENSOR_ENTITY_DESCRIPTORS: tuple[BinarySensorEntityDescription, ...] = (
     BinarySensorEntityDescription(
         key="carconnected",
@@ -62,6 +70,17 @@ async def async_setup_entry(hass, entry: AlfenConfigEntry, async_add_entities) -
         )
         for entity_description in BINARY_SENSOR_ENTITY_DESCRIPTORS
     )
+    if hub.read_scn:
+        entities.extend(
+            AlfenBinarySensor(
+                hub_name,
+                hub,
+                device_info,
+                entity_description,
+                None,
+            )
+            for entity_description in SCN_BINARY_SENSOR_ENTITY_DESCRIPTORS
+        )
     entities.extend(
         AlfenBinarySensor(
             hub_name,

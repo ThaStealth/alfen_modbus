@@ -17,8 +17,10 @@ Home Assistant integration for **Alfen Eve NG9xx** and **AHP** series EV charger
 - 📊 **Session tracking** - Energy consumed and duration per charging session
 - 🔄 **Auto-renew max current** - Prevents timeout to safe current mode
 - 🏢 **Multi-socket support** - Works with dual socket chargers
-- 🌐 **SCN support** - Smart Charging Network (partial)
+- 🌐 **SCN support** - Smart Charging Network: per-phase consumption, actual/max/safe current and enable state, with a control to set the max current per phase
 - 🗣️ **Localized UI** - Entity names and states are translated into English, Dutch, German, French, Finnish, Norwegian, Swedish and Danish, following your Home Assistant language setting
+- 🩺 **Diagnostics** - Download a redacted diagnostics report from Settings → Devices & Services for bug reports
+- 🚑 **Repair notifications** - Flags known issues (e.g. outdated NG9xx firmware) directly in Settings → Repairs
 
 ## Requirements
 
@@ -84,6 +86,7 @@ See the [Alfen Smart Charging Manual](https://knowledge.alfen.com/space/IN/63976
 | | Energy (Delivered, Consumed per phase + Sum) |
 | | Mode 3 State, Availability, Charging Phases |
 | **Derived** | Car Connected, Car Charging, Session Wh, Session Duration |
+| **SCN** (if enabled) | Total Consumption, Actual Max Current and Safe Current per phase, Max Current Enabled |
 
 ## Controls
 
@@ -91,10 +94,11 @@ See the [Alfen Smart Charging Manual](https://knowledge.alfen.com/space/IN/63976
 |---------|-------------|
 | **Max Current** | Set the maximum charging current (load balancing) |
 | **Phase Mode** | Select 1-phase or 3-phase charging |
+| **SCN Max Current per phase** (if enabled) | Set the maximum current for the Smart Charging Network as a whole, per phase |
 
 ## Known Issues
 
-- Power budget may reset to 0A when no car is connected (fixed in NG9xx firmware [6.4.0-4210](https://knowledge.alfen.com/space/IN/243466257))
+- Power budget may reset to 0A when no car is connected (fixed in NG9xx firmware [6.4.0-4210](https://knowledge.alfen.com/space/IN/243466257)). The integration raises a repair notification in Settings → Repairs if it detects an NG9xx charger on older firmware.
 - **Reallin power meter (post-2021)**: Chargers with a Reallin power meter produced after 2021 only export a subset of measurement values. Per-phase energy, apparent energy, and reactive energy sensors will show as "unavailable" (NaN). This is a hardware limitation, not a bug.
 - **AHP platform, integration < v0.2.1**: all entities stay unavailable because a single oversized Modbus read fails on every poll cycle. Update to v0.2.1 or newer ([#40](https://github.com/ThaStealth/alfen_modbus/issues/40)).
 

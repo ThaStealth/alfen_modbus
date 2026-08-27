@@ -6,9 +6,11 @@ from homeassistant.const import CONF_NAME
 from . import AlfenConfigEntry
 from .const import (
     ATTR_MANUFACTURER,
+    CONTROL_SCN_MAX_CURRENT,
     CONTROL_SLAVE_MAX_CURRENT,
     DOMAIN,
     MAX_CURRENT_S,
+    SCN_ACTUAL_MAX_CURRENT_L,
 )
 from .entity import AlfenEntity
 
@@ -56,6 +58,21 @@ async def async_setup_entry(hass, entry: AlfenConfigEntry, async_add_entities) -
                 number_info[4],
             )
             entities.append(number)
+
+    if hub.has_scn:
+        for scn_number_info in CONTROL_SCN_MAX_CURRENT:
+            entities.append(
+                AlfenSCNNumber(
+                    hub_name,
+                    hub,
+                    device_info,
+                    scn_number_info[0],
+                    scn_number_info[1],
+                    scn_number_info[2],
+                    scn_number_info[3],
+                    scn_number_info[4],
+                )
+            )
 
     async_add_entities(entities)
     return True
@@ -146,6 +163,66 @@ class AlfenNumber(AlfenEntity, NumberEntity):
                 value = max_allowed
 
         self._hub.data[self._key] = value
-        await self.update_value()       
+        await self.update_value()
+        self.hass.async_create_task(self._hub.async_refresh_modbus_data())
+        self.async_write_ha_state()
+
+
+class AlfenSCNNumber(AlfenEntity, NumberEntity):
+    """Representation of an Alfen Modbus SCN max-current-per-phase number.
+
+    SCN registers live at the station's own Modbus address (unlike socket
+    max current, which is written to the socket's slave address), so this
+    doesn't reuse AlfenNumber's per-socket unit. It also does not auto-renew:
+    unlike per-socket max current, enabling this is a deliberate takeover of
+    SCN balancing, not a side effect of reading SCN telemetry, so the setpoint
+    is written only when the user changes it and is left to lapse to the
+    station's configured safe current otherwise.
+    """
+
+    _attr_has_entity_name = True
+
+    def __init__(self,
+                 platform_name,
+                 hub,
+                 device_info,
+                 translation_key,
+                 key,
+                 phase,
+                 register,
+                 attrs
+    ) -> None:
+        """Initialize the number."""
+        super().__init__(hub, device_info)
+        self._platform_name = platform_name
+        self._attr_translation_key = translation_key
+        self._key = key
+        self._actual_max_current_key = SCN_ACTUAL_MAX_CURRENT_L + phase
+        self._register = register
+        self._attr_native_min_value = attrs["min"]
+        self._attr_native_max_value = attrs["max"]
+        self._attr_native_unit_of_measurement = attrs["unit"]
+        self._attr_mode = attrs["mode"]
+        self._attr_native_step = attrs["step"]
+
+    @property
+    def unique_id(self) -> str | None:
+        return f"{self._platform_name}_{self._key}"
+
+    @property
+    def native_max_value(self) -> float:
+        return self._hub.data.get(self._actual_max_current_key, self._attr_native_max_value)
+
+    @property
+    def native_value(self) -> float | None:
+        return self._hub.data.get(self._key)
+
+    async def async_set_native_value(self, value: float) -> None:
+        """Change the selected value."""
+        payload = self._hub._client.convert_to_registers(
+            float(value), data_type=self._hub._client.DATATYPE.FLOAT32, word_order="big"
+        )
+        await self._hub.write_registers(unit=self._hub._address, address=self._register, payload=payload)
+        self._hub.data[self._key] = value
         self.hass.async_create_task(self._hub.async_refresh_modbus_data())
         self.async_write_ha_state()

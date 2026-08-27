@@ -229,6 +229,24 @@ def setup_product_context():
     block.setValues(reg(1104), encode_uint16(1))     # Backoffice Connected
     block.setValues(reg(1105), encode_uint16(1))     # Number of Sockets
 
+    # === SCN (Registers 1400-1431) ===
+    block.setValues(reg(1400), encode_string("TESTSCN", 8))  # SCN Name (4 regs)
+    block.setValues(reg(1404), encode_uint16(2))             # SCN Sockets
+    block.setValues(reg(1405), encode_float(11.0))           # SCN Total Consumption L1
+    block.setValues(reg(1407), encode_float(12.0))           # SCN Total Consumption L2
+    block.setValues(reg(1409), encode_float(13.0))           # SCN Total Consumption L3
+    block.setValues(reg(1411), encode_float(21.0))           # SCN Actual Max Current L1
+    block.setValues(reg(1413), encode_float(22.0))           # SCN Actual Max Current L2
+    block.setValues(reg(1415), encode_float(23.0))           # SCN Actual Max Current L3
+    block.setValues(reg(1417), encode_float(31.0))           # SCN Max Current per Phase L1
+    block.setValues(reg(1419), encode_float(32.0))           # SCN Max Current per Phase L2
+    block.setValues(reg(1421), encode_float(33.0))           # SCN Max Current per Phase L3
+    block.setValues(reg(1423), encode_uint32(41))            # Remaining valid time L1
+    block.setValues(reg(1425), encode_uint32(42))            # Remaining valid time L2
+    block.setValues(reg(1427), encode_uint32(43))            # Remaining valid time L3
+    block.setValues(reg(1429), encode_float(51.0))           # SCN Safe Current
+    block.setValues(reg(1431), encode_uint16(1))             # SCN Modbus Slave Max Current Enable
+
     return ModbusDeviceContext(hr=block)
 
 # ============================================================================
@@ -247,7 +265,7 @@ def setup_socket_context(socket_id):
     # HA reads this as two value-aligned chunks (300-361 and 362-425)
     # and uses offsets from 300 against the concatenated block.
     block.setValues(reg(300), encode_uint16(3))      # Meter State (offset 0)
-    block.setValues(reg(301), encode_uint32(1500))   # Meter Age ms (offset 1, 4 regs but read as UINT16)
+    block.setValues(reg(301), encode_uint64(1500))   # Meter last value timestamp, ms (UNSIGNED64, 4 regs)
     block.setValues(reg(305), encode_uint16(1))      # Meter Type (offset 5)
     
     # Voltages L-N (float32, V) - offset 6, 8, 10
