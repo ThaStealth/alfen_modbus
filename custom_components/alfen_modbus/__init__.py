@@ -31,6 +31,7 @@ from .const import (
     SCN_MAX_CURRENT_VALID_TIME_L,
     VALID_TIME_S,
 )
+
 # SCN_MAX_CURRENT_VALID_TIME_L keys the "SCN max current valid time" sensors below;
 # unlike per-socket max current, SCN max current is not auto-renewed (see number.py).
 from .repairs import async_check_firmware, async_clear_firmware_issue
