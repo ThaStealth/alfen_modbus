@@ -51,9 +51,9 @@ async def async_setup_entry(hass, entry: AlfenConfigEntry, async_add_entities) -
 
     device_info = {
         "identifiers": {(DOMAIN, hub_name)},
+        "name": hub_name,
         "serial_number": hub.data.get("serial", None),
-        "manufacturer": hub.data.get("manufacturer", None),
-        "default_manufacturer": DEFAULT_MANUFACTURER,
+        "manufacturer": DEFAULT_MANUFACTURER,
         "model": hub.data.get("platformType", None),
         "sw_version": hub.data.get("firmwareVersion", None),
     }
