@@ -19,7 +19,6 @@ from .const import (
     CONF_MODBUS_ADDRESS,
     CONF_READ_SCN,
     CONF_READ_SOCKET2,
-    CONTROL_PHASE_MODES,
     DEFAULT_MODBUS_ADDRESS,
     DEFAULT_NAME,
     DEFAULT_READ_SCN,
@@ -27,6 +26,7 @@ from .const import (
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     MAX_CURRENT_S,
+    PHASE_SWITCH_OPTIONS,
     SCN_MAX_CURRENT_L,
     SCN_MAX_CURRENT_VALID_TIME_L,
     VALID_TIME_S,
@@ -58,7 +58,7 @@ CONFIG_SCHEMA = vol.Schema(
     {DOMAIN: vol.Schema({cv.slug: ALFEN_MODBUS_SCHEMA})}, extra=vol.ALLOW_EXTRA
 )
 
-PLATFORMS = ["binary_sensor", "number", "select", "sensor"]
+PLATFORMS = ["binary_sensor", "number", "select", "sensor", "switch"]
 
 type AlfenConfigEntry = ConfigEntry[AlfenModbusHub]
 
@@ -508,6 +508,12 @@ class AlfenModbusHub:
             else:
                 self.data["socket_"+str(socket)+"_carcharging"] = 0
 
+            # Alfen has no dedicated enable/disable coil, so "enabled" is
+            # derived from the max-current setpoint itself (register 1210):
+            # 0 A means charging is disabled, matching the charger_enabled
+            # switch's on/off semantics below.
+            self.data["socket_"+str(socket)+"_chargerenabled"] = 1 if self.data[MAX_CURRENT_S+str(socket)] > 0 else 0
+
             # Session tracks the whole connected period (plug-in to unplug), not
             # just PWM-active spans, so a brief charging pause (e.g. C2->C1->C2)
             # doesn't reset the session's accumulated Wh/duration.
@@ -522,8 +528,8 @@ class AlfenModbusHub:
                 self.data["socket_"+str(socket)+"_currentSession"] = self.data["socket_"+str(socket)+"_realEnergyDeliveredSum"] - self.data["socket_"+str(socket)+"_chargingStartWh"]
                 self.data["socket_"+str(socket)+"_currentSessionDuration"] = self.data["stationTime"] - self.data["socket_"+str(socket)+"_chargingStart"]
 
-            if self.data["socket_"+str(socket)+"_chargephases"] in CONTROL_PHASE_MODES:
-                self.data["usephases_S"+str(socket)] = CONTROL_PHASE_MODES[self.data["socket_"+str(socket)+"_chargephases"]]
+            if self.data["socket_"+str(socket)+"_chargephases"] in PHASE_SWITCH_OPTIONS:
+                self.data["usephases_S"+str(socket)] = PHASE_SWITCH_OPTIONS[self.data["socket_"+str(socket)+"_chargephases"]]
         return True           
         
         

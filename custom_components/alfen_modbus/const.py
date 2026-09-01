@@ -166,13 +166,23 @@ CONTROL_PHASE_MODES = {
     3: "3 Phases",    
 }
 
+# EVCC (and other integrations expecting a plain select) require the literal
+# option values "1"/"3" rather than the human-readable CONTROL_PHASE_MODES
+# text used by the read-only "charging mode" sensor.
+PHASE_SWITCH_OPTIONS = {
+    1: "1",
+    3: "3",
+}
+
 CONTROL_PHASE = [
-    ["usable_phases", "usephases_S", 1215, CONTROL_PHASE_MODES],
+    ["usable_phases", "usephases_S", 1215, PHASE_SWITCH_OPTIONS],
 ]
 
 
+MAX_CURRENT_REGISTER = 1210
+
 CONTROL_SLAVE_MAX_CURRENT = [
-    ["max_current_limit", MAX_CURRENT_S, 1210, "f", {"min": 0, "max": 32, "unit": "A", "mode": "slider", "step": 0.1}]
+    ["max_current_limit", MAX_CURRENT_S, MAX_CURRENT_REGISTER, "f", {"min": 0, "max": 32, "unit": "A", "mode": "slider", "step": 0.1}]
 ]
 
 SCN_MAX_CURRENT_L = "scnMaxCurrent"

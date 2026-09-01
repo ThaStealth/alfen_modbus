@@ -72,6 +72,20 @@
           "on": "Enabled",
           "off": "Disabled"
         }
+      },
+      "charger_enabled_socket": {
+        "name": "Socket {socket_number} charger enabled",
+        "state": {
+          "on": "Enabled",
+          "off": "Disabled"
+        }
+      },
+      "charger_enabled": {
+        "name": "Charger enabled",
+        "state": {
+          "on": "Enabled",
+          "off": "Disabled"
+        }
       }
     },
     "sensor": {
@@ -553,6 +567,14 @@
       },
       "usable_phases": {
         "name": "Usable phases"
+      }
+    },
+    "switch": {
+      "charger_enabled_socket": {
+        "name": "Socket {socket_number} charger enabled"
+      },
+      "charger_enabled": {
+        "name": "Charger enabled"
       }
     }
   },

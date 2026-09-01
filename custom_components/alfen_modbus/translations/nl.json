@@ -90,6 +90,20 @@
           "on": "Opladen",
           "off": "Niet opladen"
         }
+      },
+      "charger_enabled_socket": {
+        "name": "Aansluiting {socket_number} laden ingeschakeld",
+        "state": {
+          "on": "Ingeschakeld",
+          "off": "Uitgeschakeld"
+        }
+      },
+      "charger_enabled": {
+        "name": "Laden ingeschakeld",
+        "state": {
+          "on": "Ingeschakeld",
+          "off": "Uitgeschakeld"
+        }
       }
     },
     "sensor": {
@@ -532,6 +546,14 @@
       },
       "usable_phases": {
         "name": "Bruikbare fasen"
+      }
+    },
+    "switch": {
+      "charger_enabled_socket": {
+        "name": "Aansluiting {socket_number} laden ingeschakeld"
+      },
+      "charger_enabled": {
+        "name": "Laden ingeschakeld"
       }
     }
   }

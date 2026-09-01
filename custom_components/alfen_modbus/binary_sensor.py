@@ -42,6 +42,10 @@ SOCKET_BINARY_SENSOR_ENTITY_DESCRIPTORS: tuple[BinarySensorEntityDescription, ..
         translation_key="carcharging",
         device_class=BinarySensorDeviceClass.BATTERY_CHARGING,
     ),
+    BinarySensorEntityDescription(
+        key="chargerenabled",
+        translation_key="charger_enabled",
+    ),
 )
 
 async def async_setup_entry(hass, entry: AlfenConfigEntry, async_add_entities) -> None:
