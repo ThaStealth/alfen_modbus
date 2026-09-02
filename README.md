@@ -99,7 +99,7 @@ See the [Alfen Smart Charging Manual](https://knowledge.alfen.com/space/IN/63976
 
 ## EVCC Integration
 
-[EVCC](https://evcc.io)'s generic Home Assistant charger lets you map its fields directly to entities from this integration.
+[EVCC](https://evcc.io)'s generic Home Assistant charger lets you map its fields directly to entities from this integration. See [docs/evcc.md](docs/evcc.md) for a step-by-step walkthrough of EVCC's configuration wizard.
 
 ### Field mapping
 
