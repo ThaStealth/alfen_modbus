@@ -11,7 +11,8 @@
           "modbus_address": "Modbus-Adresse",
           "read_scn": "SCN lesen",
           "read_socket_2": "Steckdose 2 lesen",
-          "scan_interval": "Abfrageintervall"
+          "scan_interval": "Abfrageintervall",
+          "measurement_interval": "Messintervall"
         },
         "data_description": {
           "host": "Die IP-Adresse oder der Hostname deiner Alfen-Ladestation",
@@ -20,7 +21,8 @@
           "modbus_address": "Modbus-Slave-Adresse (Standard: 200)",
           "read_scn": "Smart Charging Network-Register aktivieren",
           "read_socket_2": "Steckdose 2 für Geräte mit zwei Steckdosen aktivieren",
-          "scan_interval": "Abfrageintervall in Sekunden"
+          "scan_interval": "Abfrageintervall in Sekunden für Energiezähler und Stationsdaten",
+          "measurement_interval": "Abfrageintervall in Sekunden für Leistung, Strom, Spannung und Ladestatus. 2-5 s für Lastmanagement; Standard ist das Abfrageintervall"
         }
       }
     },
@@ -43,14 +45,16 @@
           "port": "Port",
           "read_scn": "SCN lesen",
           "read_socket_2": "Steckdose 2 lesen",
-          "scan_interval": "Abfrageintervall"
+          "scan_interval": "Abfrageintervall",
+          "measurement_interval": "Messintervall"
         },
         "data_description": {
           "host": "Die IP-Adresse oder der Hostname deiner Alfen-Ladestation",
           "port": "TCP-Port (Standard: 502)",
           "read_scn": "Smart Charging Network-Register aktivieren",
           "read_socket_2": "Steckdose 2 für Geräte mit zwei Steckdosen aktivieren",
-          "scan_interval": "Abfrageintervall in Sekunden"
+          "scan_interval": "Abfrageintervall in Sekunden für Energiezähler und Stationsdaten",
+          "measurement_interval": "Abfrageintervall in Sekunden für Leistung, Strom, Spannung und Ladestatus. 2-5 s für Lastmanagement; Standard ist das Abfrageintervall"
         }
       }
     },

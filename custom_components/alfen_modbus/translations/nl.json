@@ -11,7 +11,8 @@
           "modbus_address": "Modbus adres",
           "read_scn": "Lees SCN (Smart Charging Network) data",
           "read_socket_2": "Lees 2e socket data",
-          "scan_interval": "De polling-frequentie van de modbus registratie in seconden"
+          "scan_interval": "De polling-frequentie van de modbus registratie in seconden",
+          "measurement_interval": "Meetinterval"
         },
         "data_description": {
           "host": "Het ip-adres of de hostnaam van uw Alfen-laadstation",
@@ -20,7 +21,8 @@
           "modbus_address": "Modbus slave-adres (standaard: 200)",
           "read_scn": "Schakel Smart Charging Network-registers in",
           "read_socket_2": "Schakel 2e socket in voor apparaten met twee sockets",
-          "scan_interval": "Polling-interval in seconden"
+          "scan_interval": "Polling-interval in seconden voor energietotalen en stationgegevens",
+          "measurement_interval": "Polling-interval in seconden voor vermogen, stroom, spanning en laadstatus. Gebruik 2-5 s voor load balancing; standaard gelijk aan het polling-interval"
         }
       }
     },
@@ -43,14 +45,16 @@
           "port": "Poort",
           "read_scn": "Lees SCN",
           "read_socket_2": "Lees 2e socket",
-          "scan_interval": "Polling-interval"
+          "scan_interval": "Polling-interval",
+          "measurement_interval": "Meetinterval"
         },
         "data_description": {
           "host": "Het ip-adres of de hostnaam van uw Alfen-laadstation",
           "port": "TCP-poort (standaard: 502)",
           "read_scn": "Schakel Smart Charging Network-registers in",
           "read_socket_2": "Schakel 2e socket in voor apparaten met twee sockets",
-          "scan_interval": "Polling-interval in seconden"
+          "scan_interval": "Polling-interval in seconden voor energietotalen en stationgegevens",
+          "measurement_interval": "Polling-interval in seconden voor vermogen, stroom, spanning en laadstatus. Gebruik 2-5 s voor load balancing; standaard gelijk aan het polling-interval"
         }
       }
     },

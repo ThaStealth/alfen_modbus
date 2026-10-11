@@ -9,6 +9,7 @@ from homeassistant.core import HomeAssistant, callback
 from pymodbus.client import ModbusTcpClient
 
 from .const import (
+    CONF_MEASUREMENT_INTERVAL,
     CONF_MODBUS_ADDRESS,
     CONF_READ_SCN,
     CONF_READ_SOCKET2,
@@ -32,6 +33,9 @@ DATA_SCHEMA = vol.Schema(
         vol.Optional(CONF_READ_SCN, default=DEFAULT_READ_SCN): bool,
         vol.Optional(CONF_READ_SOCKET2, default=DEFAULT_READ_SOCKET2): bool,
         vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): int,
+        vol.Optional(
+            CONF_MEASUREMENT_INTERVAL, default=DEFAULT_SCAN_INTERVAL
+        ): vol.All(int, vol.Range(min=1)),
     }
 )
 
@@ -157,6 +161,15 @@ class AlfenModbusOptionsFlowHandler(config_entries.OptionsFlow):
                         CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
                     ),
                 ): int,
+                vol.Optional(
+                    CONF_MEASUREMENT_INTERVAL,
+                    default=self.config_entry.data.get(
+                        CONF_MEASUREMENT_INTERVAL,
+                        self.config_entry.data.get(
+                            CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
+                        ),
+                    ),
+                ): vol.All(int, vol.Range(min=1)),
                 vol.Optional(
                     CONF_READ_SCN,
                     default=self.config_entry.data.get(CONF_READ_SCN, DEFAULT_READ_SCN),

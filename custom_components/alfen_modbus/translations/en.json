@@ -11,7 +11,8 @@
           "modbus_address": "Modbus Address",
           "read_scn": "Read SCN",
           "read_socket_2": "Read Socket 2",
-          "scan_interval": "Scan Interval"
+          "scan_interval": "Scan Interval",
+          "measurement_interval": "Measurement Interval"
         },
         "data_description": {
           "host": "The IP address or hostname of your Alfen device",
@@ -20,7 +21,8 @@
           "modbus_address": "Modbus slave address (default: 200)",
           "read_scn": "Enable Smart Charging Network registers",
           "read_socket_2": "Enable socket 2 for dual socket units",
-          "scan_interval": "Polling interval in seconds"
+          "scan_interval": "Polling interval in seconds for energy totals and station data",
+          "measurement_interval": "Polling interval in seconds for power, current, voltage and charger state. Use 2-5 s for load balancing; defaults to the scan interval"
         }
       }
     },
@@ -43,14 +45,16 @@
           "port": "Port",
           "read_scn": "Read SCN",
           "read_socket_2": "Read Socket 2",
-          "scan_interval": "Scan Interval"
+          "scan_interval": "Scan Interval",
+          "measurement_interval": "Measurement Interval"
         },
         "data_description": {
           "host": "The IP address or hostname of your Alfen device",
           "port": "TCP port (default: 502)",
           "read_scn": "Enable Smart Charging Network registers",
           "read_socket_2": "Enable socket 2 for dual socket units",
-          "scan_interval": "Polling interval in seconds"
+          "scan_interval": "Polling interval in seconds for energy totals and station data",
+          "measurement_interval": "Polling interval in seconds for power, current, voltage and charger state. Use 2-5 s for load balancing; defaults to the scan interval"
         }
       }
     },

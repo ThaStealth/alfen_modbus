@@ -21,3 +21,42 @@ jobs:
         uses: "hacs/action@main"
         with:
           category: "integration"
+  test:
+    name: Tests (Home Assistant ${{ matrix.homeassistant }}, pymodbus ${{ matrix.pymodbus }})
+    runs-on: "ubuntu-latest"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # The minimum Home Assistant version (hacs.json) and a recent one, each
+          # with the pymodbus pin of its core and the Python it needs.
+          - homeassistant: "2025.10.0"
+            pymodbus: "3.11.2"
+            python: "3.13"
+            # Core pins aiodns 3.5.0 but not pycares; pycares 5 breaks that aiodns.
+            extra: "pycares<5"
+          - homeassistant: "2026.9.4"
+            pymodbus: "3.13.1"
+            python: "3.14"
+            extra: ""
+    steps:
+      - uses: "actions/checkout@v4"
+        with:
+          fetch-depth: 0
+      - uses: "actions/setup-python@v5"
+        with:
+          python-version: "${{ matrix.python }}"
+      - name: Install the simulator environment
+        run: |
+          python -m venv sim-venv
+          sim-venv/bin/pip install -r simulator/requirements.txt
+      - name: Install the integration dependencies
+        run: pip install "homeassistant==${{ matrix.homeassistant }}" "pymodbus==${{ matrix.pymodbus }}" voluptuous python-dateutil ${{ matrix.extra && format('"{0}"', matrix.extra) || '' }}
+      - name: Run hub polling tests
+        run: python simulator/test_hub_polling.py
+        env:
+          ALFEN_SIM_PYTHON: sim-venv/bin/python
+      - name: Run sensor class tests
+        run: python simulator/test_sensor_classes.py
+        env:
+          ALFEN_SIM_PYTHON: sim-venv/bin/python

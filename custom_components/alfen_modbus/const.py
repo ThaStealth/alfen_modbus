@@ -12,6 +12,10 @@ ATTR_MANUFACTURER = "Alfen"
 CONF_MODBUS_ADDRESS = "modbus_address"
 CONF_READ_SCN = "read_scn"
 CONF_READ_SOCKET2 = "read_socket_2"
+# Polling interval for the live measurements (power, current, voltage, mode 3
+# state, setpoint). Load balancing needs these fresh; the rest of the registers
+# keep the slower scan_interval. Defaults to scan_interval: no change unless set.
+CONF_MEASUREMENT_INTERVAL = "measurement_interval"
 
 VALID_TIME_S = "maxCurrentValidTime_socket_"
 MAX_CURRENT_S = "maxCurrent_socket_"
@@ -60,10 +64,10 @@ SOCKET_SENSOR_TYPES = {
     "S1_Apparant_Power_PhaseL2": ["apparent_power_l2", "socket_{socket}_apparantPowerL2", "VA", None],
     "S1_Apparant_Power_PhaseL3": ["apparent_power_l3", "socket_{socket}_apparantPowerL3", "VA", None],
     "S1_Apparant_Power_Sum": ["apparent_power_sum", "socket_{socket}_apparantPowerSum", "VA", None],
-    "S1_Reactive_Power_Phase_L1": ["reactive_power_l1", "socket_{socket}_reactivePowerL1", "VAr", None],
-    "S1_Reactive_Power_Phase_L2": ["reactive_power_l2", "socket_{socket}_reactivePowerL2", "VAr", None],
-    "S1_Reactive_Power_Phase_L3": ["reactive_power_l3", "socket_{socket}_reactivePowerL3", "VAr", None],
-    "S1_Reactive_Power_Sum": ["reactive_power_sum", "socket_{socket}_reactivePowerSum", "VAr", None],
+    "S1_Reactive_Power_Phase_L1": ["reactive_power_l1", "socket_{socket}_reactivePowerL1", "var", None],
+    "S1_Reactive_Power_Phase_L2": ["reactive_power_l2", "socket_{socket}_reactivePowerL2", "var", None],
+    "S1_Reactive_Power_Phase_L3": ["reactive_power_l3", "socket_{socket}_reactivePowerL3", "var", None],
+    "S1_Reactive_Power_Sum": ["reactive_power_sum", "socket_{socket}_reactivePowerSum", "var", None],
     "S1_Real_Enegery_Delivered_Phase_L1": ["real_energy_delivered_l1", "socket_{socket}_realEnergyDeliveredL1", "Wh", None],
     "S1_Real_Enegery_Delivered_Phase_L2": ["real_energy_delivered_l2", "socket_{socket}_realEnergyDeliveredL2", "Wh", None],
     "S1_Real_Enegery_Delivered_Phase_L3": ["real_energy_delivered_l3", "socket_{socket}_realEnergyDeliveredL3", "Wh", None],
@@ -76,10 +80,10 @@ SOCKET_SENSOR_TYPES = {
     "S1_Apparant_Energy_Phase_L2": ["apparent_energy_l2", "socket_{socket}_apparantEnergyL2", "VAh", None],
     "S1_Apparant_Energy_Phase_L3": ["apparent_energy_l3", "socket_{socket}_apparantEnergyL3", "VAh", None],
     "S1_Apparant_Energy_Sum": ["apparent_energy_sum", "socket_{socket}_apparantEnergySum", "VAh", None],
-    "S1_Reactieve_Energy_Phase_L1": ["reactive_energy_l1", "socket_{socket}_reactiveEnergyL1", "VAh", None],
-    "S1_Reactieve_Energy_Phase_L2": ["reactive_energy_l2", "socket_{socket}_reactiveEnergyL2", "VAh", None],
-    "S1_Reactieve_Energy_Phase_L3": ["reactive_energy_l3", "socket_{socket}_reactiveEnergyL3", "VAh", None],
-    "S1_Reactieve_Energy_Sum": ["reactive_energy_sum", "socket_{socket}_reactiveEnergySum", "VAh", None],
+    "S1_Reactieve_Energy_Phase_L1": ["reactive_energy_l1", "socket_{socket}_reactiveEnergyL1", "varh", None],
+    "S1_Reactieve_Energy_Phase_L2": ["reactive_energy_l2", "socket_{socket}_reactiveEnergyL2", "varh", None],
+    "S1_Reactieve_Energy_Phase_L3": ["reactive_energy_l3", "socket_{socket}_reactiveEnergyL3", "varh", None],
+    "S1_Reactieve_Energy_Sum": ["reactive_energy_sum", "socket_{socket}_reactiveEnergySum", "varh", None],
     "S1_Availability": ["availability", "socket_{socket}_available", None, None],
     "S1_Mode3State": ["mode_3_state", "socket_{socket}_mode3state", None, None],
     "S1_Actual_Applied_Max_Current": ["actual_applied_max_current", "socket_{socket}_actualMaxCurrent", "A", "mdi:current-ac"],

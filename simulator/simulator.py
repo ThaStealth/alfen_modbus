@@ -213,7 +213,8 @@ def setup_product_context():
     
     # Time registers (168-178)
     import datetime
-    now = datetime.datetime.now()  # noqa: DTZ005 - simulates the charger's local wall clock
+    # Simulates the charger's local wall clock, so no time zone.
+    now = datetime.datetime.now()
     block.setValues(reg(168), encode_int16(now.year))
     block.setValues(reg(169), encode_int16(now.month))
     block.setValues(reg(170), encode_int16(now.day))
@@ -265,7 +266,7 @@ def setup_socket_context(socket_id):
     # HA reads this as two value-aligned chunks (300-361 and 362-425)
     # and uses offsets from 300 against the concatenated block.
     block.setValues(reg(300), encode_uint16(3))      # Meter State (offset 0)
-    block.setValues(reg(301), encode_uint64(1500))   # Meter last value timestamp, ms (UNSIGNED64, 4 regs)
+    block.setValues(reg(301), encode_uint64(500))    # Meter last value timestamp, ms (UNSIGNED64, 4 regs)
     block.setValues(reg(305), encode_uint16(1))      # Meter Type (offset 5)
     
     # Voltages L-N (float32, V) - offset 6, 8, 10
@@ -353,14 +354,27 @@ def setup_socket_context(socket_id):
 # Simulation Logic
 # ============================================================================
 
-async def update_simulation(context):
+def decode_float_regs(values):
+    return struct.unpack('>f', b''.join(int(v).to_bytes(2, 'big') for v in values))[0]
+
+
+def decode_double_regs(values):
+    return struct.unpack('>d', b''.join(int(v).to_bytes(2, 'big') for v in values))[0]
+
+
+async def update_simulation(context, static=False):
     """Updates simulation state periodically.
-    
+
     Mirrors written Max Current (1210) to Actual Applied Max Current (1206).
+    Unless static, the meter also behaves like a live charger: the reading age
+    cycles below one second, the real power follows the applied current and
+    phase setting, and the delivered energy grows while charging.
     """
+    tick = 0
     while True:
         await asyncio.sleep(1)
-        
+        tick += 1
+
         for unit in [ADDRESS_SOCKET_1, ADDRESS_SOCKET_2]:
             try:
                 slave = context[unit]
@@ -370,6 +384,23 @@ async def update_simulation(context):
                 if isinstance(values, list) and len(values) == 2:
                     # Write to Actual Applied Max Current (register 1206)
                     slave.setValues(3, 1206, values)
+                if static:
+                    continue
+
+                # Same addressing as above: the context maps register N itself.
+                slave.setValues(3, 301, encode_uint64((tick * 237) % 1000))
+                current = decode_float_regs(slave.getValues(3, 1206, 2))
+                phases = slave.getValues(3, 1215, 1)[0] or 3
+                mode3 = b''.join(int(v).to_bytes(2, 'big') for v in slave.getValues(3, 1201, 5)).strip(b'\x00')
+                charging = mode3 in (b'C2', b'D2')
+                p_phase = current * 230.0 * 0.98 if charging else 0.0
+                per_phase = [p_phase if i < phases else 0.0 for i in range(3)]
+                for i, p in enumerate(per_phase):
+                    slave.setValues(3, 338 + 2 * i, encode_float(p))
+                p_sum = sum(per_phase)
+                slave.setValues(3, 344, encode_float(p_sum))
+                e_sum = decode_double_regs(slave.getValues(3, 374, 4)) + p_sum / 3600.0
+                slave.setValues(3, 374, encode_double(e_sum))
             except Exception as err:  # noqa: BLE001 - keep the mirror loop alive
                 log.debug("Max current mirror failed for unit %s: %s", unit, err)
 
@@ -377,7 +408,7 @@ async def update_simulation(context):
 # Main
 # ============================================================================
 
-async def run_server(port):
+async def run_server(port, static=False):
     """Starts the Modbus TCP server."""
     # Kill any ghost processes holding the port
     kill_ghost_processes(port)
@@ -407,17 +438,19 @@ async def run_server(port):
         address=("0.0.0.0", port)
     ))
     
-    simulator_logic = asyncio.create_task(update_simulation(store))
-    
+    simulator_logic = asyncio.create_task(update_simulation(store, static))
+
     await asyncio.gather(server_task, simulator_logic)
 
 def main():
     parser = argparse.ArgumentParser(description='Alfen Eve Single Pro Modbus Simulator')
     parser.add_argument('-p', '--port', type=int, default=DEFAULT_PORT,
                         help=f'TCP port to listen on (default: {DEFAULT_PORT})')
+    parser.add_argument('--static', action='store_true',
+                        help='Keep the meter values fixed (for comparing register decodes)')
     args = parser.parse_args()
-    
-    asyncio.run(run_server(args.port))
+
+    asyncio.run(run_server(args.port, args.static))
 
 if __name__ == "__main__":
     main()

@@ -24,7 +24,7 @@ Home Assistant integration for **Alfen Eve NG9xx** and **AHP** series EV charger
 
 ## Requirements
 
-- Home Assistant **2025.10.0** or newer
+- Home Assistant **2025.10.0** or newer (needs pymodbus 3.11.2 or newer, which Home Assistant ships from that release)
 - A supported Alfen charger (see [Supported Platforms](#supported-platforms)) with:
   - The minimum firmware version for your platform
   - **Active Load Balancing** license enabled
@@ -57,6 +57,21 @@ Home Assistant integration for **Alfen Eve NG9xx** and **AHP** series EV charger
 2. Click **Add Integration**
 3. Search for **Alfen Modbus**
 4. Enter your charger's IP address and port (default: 502)
+
+### Polling intervals
+
+| Option | Reads | Default |
+|--------|-------|---------|
+| **Scan Interval** | Energy totals, apparent/reactive power, station data and clock | 30 s |
+| **Measurement Interval** | Power, current, voltage, meter state, mode 3 state and setpoint | Scan interval |
+
+For load balancing, set the **Measurement Interval** to 2-5 s. A load balancer that
+subtracts the charger power from a grid meter otherwise works with a charger value
+up to one scan interval old, and sees phantom headroom after every current change.
+A measurement read is 62 registers in 2 requests per socket. The product
+identification is read at setup (HA startup and integration reload) and again
+when the charger restarts. Both options can be changed later under
+**Configure**.
 
 ## Localization
 
