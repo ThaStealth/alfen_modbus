@@ -4,6 +4,8 @@ Step-by-step setup for the **Home Assistant Charger** template in [EVCC](https:/
 
 EVCC's configurator auto-discovers Home Assistant instances on your network and suggests matching `sensor.*`, `binary_sensor.*`, `switch.*` and `number.*` entities as you type. Go to **Configuration → Charger → Add charger** and pick **Home Assistant Charger**, then fill in the fields below.
 
+> **Entity IDs are language-dependent.** This integration's entities are auto-named from the translated friendly name shown when the entity is first created, so the entity IDs below assume an **English** Home Assistant instance. On a Dutch instance, for example, `binary_sensor.alfen_charger_enabled` and `switch.alfen_charger_enabled` are instead `binary_sensor.alfen_laden_ingeschakeld` and `switch.alfen_laden_ingeschakeld`. If an entity from this guide doesn't exist, look it up under **Settings → Devices & Services → Alfen Modbus → Entities** instead of assuming it's missing.
+
 ## Basic settings
 
 | Field | Value | Notes |
