@@ -1,3 +1,15 @@
+from homeassistant.components.number import NumberMode
+from homeassistant.const import (
+    UnitOfApparentPower,
+    UnitOfElectricCurrent,
+    UnitOfElectricPotential,
+    UnitOfEnergy,
+    UnitOfFrequency,
+    UnitOfPower,
+    UnitOfTemperature,
+    UnitOfTime,
+)
+
 DOMAIN = "alfen_modbus"
 DEFAULT_MANUFACTURER = "Alfen"
 DEFAULT_NAME = "alfen"
@@ -25,8 +37,8 @@ SENSOR_TYPES = {
     "Serial": ["serial", "serial", None, None],
     "Current_time": ["current_time", "stationTime", None, None],
     "Last_boot": ["last_boot", "lastBoot", None, None],
-    "Actual_max_current": ["actual_max_current", "actualMaxCurrent", "A", "mdi:current-dc"],
-    "Board_temp": ["board_temperature", "boardTemperature", "°C", None],
+    "Actual_max_current": ["actual_max_current", "actualMaxCurrent", UnitOfElectricCurrent.AMPERE, "mdi:current-dc"],
+    "Board_temp": ["board_temperature", "boardTemperature", UnitOfTemperature.CELSIUS, None],
     "Backoffice_connected": ["backoffice_connected", "backofficeConnected", None, None],
     "Number_of_sockets": ["number_of_sockets", "numberOfSockets", None, None],
 }
@@ -34,44 +46,49 @@ SENSOR_TYPES = {
 
 SOCKET_SENSOR_TYPES = {
     "S1_Meterstate": ["meter_state", "socket_{socket}_meterstate", None, None],
-    "S1_Meterage": ["meter_reading_age", "socket_{socket}_meterAge", "s", None],
+    "S1_Meterage": ["meter_reading_age", "socket_{socket}_meterAge", UnitOfTime.SECONDS, None],
     "S1_Metertype": ["meter_type", "socket_{socket}_meterType", None, None],
-    "S1_VoltageL1N": ["voltage_l1_n", "socket_{socket}_VL1-N", "V", None],
-    "S1_VoltageL2N": ["voltage_l2_n", "socket_{socket}_VL2-N", "V", None],
-    "S1_VoltageL3N": ["voltage_l3_n", "socket_{socket}_VL3-N", "V", None],
-    "S1_VoltageL1L2": ["voltage_l1_l2", "socket_{socket}_VL1-L2", "V", None],
-    "S1_VoltageL2L3": ["voltage_l2_l3", "socket_{socket}_VL2-L3", "V", None],
-    "S1_VoltageL3L1": ["voltage_l3_l1", "socket_{socket}_VL3-L1", "V", None],
-    "S1_CurrN": ["current_n", "socket_{socket}_currentN", "A", "mdi:current-ac"],
-    "S1_CurrL1": ["current_l1", "socket_{socket}_currentL1", "A", "mdi:current-ac"],
-    "S1_CurrL2": ["current_l2", "socket_{socket}_currentL2", "A", "mdi:current-ac"],
-    "S1_CurrL3": ["current_l3", "socket_{socket}_currentL3", "A", "mdi:current-ac"],
-    "S1_CurrTotal": ["current_total", "socket_{socket}_currentSum", "A", "mdi:current-ac"],
+    "S1_VoltageL1N": ["voltage_l1_n", "socket_{socket}_VL1-N", UnitOfElectricPotential.VOLT, None],
+    "S1_VoltageL2N": ["voltage_l2_n", "socket_{socket}_VL2-N", UnitOfElectricPotential.VOLT, None],
+    "S1_VoltageL3N": ["voltage_l3_n", "socket_{socket}_VL3-N", UnitOfElectricPotential.VOLT, None],
+    "S1_VoltageL1L2": ["voltage_l1_l2", "socket_{socket}_VL1-L2", UnitOfElectricPotential.VOLT, None],
+    "S1_VoltageL2L3": ["voltage_l2_l3", "socket_{socket}_VL2-L3", UnitOfElectricPotential.VOLT, None],
+    "S1_VoltageL3L1": ["voltage_l3_l1", "socket_{socket}_VL3-L1", UnitOfElectricPotential.VOLT, None],
+    "S1_CurrN": ["current_n", "socket_{socket}_currentN", UnitOfElectricCurrent.AMPERE, "mdi:current-ac"],
+    "S1_CurrL1": ["current_l1", "socket_{socket}_currentL1", UnitOfElectricCurrent.AMPERE, "mdi:current-ac"],
+    "S1_CurrL2": ["current_l2", "socket_{socket}_currentL2", UnitOfElectricCurrent.AMPERE, "mdi:current-ac"],
+    "S1_CurrL3": ["current_l3", "socket_{socket}_currentL3", UnitOfElectricCurrent.AMPERE, "mdi:current-ac"],
+    "S1_CurrTotal": ["current_total", "socket_{socket}_currentSum", UnitOfElectricCurrent.AMPERE, "mdi:current-ac"],
     "S1_PowerFactorL1": ["power_factor_l1", "socket_{socket}_powerL1", None, None],
     "S1_PowerFactorL2": ["power_factor_l2", "socket_{socket}_powerL2", None, None],
     "S1_PowerFactorL3": ["power_factor_l3", "socket_{socket}_powerL3", None, None],
     "S1_PowerFactorSum": ["power_factor_sum", "socket_{socket}_powerSum", None, None],
-    "S1_Frequency": ["frequency", "socket_{socket}_frequency", "Hz", None],
-    "S1_RealPowerL1": ["real_power_l1", "socket_{socket}_realPowerL1", "W", None],
-    "S1_RealPowerL2": ["real_power_l2", "socket_{socket}_realPowerL2", "W", None],
-    "S1_RealPowerL3": ["real_power_l3", "socket_{socket}_realPowerL3", "W", None],
-    "S1_RealPowerSum": ["real_power_sum", "socket_{socket}_realPowerSum", "W", None],
-    "S1_Apparant_Power_PhaseL1": ["apparent_power_l1", "socket_{socket}_apparantPowerL1", "VA", None],
-    "S1_Apparant_Power_PhaseL2": ["apparent_power_l2", "socket_{socket}_apparantPowerL2", "VA", None],
-    "S1_Apparant_Power_PhaseL3": ["apparent_power_l3", "socket_{socket}_apparantPowerL3", "VA", None],
-    "S1_Apparant_Power_Sum": ["apparent_power_sum", "socket_{socket}_apparantPowerSum", "VA", None],
+    "S1_Frequency": ["frequency", "socket_{socket}_frequency", UnitOfFrequency.HERTZ, None],
+    "S1_RealPowerL1": ["real_power_l1", "socket_{socket}_realPowerL1", UnitOfPower.WATT, None],
+    "S1_RealPowerL2": ["real_power_l2", "socket_{socket}_realPowerL2", UnitOfPower.WATT, None],
+    "S1_RealPowerL3": ["real_power_l3", "socket_{socket}_realPowerL3", UnitOfPower.WATT, None],
+    "S1_RealPowerSum": ["real_power_sum", "socket_{socket}_realPowerSum", UnitOfPower.WATT, None],
+    "S1_Apparant_Power_PhaseL1": ["apparent_power_l1", "socket_{socket}_apparantPowerL1", UnitOfApparentPower.VOLT_AMPERE, None],
+    "S1_Apparant_Power_PhaseL2": ["apparent_power_l2", "socket_{socket}_apparantPowerL2", UnitOfApparentPower.VOLT_AMPERE, None],
+    "S1_Apparant_Power_PhaseL3": ["apparent_power_l3", "socket_{socket}_apparantPowerL3", UnitOfApparentPower.VOLT_AMPERE, None],
+    "S1_Apparant_Power_Sum": ["apparent_power_sum", "socket_{socket}_apparantPowerSum", UnitOfApparentPower.VOLT_AMPERE, None],
+    # No HA unit enum/device class exists for reactive power/energy in the mixed-case
+    # "VAr"/"VAh" form the Alfen register table uses (HA's own UnitOfReactivePower is
+    # lowercase "var"). Changing the literal unit string would be a breaking change for
+    # existing recorder statistics, so these stay plain strings without a device_class.
     "S1_Reactive_Power_Phase_L1": ["reactive_power_l1", "socket_{socket}_reactivePowerL1", "VAr", None],
     "S1_Reactive_Power_Phase_L2": ["reactive_power_l2", "socket_{socket}_reactivePowerL2", "VAr", None],
     "S1_Reactive_Power_Phase_L3": ["reactive_power_l3", "socket_{socket}_reactivePowerL3", "VAr", None],
     "S1_Reactive_Power_Sum": ["reactive_power_sum", "socket_{socket}_reactivePowerSum", "VAr", None],
-    "S1_Real_Enegery_Delivered_Phase_L1": ["real_energy_delivered_l1", "socket_{socket}_realEnergyDeliveredL1", "Wh", None],
-    "S1_Real_Enegery_Delivered_Phase_L2": ["real_energy_delivered_l2", "socket_{socket}_realEnergyDeliveredL2", "Wh", None],
-    "S1_Real_Enegery_Delivered_Phase_L3": ["real_energy_delivered_l3", "socket_{socket}_realEnergyDeliveredL3", "Wh", None],
-    "S1_Real_Enegery_Delivered_Sum": ["real_energy_delivered_sum", "socket_{socket}_realEnergyDeliveredSum", "Wh", None],
-    "S1_Real_Energy_Cosumed_Phase_L1": ["real_energy_consumed_l1", "socket_{socket}_realEnergyConsumedL1", "Wh", None],
-    "S1_Real_Energy_Cosumed_Phase_L2": ["real_energy_consumed_l2", "socket_{socket}_realEnergyConsumedL2", "Wh", None],
-    "S1_Real_Energy_Cosumed_Phase_L3": ["real_energy_consumed_l3", "socket_{socket}_realEnergyConsumedL3", "Wh", None],
-    "S1_Real_Energy_Cosumed_Sum": ["real_energy_consumed_sum", "socket_{socket}_realEnergyConsumedSum", "Wh", None],
+    "S1_Real_Enegery_Delivered_Phase_L1": ["real_energy_delivered_l1", "socket_{socket}_realEnergyDeliveredL1", UnitOfEnergy.WATT_HOUR, None],
+    "S1_Real_Enegery_Delivered_Phase_L2": ["real_energy_delivered_l2", "socket_{socket}_realEnergyDeliveredL2", UnitOfEnergy.WATT_HOUR, None],
+    "S1_Real_Enegery_Delivered_Phase_L3": ["real_energy_delivered_l3", "socket_{socket}_realEnergyDeliveredL3", UnitOfEnergy.WATT_HOUR, None],
+    "S1_Real_Enegery_Delivered_Sum": ["real_energy_delivered_sum", "socket_{socket}_realEnergyDeliveredSum", UnitOfEnergy.WATT_HOUR, None],
+    "S1_Real_Energy_Cosumed_Phase_L1": ["real_energy_consumed_l1", "socket_{socket}_realEnergyConsumedL1", UnitOfEnergy.WATT_HOUR, None],
+    "S1_Real_Energy_Cosumed_Phase_L2": ["real_energy_consumed_l2", "socket_{socket}_realEnergyConsumedL2", UnitOfEnergy.WATT_HOUR, None],
+    "S1_Real_Energy_Cosumed_Phase_L3": ["real_energy_consumed_l3", "socket_{socket}_realEnergyConsumedL3", UnitOfEnergy.WATT_HOUR, None],
+    "S1_Real_Energy_Cosumed_Sum": ["real_energy_consumed_sum", "socket_{socket}_realEnergyConsumedSum", UnitOfEnergy.WATT_HOUR, None],
+    # Same reservation as reactive power above: "VAh" has no HA unit enum at all.
     "S1_Apparant_Energy_Phase_L1": ["apparent_energy_l1", "socket_{socket}_apparantEnergyL1", "VAh", None],
     "S1_Apparant_Energy_Phase_L2": ["apparent_energy_l2", "socket_{socket}_apparantEnergyL2", "VAh", None],
     "S1_Apparant_Energy_Phase_L3": ["apparent_energy_l3", "socket_{socket}_apparantEnergyL3", "VAh", None],
@@ -82,31 +99,31 @@ SOCKET_SENSOR_TYPES = {
     "S1_Reactieve_Energy_Sum": ["reactive_energy_sum", "socket_{socket}_reactiveEnergySum", "VAh", None],
     "S1_Availability": ["availability", "socket_{socket}_available", None, None],
     "S1_Mode3State": ["mode_3_state", "socket_{socket}_mode3state", None, None],
-    "S1_Actual_Applied_Max_Current": ["actual_applied_max_current", "socket_{socket}_actualMaxCurrent", "A", "mdi:current-ac"],
-    "S1_Modbus_Slave_Max_Current_Valid_Time": ["max_current_valid_time", "maxCurrentValidTime_socket_{socket}", "s", None],
-    "S1_Modbus_Slave_Max_Current": ["max_current", "maxCurrent_socket_{socket}", "A", "mdi:current-ac"],
-    "S1_Active_Load_Balacing_Save_Current": ["active_load_balancing_safe_current", "socket_{socket}_saveCurrent", "A", "mdi:current-ac"],
+    "S1_Actual_Applied_Max_Current": ["actual_applied_max_current", "socket_{socket}_actualMaxCurrent", UnitOfElectricCurrent.AMPERE, "mdi:current-ac"],
+    "S1_Modbus_Slave_Max_Current_Valid_Time": ["max_current_valid_time", "maxCurrentValidTime_socket_{socket}", UnitOfTime.SECONDS, None],
+    "S1_Modbus_Slave_Max_Current": ["max_current", "maxCurrent_socket_{socket}", UnitOfElectricCurrent.AMPERE, "mdi:current-ac"],
+    "S1_Active_Load_Balacing_Save_Current": ["active_load_balancing_safe_current", "socket_{socket}_saveCurrent", UnitOfElectricCurrent.AMPERE, "mdi:current-ac"],
     "S1_Slave_Setpoint_Accounted": ["received_sp_accounted_for", "socket_{socket}_setpointAccounted", None, None],
     "S1_Charging_Mode_Phases": ["charging_mode", "socket_{socket}_chargephases", None, None],
     "S1_Car_Charging": ["car_charging", "socket_{socket}_carcharging", None, None],
     "S1_Car_Connected": ["car_connected", "socket_{socket}_carconnected", None, None],
-    "S1_CurrentSession": ["current_session_wh", "socket_{socket}_currentSession", "Wh", None],
-    "S1_CurrentSessionDuration": ["current_session_duration", "socket_{socket}_currentSessionDuration", "s", None],
+    "S1_CurrentSession": ["current_session_wh", "socket_{socket}_currentSession", UnitOfEnergy.WATT_HOUR, None],
+    "S1_CurrentSessionDuration": ["current_session_duration", "socket_{socket}_currentSessionDuration", UnitOfTime.SECONDS, None],
 }
 
 SCN_SENSOR_TYPES = {
     "SCN_Name": ["scn_name", "scnName", None, None],
     "Number_of_scn_sockets": ["number_of_scn_sockets", "scnSockets", None, None],
-    "SCN_Total_Consumption_L1": ["scn_total_consumption_l1", "scnTotalConsumptionL1", "A", "mdi:current-ac"],
-    "SCN_Total_Consumption_L2": ["scn_total_consumption_l2", "scnTotalConsumptionL2", "A", "mdi:current-ac"],
-    "SCN_Total_Consumption_L3": ["scn_total_consumption_l3", "scnTotalConsumptionL3", "A", "mdi:current-ac"],
-    "SCN_Actual_Max_Current_L1": ["scn_actual_max_current_l1", "scnActualMaxCurrentL1", "A", "mdi:current-ac"],
-    "SCN_Actual_Max_Current_L2": ["scn_actual_max_current_l2", "scnActualMaxCurrentL2", "A", "mdi:current-ac"],
-    "SCN_Actual_Max_Current_L3": ["scn_actual_max_current_l3", "scnActualMaxCurrentL3", "A", "mdi:current-ac"],
-    "SCN_Max_Current_Valid_Time_L1": ["scn_max_current_valid_time_l1", "scnMaxCurrentValidTimeL1", "s", None],
-    "SCN_Max_Current_Valid_Time_L2": ["scn_max_current_valid_time_l2", "scnMaxCurrentValidTimeL2", "s", None],
-    "SCN_Max_Current_Valid_Time_L3": ["scn_max_current_valid_time_l3", "scnMaxCurrentValidTimeL3", "s", None],
-    "SCN_Safe_Current": ["scn_safe_current", "scnSafeCurrent", "A", "mdi:current-ac"],
+    "SCN_Total_Consumption_L1": ["scn_total_consumption_l1", "scnTotalConsumptionL1", UnitOfElectricCurrent.AMPERE, "mdi:current-ac"],
+    "SCN_Total_Consumption_L2": ["scn_total_consumption_l2", "scnTotalConsumptionL2", UnitOfElectricCurrent.AMPERE, "mdi:current-ac"],
+    "SCN_Total_Consumption_L3": ["scn_total_consumption_l3", "scnTotalConsumptionL3", UnitOfElectricCurrent.AMPERE, "mdi:current-ac"],
+    "SCN_Actual_Max_Current_L1": ["scn_actual_max_current_l1", "scnActualMaxCurrentL1", UnitOfElectricCurrent.AMPERE, "mdi:current-ac"],
+    "SCN_Actual_Max_Current_L2": ["scn_actual_max_current_l2", "scnActualMaxCurrentL2", UnitOfElectricCurrent.AMPERE, "mdi:current-ac"],
+    "SCN_Actual_Max_Current_L3": ["scn_actual_max_current_l3", "scnActualMaxCurrentL3", UnitOfElectricCurrent.AMPERE, "mdi:current-ac"],
+    "SCN_Max_Current_Valid_Time_L1": ["scn_max_current_valid_time_l1", "scnMaxCurrentValidTimeL1", UnitOfTime.SECONDS, None],
+    "SCN_Max_Current_Valid_Time_L2": ["scn_max_current_valid_time_l2", "scnMaxCurrentValidTimeL2", UnitOfTime.SECONDS, None],
+    "SCN_Max_Current_Valid_Time_L3": ["scn_max_current_valid_time_l3", "scnMaxCurrentValidTimeL3", UnitOfTime.SECONDS, None],
+    "SCN_Safe_Current": ["scn_safe_current", "scnSafeCurrent", UnitOfElectricCurrent.AMPERE, "mdi:current-ac"],
 }
 
 
@@ -182,7 +199,7 @@ CONTROL_PHASE = [
 MAX_CURRENT_REGISTER = 1210
 
 CONTROL_SLAVE_MAX_CURRENT = [
-    ["max_current_limit", MAX_CURRENT_S, MAX_CURRENT_REGISTER, "f", {"min": 0, "max": 32, "unit": "A", "mode": "slider", "step": 0.1}]
+    ["max_current_limit", MAX_CURRENT_S, MAX_CURRENT_REGISTER, "f", {"min": 0, "max": 32, "unit": UnitOfElectricCurrent.AMPERE, "mode": NumberMode.SLIDER, "step": 0.1}]
 ]
 
 SCN_MAX_CURRENT_L = "scnMaxCurrent"
@@ -191,7 +208,7 @@ SCN_MAX_CURRENT_VALID_TIME_L = "scnMaxCurrentValidTime"
 SCN_ACTUAL_MAX_CURRENT_L = "scnActualMaxCurrent"
 
 CONTROL_SCN_MAX_CURRENT = [
-    ["scn_max_current_phase_l1", SCN_MAX_CURRENT_L + "L1", "L1", 1417, {"min": 0, "max": 32, "unit": "A", "mode": "slider", "step": 0.1}],
-    ["scn_max_current_phase_l2", SCN_MAX_CURRENT_L + "L2", "L2", 1419, {"min": 0, "max": 32, "unit": "A", "mode": "slider", "step": 0.1}],
-    ["scn_max_current_phase_l3", SCN_MAX_CURRENT_L + "L3", "L3", 1421, {"min": 0, "max": 32, "unit": "A", "mode": "slider", "step": 0.1}],
+    ["scn_max_current_phase_l1", SCN_MAX_CURRENT_L + "L1", "L1", 1417, {"min": 0, "max": 32, "unit": UnitOfElectricCurrent.AMPERE, "mode": NumberMode.SLIDER, "step": 0.1}],
+    ["scn_max_current_phase_l2", SCN_MAX_CURRENT_L + "L2", "L2", 1419, {"min": 0, "max": 32, "unit": UnitOfElectricCurrent.AMPERE, "mode": NumberMode.SLIDER, "step": 0.1}],
+    ["scn_max_current_phase_l3", SCN_MAX_CURRENT_L + "L3", "L3", 1421, {"min": 0, "max": 32, "unit": UnitOfElectricCurrent.AMPERE, "mode": NumberMode.SLIDER, "step": 0.1}],
 ]

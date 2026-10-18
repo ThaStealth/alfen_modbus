@@ -5,7 +5,17 @@ from homeassistant.components.sensor import (
     SensorEntity,
     SensorStateClass,
 )
-from homeassistant.const import CONF_NAME, UnitOfEnergy, UnitOfPower
+from homeassistant.const import (
+    CONF_NAME,
+    UnitOfApparentPower,
+    UnitOfElectricCurrent,
+    UnitOfElectricPotential,
+    UnitOfEnergy,
+    UnitOfFrequency,
+    UnitOfPower,
+    UnitOfTemperature,
+    UnitOfTime,
+)
 
 from . import AlfenConfigEntry
 from .const import (
@@ -24,6 +34,18 @@ from .const import (
 from .entity import AlfenEntity
 
 _LOGGER = logging.getLogger(__name__)
+
+# Device class implied by a sensor's unit of measurement. Energy (Wh/kWh) is
+# handled separately below since it also needs a non-default state_class.
+_UNIT_DEVICE_CLASSES: dict[str, SensorDeviceClass] = {
+    UnitOfElectricCurrent.AMPERE: SensorDeviceClass.CURRENT,
+    UnitOfElectricPotential.VOLT: SensorDeviceClass.VOLTAGE,
+    UnitOfTemperature.CELSIUS: SensorDeviceClass.TEMPERATURE,
+    UnitOfFrequency.HERTZ: SensorDeviceClass.FREQUENCY,
+    UnitOfApparentPower.VOLT_AMPERE: SensorDeviceClass.APPARENT_POWER,
+    UnitOfTime.SECONDS: SensorDeviceClass.DURATION,
+    UnitOfPower.WATT: SensorDeviceClass.POWER,
+}
 
 
 async def async_setup_entry(hass, entry: AlfenConfigEntry, async_add_entities):
@@ -103,11 +125,11 @@ class AlfenSensor(AlfenEntity, SensorEntity):
         self._icon = icon
         self._device_info = device_info
         self._attr_state_class = SensorStateClass.MEASUREMENT
-        if self._unit_of_measurement == UnitOfEnergy.KILO_WATT_HOUR or self._unit_of_measurement == UnitOfEnergy.WATT_HOUR:
+        if self._unit_of_measurement in (UnitOfEnergy.KILO_WATT_HOUR, UnitOfEnergy.WATT_HOUR):
             self._attr_state_class = SensorStateClass.TOTAL_INCREASING
             self._attr_device_class = SensorDeviceClass.ENERGY
-        if self._unit_of_measurement == UnitOfPower.WATT :
-            self._attr_device_class = SensorDeviceClass.POWER
+        elif self._unit_of_measurement in _UNIT_DEVICE_CLASSES:
+            self._attr_device_class = _UNIT_DEVICE_CLASSES[self._unit_of_measurement]
         if self._key in ENUM_SENSOR_KEYS:
             self._attr_state_class = None
             self._attr_device_class = SensorDeviceClass.ENUM

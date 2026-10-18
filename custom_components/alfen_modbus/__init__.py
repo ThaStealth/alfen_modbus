@@ -1,11 +1,8 @@
 """The Alfen Modbus Integration."""
 import asyncio
 import logging
-import operator
 from datetime import datetime, timedelta
 
-import homeassistant.helpers.config_validation as cv
-import voluptuous as vol
 from dateutil.tz import tzoffset
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_NAME, CONF_PORT, CONF_SCAN_INTERVAL
@@ -19,11 +16,6 @@ from .const import (
     CONF_MODBUS_ADDRESS,
     CONF_READ_SCN,
     CONF_READ_SOCKET2,
-    DEFAULT_MODBUS_ADDRESS,
-    DEFAULT_NAME,
-    DEFAULT_READ_SCN,
-    DEFAULT_READ_SOCKET2,
-    DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     MAX_CURRENT_S,
     PHASE_SWITCH_OPTIONS,
@@ -37,26 +29,6 @@ from .const import (
 from .repairs import async_check_firmware, async_clear_firmware_issue
 
 _LOGGER = logging.getLogger(__name__)
-
-ALFEN_MODBUS_SCHEMA = vol.Schema(
-    {
-        vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-        vol.Required(CONF_HOST): cv.string,
-        vol.Required(CONF_PORT): cv.positive_int,
-        vol.Optional(
-            CONF_MODBUS_ADDRESS, default=DEFAULT_MODBUS_ADDRESS
-        ): cv.positive_int,
-        vol.Optional(CONF_READ_SCN, default=DEFAULT_READ_SCN): cv.boolean,
-        vol.Optional(CONF_READ_SOCKET2, default=DEFAULT_READ_SOCKET2): cv.boolean,
-        vol.Optional(
-            CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL
-        ): cv.positive_int,
-    }
-)
-
-CONFIG_SCHEMA = vol.Schema(
-    {DOMAIN: vol.Schema({cv.slug: ALFEN_MODBUS_SCHEMA})}, extra=vol.ALLOW_EXTRA
-)
 
 PLATFORMS = ["binary_sensor", "number", "select", "sensor", "switch"]
 
@@ -78,7 +50,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: AlfenConfigEntry):
     read_scn = entry.data.get(CONF_READ_SCN, False)
     read_socket2 = entry.data.get(CONF_READ_SOCKET2, False)
 
-    _LOGGER.info("Setup %s.%s (integration v0.2.1, split socket reads, fixes issue #40)", DOMAIN, name)
+    _LOGGER.debug("Setting up %s.%s", DOMAIN, name)
 
     hub = AlfenModbusHub(
         hass,
@@ -128,20 +100,6 @@ async def async_unload_entry(hass, entry):
     if unload_ok:
         async_clear_firmware_issue(hass, entry.entry_id)
     return unload_ok
-
-
-def validate(value, comparison, against):
-    ops = {
-        ">": operator.gt,
-        "<": operator.lt,
-        ">=": operator.ge,
-        "<=": operator.le,
-        "==": operator.eq,
-        "!=": operator.ne,
-    }
-    if not ops[comparison](value, against):
-        raise ValueError(f"Value {value} failed validation ({comparison}{against})")
-    return value
 
 
 class AlfenModbusHub:
