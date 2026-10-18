@@ -8,6 +8,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_NAME, CONF_PORT, CONF_SCAN_INTERVAL
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.event import async_track_time_interval
 from pymodbus.client import ModbusTcpClient
 from pymodbus.exceptions import ModbusException
@@ -29,6 +30,9 @@ from .const import (
 from .repairs import async_check_firmware, async_clear_firmware_issue
 
 _LOGGER = logging.getLogger(__name__)
+
+# This integration is config-entry only; it has no YAML configuration.
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 PLATFORMS = ["binary_sensor", "number", "select", "sensor", "switch"]
 

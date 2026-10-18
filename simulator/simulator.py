@@ -213,7 +213,7 @@ def setup_product_context():
     
     # Time registers (168-178)
     import datetime
-    now = datetime.datetime.now()  # noqa: DTZ005 - simulates the charger's local wall clock
+    now = datetime.datetime.now()  # simulates the charger's local wall clock
     block.setValues(reg(168), encode_int16(now.year))
     block.setValues(reg(169), encode_int16(now.month))
     block.setValues(reg(170), encode_int16(now.day))
