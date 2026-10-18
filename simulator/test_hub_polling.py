@@ -110,6 +110,9 @@ def install_ha_stubs():
     cv = types.ModuleType("homeassistant.helpers.config_validation")
     cv.string, cv.boolean, cv.slug = str, bool, str
     cv.positive_int = vol.All(vol.Coerce(int), vol.Range(min=0))
+    # __init__.py declares a config-entry-only schema with this helper rather
+    # than YAML vol.Schema; the hub test only needs it to be a no-op validator.
+    cv.config_entry_only_config_schema = lambda domain: (lambda value: value)
 
     event = types.ModuleType("homeassistant.helpers.event")
 

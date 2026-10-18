@@ -77,7 +77,6 @@ class AlfenModbusConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Alfen Modbus configflow."""
 
     VERSION = 1
-    CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
 
     @staticmethod
     @callback
